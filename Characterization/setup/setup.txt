@@ -1,0 +1,68 @@
+# how to set up
+
+
+# install python
+https://www.python.org/downloads/
+# add python to path during setup
+
+# open terminal
+# to check if python is working type:
+python
+exit()
+
+
+# navigate to directory with scripts
+cd Desktop
+
+
+# to view contents
+dir
+
+
+# create virtual environment
+python -m venv myenv
+
+
+# activate virtual environment
+myenv\Scripts\activate
+
+
+# if permission issue with power shell
+Set-ExecutionPolicy Unrestricted -Scope Process
+.\myenv\Scripts\Activate.ps1
+
+# to deactivate
+deactivate
+
+
+# install requirements
+pip install -r requirements.txt
+
+
+# to export requirements to a text file
+pip freeze > requirements.txt
+
+
+# to run app from anechoic_um_app on my windows comp
+python .\app\app_main.py
+
+
+# how to run it on anechoic chamber comp
+# cd into anechoic_um_app directory
+python -m app.app_main
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
