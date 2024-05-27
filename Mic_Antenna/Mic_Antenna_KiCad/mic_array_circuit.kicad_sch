@@ -1,0 +1,19 @@
+(kicad_sch
+	(version 20231120)
+	(generator "eeschema")
+	(generator_version "8.0")
+	(uuid "6e64b3a7-df06-4c4c-8c03-96406456727d")
+	(paper "A4")
+	(title_block
+		(title "FOSSN Mic Array Circuit")
+		(date "2024-05-17")
+		(company "University of Memphis")
+		(comment 1 "Kevin McKenzie")
+	)
+	(lib_symbols)
+	(sheet_instances
+		(path "/"
+			(page "1")
+		)
+	)
+)
