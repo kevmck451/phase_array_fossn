@@ -193,7 +193,6 @@ class GainProcessor(Component):
 
         return m
 
-
 # separate component for CDC reasons
 class MicCaptureRegs(Component):
     csr_bus: In(csr.Signature(addr_width=2, data_width=32))

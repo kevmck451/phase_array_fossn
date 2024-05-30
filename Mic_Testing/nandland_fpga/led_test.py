@@ -1,5 +1,4 @@
 from amaranth import *
-from amaranth.build import *
 from amaranth_boards.nandland_go import NandlandGoPlatform
 
 class LEDTest(Elaboratable):
@@ -8,15 +7,24 @@ class LEDTest(Elaboratable):
 
         led1 = platform.request("led", 0)
         led2 = platform.request("led", 1)
+        led3 = platform.request("led", 2)
+        led4 = platform.request("led", 3)
 
-        counter = Signal(24)
+        button1 = platform.request("button", 3)
+
+        counter = Signal(28)
 
         # Blink LED1
-        m.d.sync += counter.eq(counter + 1)
+        m.d.sync += [counter.eq(counter + 1)]
+
         m.d.comb += [
-            led1.o.eq(counter[-1]),  # Toggle LED1 based on the counter
-            led2.o.eq(~counter[-1]),  # Toggle LED2 in the opposite phase
+            led1.o.eq(counter[-1]),
+            led2.o.eq(counter[-2]),
+            led3.o.eq(counter[-3]),
+            led4.o.eq(counter[-4]),
         ]
+
+        # m.d.comb += led4.o.eq(button1.i)
 
         return m
 
