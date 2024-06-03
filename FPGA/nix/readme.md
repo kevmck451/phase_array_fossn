@@ -30,7 +30,6 @@ The intial setup for the DE10 Nano board cannot be setup with anything other tha
     - Initial folder structure
         - flake.nix file is inside FPGA developmental folder
         - nix folder inside that for all nix files like shell definition and overlays
-        - flake.nix file under outputs: change system to your system
         - commit files to git or get dirty warning
         - inside FPGA folder, run ‘nix develop’ to start environment
         - a flake.lock file will be auto generated after running this command
