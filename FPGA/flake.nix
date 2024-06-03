@@ -3,7 +3,7 @@
 
   outputs = { self, nixpkgs }: let
     flakeInputs = { inherit nixpkgs; };
-    system = "x86_64-linux";
+    system = "aarch64-darwin";
 
     # a text file containing the paths to the flake inputs in order to stop
     # them from being garbage collected
