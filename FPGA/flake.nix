@@ -1,9 +1,10 @@
 {
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
+
   outputs = { self, nixpkgs }: let
     flakeInputs = { inherit nixpkgs; };
-    system = "aarch64-darwin";
+    system = "aarch64-darwin"; # make sure to change system to your system before running
 
     # a text file containing the paths to the flake inputs in order to stop
     # them from being garbage collected

@@ -2,6 +2,11 @@
 
 ## Project Setup with Nix
 
+The intial setup for the DE10 Nano board cannot be setup with anything other than intel processor running linux
+
+
+
+
 1. Start git repo folder
 2. Initialize basic Nix files
     - Set up the basic nix folder structure
