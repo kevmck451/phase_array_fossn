@@ -34,3 +34,47 @@ The intial setup for the DE10 Nano board cannot be setup with anything other tha
         - inside FPGA folder, run ‘nix develop’ to start environment
         - a flake.lock file will be auto generated after running this command
         - commit flake.lock file and run again to start development environment
+3. Add Quartus-Prime to Nix Packages
+4. Setting up the files required for the FPGA design: Terasic System Builder
+5. Adding Qsys
+
+setting up nix so that when quartus is used to generate the files needed to program the fpga
+it knows what to do with those files and has the correct structures and packages installed
+
+setting up the HPS operating system to include the quartus packages needed to connect the HPS to FPGA fabric
+first objective is being able to load a program on the FPGA
+   - to do this, the HPS needs to connect to it using the AXI Bridge
+     - AXI is protocol used to connect different components like 
+       - processors, memory controller, peripherals, and custom logic implemented in the FPGA
+
+
+Nix defaults and overlays: are you adding terminal command and routing them to specific run commands?
+
+
+
+## Building SD Image for DE10 Nano NixOS
+once your development environment is functional and you can load a program onto the FPGA
+build the NixOS sdImage file which will be in charge of operating the HPS system and
+controlling the FPGA
+
+
+readme.md in papa_fpga to add nixos to de10. how to connect and set up dev environment for running commands
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
