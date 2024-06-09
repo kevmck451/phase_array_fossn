@@ -1,8 +1,61 @@
 # Nix Info
 
+The initial setup for the DE10 Nano board cannot be setup with anything other than intel processor running linux
+
+The development environment for this project was setup on a [Wo-We Mini PC](https://www.amazon.com/dp/B0CLD8JRWK?psc=1&ref=ppx_yo2ov_dt_b_product_details)
+   - Processor: Intel Celeron N4020 CPU @ 1.1GHz x 2 running Ubuntu 20.04.6 64 bit
+
+Installing Nix [Nix Website](https://nixos.org/download/#nixos-iso)
+
+Browsing for Nix Packages [Package Search Website](https://search.nixos.org/packages?ref=itsfoss.com)
+
+Adding the flake feature in ubuntu
+```zsh
+sudo nano /etc/nix/nix.conf
+```
+Add this to the config file
+~~~
+experimental-features = nix-command flakes
+~~~
+
+Download de10_nano_nixos_demo from github
+
+cd into folder
+
+run 
+```zsh
+nix build .#nixosConfigurations.de10-nano
+```
+this can only be performed on an intel processor with nix installed
+this will take some time
+
+   didnt work for me the first time
+   failed with exit code 10 & computer gave low space warning
+
+
+
+
+
+this will make a folder called "result"
+
+inside that folder is sd-image folder
+inside that is a .img.zst file
+
+use etcher to put that onto the SD card (you can also use zstdcat/dd)
+this can be done on any computer
+
+insert sd card into de10
+set de10 mel switches to all 0 (up)
+connect to the de10 through the UART mini usb connector
+
+
+
+
+
+
+
 ## Project Setup with Nix
 
-The intial setup for the DE10 Nano board cannot be setup with anything other than intel processor running linux
 
 
 
