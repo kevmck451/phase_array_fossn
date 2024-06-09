@@ -1,13 +1,13 @@
-# Nix Info
+# Setup for DE10
 
 The initial setup for the DE10 Nano board cannot be setup with anything other than intel processor running linux
 
 The development environment for this project was setup on a [Wo-We Mini PC](https://www.amazon.com/dp/B0CLD8JRWK?psc=1&ref=ppx_yo2ov_dt_b_product_details)
    - Processor: Intel Celeron N4020 CPU @ 1.1GHz x 2 running Ubuntu 20.04.6 64 bit
 
-Installing Nix [Nix Website](https://nixos.org/download/#nixos-iso)
-
-Browsing for Nix Packages [Package Search Website](https://search.nixos.org/packages?ref=itsfoss.com)
+#### Installing Nix 
+   - [Nix Website](https://nixos.org/download/#nixos-iso)
+   - Browsing for Nix Packages [Package Search Website](https://search.nixos.org/packages?ref=itsfoss.com)
 
 Adding the flake feature in ubuntu
 ```zsh
@@ -18,31 +18,41 @@ Add this to the config file
 experimental-features = nix-command flakes
 ~~~
 
-Download de10_nano_nixos_demo from github
+#### Download Repo from Github
+   - de10_nano_nixos_demo from github
+     - git@github.com:tpwrules/de10_nano_nixos_demo.git
+   - papa_fpga repo
+     - git@github.com:tpwrules/papa_fpga.git
 
 cd into folder
 
-run 
+#### Build SD Card Image for DE10
+this can only be performed on an intel processor with nix installed
+this only needs to be done once
+then updates can be run from the device itself
+
+run the command:
 ```zsh
 nix build .#nixosConfigurations.de10-nano
 ```
-this can only be performed on an intel processor with nix installed
+
 this will take some time
 
-   didnt work for me the first time
-   failed with exit code 10 & computer gave low space warning
+##### troubleshooting
+   - didnt work for me the first time
+   - failed with exit code 10 & computer gave low space warning
+   - try on intel windows computer using WSL
 
 
+#### Create Bootable Drive
+this can be done on any computer
 
-
-
-this will make a folder called "result"
+the build command will make a folder called "result"
 
 inside that folder is sd-image folder
 inside that is a .img.zst file
 
 use etcher to put that onto the SD card (you can also use zstdcat/dd)
-this can be done on any computer
 
 insert sd card into de10
 set de10 mel switches to all 0 (up)
@@ -55,9 +65,6 @@ connect to the de10 through the UART mini usb connector
 
 
 ## Project Setup with Nix
-
-
-
 
 
 1. Start git repo folder
