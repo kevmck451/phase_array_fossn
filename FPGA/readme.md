@@ -1,4 +1,4 @@
-# __Setup Instructions for DE10-Nano__
+# Setup Instructions for DE10-Nano
 - Building the necessary libraries for DE10 Nano board must be done with:
   - a pc with an intel processor running linux (ubuntu used in this)
   - around 35GB of space for the nix store
@@ -7,7 +7,7 @@
 
 ---
 
-### __1. Installing Nix__
+### 1. Installing Nix 
    - [Nix Website](https://nixos.org/download/#nixos-iso)
    - Browsing for Nix Packages [Package Search Website](https://search.nixos.org/packages?ref=itsfoss.com)
 
@@ -47,7 +47,7 @@ nix build .#nixosConfigurations.de10-nano
 
 - this will take some time
 
-##### troubleshooting
+##### 3.1: troubleshooting
    - didnt work for me the first time
    - failed with exit code 10 & computer gave low space warning
    - tried build command again and it worked
@@ -66,7 +66,7 @@ nix build .#nixosConfigurations.de10-nano
 - you can also use zstdcat/dd
    - this decompresses the image and writes it to the SD card
 
-#### zstdcat/dd terminal method
+#### 4.1: zstdcat/dd terminal method
 1. Insert SD card into computer
 2. Identify sd card's device name
    - not the mount point of the SD card, but the device name
@@ -103,7 +103,7 @@ zstdcat result/sd-image/*.img.zst | sudo dd of=/dev/mmcblk1 bs=4M status=progres
     - it will depend on exactly how the NixOS was designed
     - creating a putty terminal and connecting over UART will be the simplest
     
-#### PuTTY on Ubuntu
+#### 5.1: PuTTY on Ubuntu
 ```zsh
 sudo apt install putty
 ```
@@ -111,7 +111,7 @@ sudo apt install putty
 ```zsh
 putty
 ```
-#### UART PuTTY Configuration
+#### 5.2: UART PuTTY Configuration
 ~~~
 Connection Type: Serial
 Serial Line: /dev/ttyUSB0
