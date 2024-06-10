@@ -7,7 +7,7 @@
 
 ---
 
-### 1. Installing Nix 
+### __1. Installing Nix__
    - [Nix Website](https://nixos.org/download/#nixos-iso)
    - Browsing for Nix Packages [Package Search Website](https://search.nixos.org/packages?ref=itsfoss.com)
 
