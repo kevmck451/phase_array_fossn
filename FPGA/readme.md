@@ -1,9 +1,10 @@
 # Setup Instructions for DE10-Nano
 - Building the necessary libraries for DE10 Nano board must be done with:
-  - a pc with an intel processor running linux (ubuntu used in this)
+  - a pc with an intel processor running linux
+  - lubuntu is lite ubuntu which is for comps with limited cpu ability
   - around 35GB of space for the nix store
 - The development environment for this project was setup on a [Wo-We Mini PC](https://www.amazon.com/dp/B0CLD8JRWK?psc=1&ref=ppx_yo2ov_dt_b_product_details)
-- Processor used for this: Intel Celeron N4020 CPU @ 1.1GHz x 2 running Ubuntu 20.04.6 64 bit
+- Processor used for this: Intel Celeron N4020 CPU @ 1.1GHz x 2 running [lubuntu 24.04 64 bit](https://lubuntu.me/downloads/)
 
 ---
 
@@ -11,25 +12,35 @@
    - [Nix Website](https://nixos.org/download/#nixos-iso)
    - Browsing for Nix Packages [Package Search Website](https://search.nixos.org/packages?ref=itsfoss.com)
 
-Adding the flake feature in ubuntu
+Adding the flake feature
 ```zsh
+sudo mkdir /etc/nix
 sudo nano /etc/nix/nix.conf
 ```
-Add this to the config file
+- Add this to the config file
+- the first line is most important
 ~~~
+# Nix Config File
+
+# enable flake feature
 experimental-features = nix-command flakes
+
+# specifies which users are trusted by the Nix daemon
+trusted-users = @root
+
+# automatically optimize the store by deduplicating files
+# performing other optimizations to reduce disk usage and improve performance
+auto-optimise-store = true
 ~~~
 
 ---
 
 ### 2. Download Repo from Github
-- These are the two already built systems for the DE10
-- First attempt will be done with 1
+- This is an already made NixOS system for the DE10
 
-1. de10_nano_nixos_demo from github
-   - git@github.com:tpwrules/de10_nano_nixos_demo.git
-2. papa_fpga repo
-   - git@github.com:tpwrules/papa_fpga.git
+```zsh
+git clone https://github.com/tpwrules/papa_fpga.git
+```
 
 cd into folder
 
@@ -38,20 +49,19 @@ cd into folder
 ### 3. Build SD Card Image for DE10
 - this can only be performed on an intel processor with nix installed
 - this only needs to be done once
-- then updates can be run from the device itself
+- then updates can be run from the device itself with ```nix rebuild``` command
 
 - run the command:
 ```zsh
-nix build .#nixosConfigurations.de10-nano
+nix build .#nixosConfigurations.de10-nano -j1 -L
 ```
-
-- this will take some time
-
-##### 3.1: troubleshooting
-   - didnt work for me the first time
-   - failed with exit code 10 & computer gave low space warning
-   - tried build command again and it worked
-
+- -j1 is for small cpu computers
+- -L is to see a verbose output as it builds
+- this will take some time the first time (8+ hours potentially)
+- there is no harm in stopping the build and restarting it
+- it could potentially reduce memory if needed 
+- might run into memory issues when building
+  - google how to make swap memory bigger
 ---
 
 ### 4. Create Bootable Drive
@@ -99,30 +109,39 @@ zstdcat result/sd-image/*.img.zst | sudo dd of=/dev/mmcblk1 bs=4M status=progres
 - connect to the de10 through the UART mini usb connector
 - plug the power cable to the DE10
 
-- from here there are several ways to connect to the DE10
-    - it will depend on exactly how the NixOS was designed
-    - creating a putty terminal and connecting over UART will be the simplest
+There are two ways we will connect to the DE10:
+1. connection over UART 
+2. connection via ssh with ethernet over usb 
     
-#### 5.1: PuTTY on Ubuntu
+---
+
+#### 5.1: UART Connection on Linux
 ```zsh
-sudo apt install putty
+sudo apt install minicom
 ```
-- start the putty application from terminal or app
+- Sometimes, you might need appropriate permissions to access these devices
+- You can change the permissions by adding your user to the dialout group
 ```zsh
-putty
+sudo usermod -aG dialout kevmck
 ```
-#### 5.2: UART PuTTY Configuration
-~~~
-Connection Type: Serial
-Serial Line: /dev/ttyUSB0
-Speed: 115200
-~~~
+- program that tries to find modems on serials ports so get rid of it
+```zsh
+sudo apt purge modemmanager
+```
+- start the UART connection
+- most likely USB0, but maybe USB1
+```zsh
+minicom -D /dev/ttyUSB0 -b 115200
+```
+- once run, you should see start up of device
+- to exit session: press control a, let go of both, press x
 
-- finding the UART connection destination for the Serial Line 
+---
 
+#### 5.2: SSH Connection
+```zsh
 
-
-
+```
 
 
 
