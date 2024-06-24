@@ -12,6 +12,12 @@
    - [Nix Website](https://nixos.org/download/#nixos-iso)
    - Browsing for Nix Packages [Package Search Website](https://search.nixos.org/packages?ref=itsfoss.com)
 
+
+Multi-user installation for Linux
+```zsh
+sh <(curl -L https://nixos.org/nix/install) --daemon
+```
+
 Adding the flake feature
 ```zsh
 sudo mkdir /etc/nix
@@ -62,6 +68,9 @@ nix build .#nixosConfigurations.de10-nano -j1 -L
 - it could potentially reduce memory if needed 
 - might run into memory issues when building
   - google how to make swap memory bigger
+- might run into 'lack of disk space' error
+  - this might be due to tmp space not big enough
+  - google remount /tmp with larger size
 ---
 
 ### 4. Create Bootable Drive
@@ -139,13 +148,37 @@ minicom -D /dev/ttyUSB0 -b 115200
 ---
 
 #### 5.2: SSH Connection
+- connection to the internet is required
+- make sure SSH server is installed
 ```zsh
+sudo apt install openssh-server
+```
+- SSH into FPGA
+```zsh
+ssh nixos@192.168.80.1
+```
 
+#### 5.3: SSH Connection with MacBook
+- this is done on the MacBook terminal
+- get intel linux ip address and username
+- Copy SSH key to connect without password
+```zsh
+ssh-copy-id kevmck@141.225.162.254
+```
+- SSH into FPGA from MacBook with jumping
+```zsh
+ssh nixos@192.168.80.1 -J kevmck@141.225.162.254    
 ```
 
 
-
-
-
-
+### 6. Test FPGA wavdump functionality
+- on macbook, ssh into fpga with jumping (from 5.3)
+- run the wavdump command with -f for fake mics
+```zsh
+sudo wavdump -f fake_mic_test.wav
+```
+- copy the file to macbook for inspection with Audacity
+```zsh
+scp -J kevmck@141.225.162.254 nixos@192.168.80.1:/home/nixos/cool.wav .
+```
 

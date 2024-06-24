@@ -1,7 +1,14 @@
 final: prev: {
-  quartus-prime-lite = final.callPackage ./packages/quartus-prime {
+  quartus-prime-lite = prev.quartus-prime-lite.override {
     supportedDevices = [ "Cyclone V" ];
+    withQuesta = false;
   };
+
+  vde2 = prev.vde2.override (old: {
+    wolfssl = old.wolfssl.overrideAttrs (old: {
+      configureFlags = builtins.filter (f: (f != "--enable-intelasm") && (f != "--enable-aesni")) old.configureFlags;
+    });
+  });
 
   pythonPackagesExtensions = let
     amaranth-soc =
@@ -14,14 +21,14 @@ final: prev: {
 
       buildPythonPackage rec {
         pname = "amaranth-soc";
-        version = "0.0.0+unstable-2024-03-04";
+        version = "0.0.0+unstable-2024-04-10";
         format = "pyproject";
 
         src = fetchFromGitHub {
           owner = "amaranth-lang";
           repo = "amaranth-soc";
-          rev = "19235589cb79ec5670445f64fe22ddd3a130e91d";
-          hash = "sha256-EOcUxTHkVgNNDq8wTSlCzMkR7l0U6DDPwKwddF1vjwA=";
+          rev = "ce4ad768dc590c38de0d76a560e76a94a615a782";
+          hash = "sha256-C5mxh0sGoTDWWVT07emJ8mQr6zIXxA02Uym9RV8ecDs=";
         };
 
         nativeBuildInputs = [ pdm-backend ];
@@ -46,14 +53,16 @@ final: prev: {
 
       buildPythonPackage rec {
         pname = "amaranth-boards";
-        version = "0.0.0+unstable-2024-02-28";
+        version = "0.0.0+unstable-2024-04-18";
         format = "pyproject";
 
         src = fetchFromGitHub {
           owner = "amaranth-lang";
           repo = "amaranth-boards";
-          rev = "b67996c48f1bc91412605acd7012f242514d3927";
-          sha256 = "sha256-C1NFu3vBaplju1HKrfzJa/z78H0AN09CZ4f5CeBdVuw=";
+          rev = "8be265b8ed89c1bbb4d9785a14dcfa415898a9d7";
+          # files change depending on git branch status
+          postFetch = "rm -f $out/.git_archival.txt $out/.gitattributes";
+          sha256 = "sha256-IkRmIINEjHI3wJkecBUeWz1mIRWZaa1QOYMMz6eeHNU=";
         };
 
         nativeBuildInputs = [ setuptools setuptools-scm ];
@@ -73,14 +82,23 @@ final: prev: {
     (python-final: python-prev: {
       # upgrade to latest version
       amaranth = (python-prev.amaranth.overrideAttrs (o: {
-        version = "0.4.3+unstable-2024-03-05";
+        version = "0.4.5+unstable-2024-04-20";
 
         src = final.fetchFromGitHub {
           owner = "amaranth-lang";
           repo = "amaranth";
-          rev = "161b01450ede96cf3d7b6999732f057465c2b7bb";
-          hash = "sha256-cOol0YDi4amWodv7Mm+v0XBicsTB8LJAJZ3c4FyqLc8=";
+          rev = "9201cc3179d53c9fcfb6443e571533d64dbdd417";
+          hash = "sha256-oIGcLM5Xa9hzSZar9+4oYgidEuugmC/idt1cb1bOkuo=";
         };
+
+        patches = (o.patches or []) ++ [
+          # requires PDM functionality we don't have
+          (final.fetchpatch {
+            url = "https://github.com/amaranth-lang/amaranth/commit/3fbed68365fb4f0ab5b14e305167467845adbd95.patch";
+            hash = "sha256-sTvX3+IAFRlidrqLTzqGh/CodJSR6zDaLqviaoPD8kA=";
+            revert = true;
+          })
+        ];
       }));
 
       amaranth-soc = python-final.callPackage amaranth-soc {};
@@ -88,6 +106,34 @@ final: prev: {
       amaranth-boards = python-final.callPackage amaranth-boards {};
     })
   ];
+
+  # git rev needed for latest amaranth
+  yosys = prev.yosys.overrideAttrs (old: {
+    version = "0.40";
+
+    src = final.fetchFromGitHub {
+      owner = "YosysHQ";
+      repo = "yosys";
+      rev = "refs/tags/yosys-0.40";
+      hash = "sha256-dUOPsHoknOjF9RPk2SfXKkKEa4beQR8svzykhpUdcU0=";
+    };
+
+    # remove patch that doesn't apply and we don't care about
+    patches = builtins.filter (p: !(final.lib.strings.hasInfix "fix-clang-build.patch" (builtins.toString p))) old.patches;
+
+    # remove now in tree patch by converting to nop
+    postPatch = builtins.replaceStrings ["tail +3"] ["tail -n +3"] old.postPatch;
+  });
+
+  # git rev needed for latest yosys
+  abc-verifier = prev.abc-verifier.overrideAttrs (old: {
+      src = final.fetchFromGitHub {
+        owner = "yosyshq";
+        repo  = "abc";
+        rev   = "0cd90d0d2c5338277d832a1d890bed286486bcf5";
+        hash  = "sha256-1v/HOYF/ZdfR75eC3uYySKs2k6ZLCTUI0rtzPQs0hKQ=";
+      };
+  });
 
   design = prev.lib.makeScope prev.newScope (self: with self; {
     amaranth_top = callPackage ./design/amaranth_top {};
