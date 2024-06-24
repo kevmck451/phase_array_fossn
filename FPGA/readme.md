@@ -165,20 +165,51 @@ ssh nixos@192.168.80.1
 ```zsh
 ssh-copy-id kevmck@141.225.162.254
 ```
+- SSH into intel linx comp
+```zsh
+ssh kevmck@141.225.162.254
+```
 - SSH into FPGA from MacBook with jumping
 ```zsh
 ssh nixos@192.168.80.1 -J kevmck@141.225.162.254    
 ```
 
+---
 
 ### 6. Test FPGA wavdump functionality
 - on macbook, ssh into fpga with jumping (from 5.3)
 - run the wavdump command with -f for fake mics
+- run with -r for raw output, not convolved
 ```zsh
-sudo wavdump -f fake_mic_test.wav
+sudo wavdump -f -r fake_mic_test.wav
 ```
+- once a few samples have been generated, press ctl c to stop
+
 - copy the file to macbook for inspection with Audacity
 ```zsh
-scp -J kevmck@141.225.162.254 nixos@192.168.80.1:/home/nixos/cool.wav .
+scp -J kevmck@141.225.162.254 nixos@192.168.80.1:/home/nixos/fake_mic_test.wav .
 ```
+- from here, changes made to code will need to be rebuilt
+
+---
+
+### 7. Updating Changes to Code to FPGA
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
