@@ -2,19 +2,27 @@ import numpy as np
 import beamform
 
 
-# This value will depend on temp
-c = 343.3
+# These values can change
+
+c = 343.3 # speed of sound in air / depends on temp
+filter_length = 101
+synthetic_channels = 75
+synthetic_shape_x = 5
+synthetic_shape_y = 15
+
+
+# Freq Configuration
 frequency = 2000
 lmbda = c / frequency
 
 # Mic Configuration
 m = 4 # Rows
 n = 12 # Cols
-
-d = 0.082333     # lmbda * 0.48
+num_microphones = n * m
+d = 0.08  # distance of mics   # lmbda * 0.48
 sample_rate = 48000
 angle_res = 22.5 # Must be less than HPBW
-fov = 90 #deg
+fov = 180 #deg
 fov_bound = fov/2
 
 # 1 Generate distance array for each microphone wrt reference microphone
@@ -29,12 +37,6 @@ for i in range(m): # rows
         mic_dist_y[i, j] = (n-j-1) * d
         mic_dist_z[i, j] = (m-i-1) * d # hard-computing y in the case of a non-square array. otherwise can just transpose x to form y matrix
 
-
-offset = 0.00712 # meters
-
-mic_dist_y[:,:2] += offset
-mic_dist_z[:2,:] += offset
-
 dir_samples = int((fov/angle_res)+1) # +- 45 degree look angle
 
 delay_mtx = np.zeros([m,n])
@@ -46,8 +48,7 @@ print(f'z: {mic_dist_z}')
 
 #x = n = b
 #y = m = a
-filter_length = 101
-win_length = 25
+
 
 fir_taps = np.zeros([m, n, dir_samples, dir_samples, filter_length]) # ROW, COL, EL, AZ, TAPS
 
@@ -56,15 +57,20 @@ for i in range(dir_samples):
     for k in range(dir_samples):
         az = -fov_bound + (angle_res*k) #-180
         print(f'beamforming for {az} az and {el} el')
-        for y in range(n):
-            for x in range(m):
+        for y in range(m):
+            for x in range(n):
                 # print(str(mic_dist_x[a,b]) + " " + str(mic_dist_y[a, b]) + " " + str(mic_dist_z[a, b]))
                 fir_taps[y,x,i,k], *crap = beamform.delay(mic_dist_x[y,x], mic_dist_y[y,x], mic_dist_z[y,x], (az), (el),
-                                                    sample_rate, filter_length, win_length)
+                                                          sample_rate, filter_length, synthetic_channels)
 
 print(fir_taps.shape)
 
-y_t = np.empty_like(fir_taps).reshape(16, 5, 5, 101)
+# Dynamically determine the dimensions based on fir_taps
+el_samples = fir_taps.shape[2]
+az_samples = fir_taps.shape[3]
+
+y_t = np.empty_like(fir_taps).reshape(num_microphones, el_samples, az_samples, filter_length)
+
 
 # Flipped about Y origin
 y_t[8] = fir_taps[0,0]
@@ -85,7 +91,7 @@ y_t[14] = fir_taps[3,2]
 y_t[15] = fir_taps[3,3]
 
 # squish square axes
-x = y_t.reshape(16, 25, 101)
+x = y_t.reshape(num_microphones, synthetic_channels, filter_length)
 # convert to fpga shape
 y = x.transpose(1, 2, 0)
 # linearize
