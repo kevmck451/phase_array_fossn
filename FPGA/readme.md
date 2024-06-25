@@ -194,7 +194,10 @@ scp -J kevmck@141.225.162.254 nixos@192.168.80.1:/home/nixos/fake_mic_test.wav .
 ---
 
 ### 7. Updating Changes to Code to FPGA
-
+- clone git repo to desktop of intel comp
+```zsh
+git clone https://github.com/kevmck451/phase_array_fossn.git 
+```
 
 
 
