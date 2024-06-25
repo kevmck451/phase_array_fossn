@@ -40,4 +40,3 @@ class IntelPLL(Elaboratable):
             params['p_duty_cycle%d' % i] = "%d" % self.output_configs[i][2]
         m.submodules.pll = Instance("altera_pll", **params)
         return m
-

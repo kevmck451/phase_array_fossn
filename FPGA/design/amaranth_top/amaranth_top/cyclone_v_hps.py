@@ -269,4 +269,3 @@ class CycloneVHPS(wiring.Component):
         # lightweight doesn't need to be instantiated as unused
 
         return m
-

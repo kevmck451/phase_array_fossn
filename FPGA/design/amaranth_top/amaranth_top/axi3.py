@@ -170,4 +170,3 @@ class AXI3Signature(_AXISignaturePiece):
             "ar": Out(AddressChannelSignature(self._params, is_write=False)),
             "r": In(ReadDataChannelSignature(self._params)),
         })
-

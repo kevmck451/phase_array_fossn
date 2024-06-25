@@ -172,4 +172,3 @@ class SignalConveyor(Elaboratable):
             m.d.comb += dst.eq(sig)
 
         return m
-

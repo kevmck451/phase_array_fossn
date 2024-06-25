@@ -202,4 +202,3 @@ class Top(Component):
                 conv_o_fifo.samples_count)
 
         return m
-

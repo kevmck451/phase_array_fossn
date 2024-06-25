@@ -54,4 +54,3 @@ class FakeAudioRAMBusWriteReceiver(Component):
                     m.next = "IDLE"
 
         return m
-

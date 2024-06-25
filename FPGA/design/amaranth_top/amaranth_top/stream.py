@@ -186,4 +186,3 @@ class SampleWriter(Component):
                     m.next = "IDLE"
 
         return m
-
