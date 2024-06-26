@@ -113,6 +113,8 @@
     ]))
 
     tmux
+    nano
+    magic-wormhole
   ];
 
   services.openssh = {
