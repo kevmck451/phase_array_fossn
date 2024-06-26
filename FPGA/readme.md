@@ -125,6 +125,9 @@ There are two ways we will connect to the DE10:
 ---
 
 #### 5.1: UART Connection on Linux
+- plug in the mini-usb cable into the UART connector (by the ethernet port)
+- the LEDs should light up immediately because it's getting power over the usb cable
+  - even if the board is off
 ```zsh
 sudo apt install minicom
 ```
@@ -148,6 +151,7 @@ minicom -D /dev/ttyUSB0 -b 115200
 ---
 
 #### 5.2: SSH Connection
+- plug in the micro-usb cable into the board
 - connection to the internet is required
 - make sure SSH server is installed
 ```zsh
@@ -194,7 +198,18 @@ scp -J kevmck@141.225.162.254 nixos@192.168.80.1:/home/nixos/fake_mic_test.wav .
 ---
 
 ### 7. Updating Changes to Code to FPGA
+- ssh into the intel linux comp
+```zsh
+ssh kevmck@141.225.162.254
+```
 - cd into FPGA folder with nix flake file
+```zsh
+cd Desktop/phase_array_fossn 
+```
+- update the changes that were made to the intel linux pc
+```zsh
+git pull
+```
 - get inside a nix shell to rebuild any changes
 ```zsh
 # which one should be used???

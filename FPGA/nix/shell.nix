@@ -10,7 +10,6 @@ pkgs.mkShell {
       p.amaranth-soc
       p.amaranth-boards
       p.numpy
-      p.magic-wormhole
     ]))
     pkgs.yosys
 
