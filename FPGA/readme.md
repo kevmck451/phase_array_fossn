@@ -45,7 +45,7 @@ auto-optimise-store = true
 - This is an already made NixOS system for the DE10
 
 ```zsh
-git clone https://github.com/tpwrules/papa_fpga.git
+git clone https://github.com/kevmck451/phase_array_fossn.git 
 ```
 
 cd into folder
@@ -194,13 +194,23 @@ scp -J kevmck@141.225.162.254 nixos@192.168.80.1:/home/nixos/fake_mic_test.wav .
 ---
 
 ### 7. Updating Changes to Code to FPGA
-- clone git repo to desktop of intel comp
+- cd into FPGA folder with nix flake file
+- get inside a nix shell to rebuild any changes
 ```zsh
-git clone https://github.com/kevmck451/phase_array_fossn.git 
+# which one should be used???
+nix develop 
+nix develop --profile profiles/dev
 ```
-
-
-
+- note: if using a dash (nix-develop) nix would expect a default.nix file
+  - not using the dash, signifies using a nix.flake file
+- for significant changes, it's best use the boot flag
+```zsh
+nixos-rebuild --target-host nixos@192.168.80.1 --fast --use-remote-sudo --flake .#de10-nano boot -L 
+```
+- otherwise the switch command is fine
+```zsh
+nixos-rebuild --target-host nixos@192.168.80.1 --fast --use-remote-sudo --flake .#de10-nano switch -L 
+```
 
 
 
