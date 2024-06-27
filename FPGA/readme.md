@@ -1,18 +1,18 @@
-# Setup and Maintenance for the DE10-Nano
+# <u>Setup and Maintenance for the DE10-Nano</u>
 
-First Time Setup Instructions
+**<u>First Time Setup Instructions</u>**
 1. Programming Environment Setup
 2. Building SD Card Image
 3. First Connection to DE10-Nano
 
-Developing and Maintenance
+**<u>Developing and Maintenance</u>**
 1. Updating OS Packages
 2. Library update maintenance
 3. Rebuilding software changes
 
 
 ---
-# First Time Setup Instructions
+# <u>First Time Setup Instructions</u>
 - Building the necessary files for operating the DE10 Nano must be done with:
   - a pc with an intel processor running linux
   - Ubuntu is recommended, but other variants like lubuntu can work
@@ -25,7 +25,7 @@ Developing and Maintenance
 
 
 ---
-## 1. Programming Environment Setup
+## <u>1. Programming Environment Setup</u>
 
 ### 1.1: Computer Requirements
 - recommended minimum computer requirements
@@ -158,7 +158,7 @@ sudo nano /etc/fstab
 ~~~
 
 ---
-## 2. Building SD Card Image
+## <u>2. Building SD Card Image</u>
 
 ### 2.1: Build SD Card Image for DE10
 - This repo contains an already made NixOS system for the DE10
@@ -215,7 +215,7 @@ zstdcat result/sd-image/*.img.zst | sudo dd of=/dev/mmcblk1 bs=4M status=progres
 - if you eject the sd card when it's done and reinsert it, it should say NixOS as the sd card name
 
 ---
-## 3. First Connection to DE10-Nano
+## <u>3. First Connection to DE10-Nano</u>
 
 ### 3.1: Starting up the DE10
 - put the SD card in the DE10
@@ -286,9 +286,27 @@ scp -J kevmck@141.225.162.254 nixos@192.168.80.1:/home/nixos/fake_mic_test.wav .
 - from here, changes made to code will need to be rebuilt
 
 ---
-# Developing and Maintenance
+# <u>Developing and Maintenance</u>
+## <u>1. Updating OS Packages</u>
 
-## Using MacBook to control headless Intel Linux PC
+### 1.1: Adding Shell Libraries
+- find packages in 'nixos/sd-image/default.nix'
+- when changes are made, follow process in 3. Rebuilding Software Changes to implement
+
+
+### 1.2: Adding Python Libraries
+
+
+
+---
+## <u>2. Library Update Maintenance</u>
+
+
+
+---
+## <u>3. Rebuilding Software Changes</u>
+
+### 3.1: Using MacBook to control headless Intel Linux PC
 
 - ssh into the intel linux comp
 ```zsh
@@ -319,7 +337,7 @@ nixos-rebuild --target-host nixos@192.168.80.1 --fast --use-remote-sudo --flake 
 nixos-rebuild --target-host nixos@192.168.80.1 --fast --use-remote-sudo --flake .#de10-nano switch -L 
 ```
 
-## Using Intel Linux PC as main computer
+### 3.2: Using Intel Linux PC as main computer
 - TODO
 
 
