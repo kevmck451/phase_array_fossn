@@ -114,7 +114,6 @@
 
     tmux
     nano
-    magic-wormhole
     htop
     git
   ];
