@@ -73,7 +73,43 @@ sudo apt purge modemmanager
 
 
 ### Increasing Swap Memory
-
+What is Swap Memory and why it's important
+- check current swap memory size with htop or this;
+```zsh
+sudo swapon --show
+```
+- disable current swap file temporarily
+```zsh
+sudo swapoff /swapfile
+```
+- resize the swap file to 12GB
+```zsh
+sudo dd if=/dev/zero of=/swapfile bs=1M count=12288
+```
+- set the correct permissions
+```zsh
+sudo chmod 600 /swapfile
+```
+- setup the swap area
+```zsh
+sudo mkswap /swapfile
+```
+- enable the swap file
+```zsh
+sudo swapon /swapfile
+```
+- you should see the swap changing in htop but can also check with this:
+```zsh
+sudo swapon --show
+```
+- Edit the '/etc/fstab' file to ensure the swap file is used at boot
+```zsh
+sudo nano /etc/fstab
+```
+- add or update the following line to ensure it reads:
+~~~
+/swapfile none swap sw 0 0
+~~~
 
 
 ---
