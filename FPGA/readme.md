@@ -80,18 +80,20 @@ sudo usermod -aG dialout kevmck
 ```zsh
 sudo apt purge modemmanager
 ```
+This process is actually a perfect segway into NixOS in that in order to set up Ubuntu OS to do what you need.
+This process has to be done every time a new computer is set up. That can be kind of cumbersome.
+What if there was an OS that you could declare everything you need up front and then build/rebuild when changes are made.
+Although Nix has many features, this is main advantage of using nix that you can declare everything you need
+and you know that it will be built the same way everytime and will always work exactly the way it's suppose to
 
 ---
 ### 1.3: Installing Nix 
-   - [Nix Website](https://nixos.org/download/#nixos-iso)
-   - Browsing for Nix Packages [Package Search Website](https://search.nixos.org/packages?ref=itsfoss.com)
-
-
-Multi-user installation for Linux
+- [Nix Website](https://nixos.org/download/#nixos-iso)
+- Browsing for Nix Packages [Package Search Website](https://search.nixos.org/packages?ref=itsfoss.com) 
+- Multi-user installation for Linux
 ```zsh
 sh <(curl -L https://nixos.org/nix/install) --daemon
 ```
-
 - Adding the flake feature
 - the folder might already exist
 ```zsh
