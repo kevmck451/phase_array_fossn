@@ -6,10 +6,13 @@
 # 1. First Time Setup Instructions
 - Building the necessary libraries for DE10 Nano board must be done with:
   - a pc with an intel processor running linux
-  - lubuntu is lite ubuntu which is for comps with limited cpu ability
-  - around 35GB of space for the nix store
-- The development environment for this project was setup on a [Wo-We Mini PC](https://www.amazon.com/dp/B0CLD8JRWK?psc=1&ref=ppx_yo2ov_dt_b_product_details)
-- Processor used for this: Intel Celeron N4020 CPU @ 1.1GHz x 2 running [lubuntu 24.04 64 bit](https://lubuntu.me/downloads/)
+  - Ubuntu is recommended, but other variants like lubuntu can work
+  - lubuntu is lite ubuntu which is for computers with limited cpu ability
+- This process was tested on a [Wo-We Mini PC](https://www.amazon.com/dp/B0CLD8JRWK?psc=1&ref=ppx_yo2ov_dt_b_product_details)
+  - it worked but was very slow and needed special consideration with some aspects of the nix builds 
+  - It's processor is an Intel Celeron N4020 CPU @ 1.1GHz x 2 (4GB RAM) running [lubuntu 24.04 64 bit](https://lubuntu.me/downloads/)
+- It was also test with a [GMKtec Mini PC](https://www.amazon.com/gp/product/B0B75PT2RY/ref=ppx_yo_dt_b_search_asin_title?ie=UTF8&th=1)
+  - processor is an Intel 11th Gen N5105 @ 3.4GHz x 4 (8GB RAM) running [Ubuntu 20.04.6](https://releases.ubuntu.com/focal/)
 
 
 ---
