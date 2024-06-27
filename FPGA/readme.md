@@ -173,7 +173,7 @@ cd phase_array_fossn/FPGA
 
 - run the command:
 ```zsh
-nix build .#nixosConfigurations.de10-nano -j1 -L
+nix build .#nixosConfigurations.de10-nano -L
 ```
 - add the -j1 flag if using small cpu computers (1 job built at a time)
 - -L is to see a verbose output as it builds
