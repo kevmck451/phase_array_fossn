@@ -23,6 +23,7 @@
   - having two cores and 4GB memory with swap memory at 16GB is theoretically possible
   - four cores with 8GB memory and 12GB swap memory took 10+hrs to build for the first time
 
+---
 ### Installing Necessary Libraries
 - htop: used to monitor computer during builds
 ```zsh
@@ -71,7 +72,7 @@ sudo usermod -aG dialout kevmck
 sudo apt purge modemmanager
 ```
 
-
+---
 ### Increasing Swap Memory
 What is Swap Memory and why it's important
 - check current swap memory size with htop or this;
