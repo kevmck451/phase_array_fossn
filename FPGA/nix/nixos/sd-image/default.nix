@@ -115,6 +115,8 @@
     tmux
     nano
     magic-wormhole
+    htop
+    git
   ];
 
   services.openssh = {
