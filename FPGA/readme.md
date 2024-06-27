@@ -4,7 +4,7 @@
 
 ---
 # 1. First Time Setup Instructions
-- Building the necessary libraries for DE10 Nano board must be done with:
+- Building the necessary files for operating the DE10 Nano must be done with:
   - a pc with an intel processor running linux
   - Ubuntu is recommended, but other variants like lubuntu can work
   - lubuntu is lite ubuntu which is for computers with limited cpu ability
@@ -16,7 +16,7 @@
 
 
 ---
-## Programming Environment
+## Programming Environment Setup
 
 ### Computer Requirements
 - recommended minimum computer requirements
@@ -48,14 +48,33 @@ sudo apt install nix
 ```zsh
 sudo apt install net-tools
 ```
-- minicom: used to communicate with devices through UART
-```zsh
-sudo apt install minicom
-```
 - ssh: allows you to "login" to other computers and control them from the terminal
 ```zsh
 sudo apt install openssh-server
 ```
+- zstd: for decompressing .zst files
+```zsh
+sudo apt install zstd
+```
+- minicom: used to communicate with devices through UART
+```zsh
+sudo apt install minicom
+```
+- Sometimes, you might need appropriate permissions to access these devices
+- You can change the permissions by adding your user to the dialout group
+- kevmck would be replaced with your username
+```zsh
+sudo usermod -aG dialout kevmck
+```
+- program that tries to find modems on serials ports so get rid of it
+```zsh
+sudo apt purge modemmanager
+```
+
+
+### Increasing Swap Memory
+
+
 
 ---
 ### 1. Installing Nix 
@@ -152,9 +171,7 @@ sudo umount /dev/mmcblk1
 ```
 4. Decompress and Write Image
    - *Warning:* incorrect use of ```dd``` commands could destroy your computer's internal disk, so use with care
-```zsh
-sudo apt install zstd
-```
+
 ```zsh
 zstdcat result/sd-image/*.img.zst | sudo dd of=/dev/mmcblk1 bs=4M status=progress conv=fsync
 ```
@@ -180,18 +197,6 @@ There are two ways we will connect to the DE10:
 - plug in the mini-usb cable into the UART connector (by the ethernet port)
 - the LEDs should light up immediately because it's getting power over the usb cable
   - even if the board is off
-```zsh
-sudo apt install minicom
-```
-- Sometimes, you might need appropriate permissions to access these devices
-- You can change the permissions by adding your user to the dialout group
-```zsh
-sudo usermod -aG dialout kevmck
-```
-- program that tries to find modems on serials ports so get rid of it
-```zsh
-sudo apt purge modemmanager
-```
 - start the UART connection
 - most likely USB0, but maybe USB1
 ```zsh
@@ -205,10 +210,6 @@ minicom -D /dev/ttyUSB0 -b 115200
 #### 5.2: SSH Connection
 - plug in the micro-usb cable into the board
 - connection to the internet is required
-- make sure SSH server is installed
-```zsh
-sudo apt install openssh-server
-```
 - SSH into FPGA
 ```zsh
 ssh nixos@192.168.80.1
@@ -218,6 +219,8 @@ ssh nixos@192.168.80.1
 - this is done on the MacBook terminal
 - get intel linux ip address and username
 - Copy SSH key to connect without password
+- replace kevmck with your username
+- replace that IP address with your linux computer's
 ```zsh
 ssh-copy-id kevmck@141.225.162.254
 ```
@@ -248,8 +251,10 @@ scp -J kevmck@141.225.162.254 nixos@192.168.80.1:/home/nixos/fake_mic_test.wav .
 - from here, changes made to code will need to be rebuilt
 
 ---
+# 2. Interacting with the DE10-Nano
 
-### 7. Updating Changes to Code to FPGA
+## Using MacBook to control headless Intel Linux PC
+
 - ssh into the intel linux comp
 ```zsh
 ssh kevmck@141.225.162.254
@@ -279,15 +284,14 @@ nixos-rebuild --target-host nixos@192.168.80.1 --fast --use-remote-sudo --flake 
 nixos-rebuild --target-host nixos@192.168.80.1 --fast --use-remote-sudo --flake .#de10-nano switch -L 
 ```
 
+## Using Intel Linux PC as main computer
+- TODO
 
 
 
 
 
-# Auxiliary
 
-
-### Increasing Swap Memory
 
 
 
