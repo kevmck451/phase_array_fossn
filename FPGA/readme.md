@@ -1,4 +1,9 @@
-# Setup Instructions for DE10-Nano
+# Setup and Maintenance for the DE10-Nano
+1. First Time Setup Instructions
+2. Interacting with the DE10-Nano
+
+---
+# 1. First Time Setup Instructions
 - Building the necessary libraries for DE10 Nano board must be done with:
   - a pc with an intel processor running linux
   - lubuntu is lite ubuntu which is for comps with limited cpu ability
@@ -6,8 +11,50 @@
 - The development environment for this project was setup on a [Wo-We Mini PC](https://www.amazon.com/dp/B0CLD8JRWK?psc=1&ref=ppx_yo2ov_dt_b_product_details)
 - Processor used for this: Intel Celeron N4020 CPU @ 1.1GHz x 2 running [lubuntu 24.04 64 bit](https://lubuntu.me/downloads/)
 
----
 
+---
+## Programming Environment
+
+### Computer Requirements
+- recommended minimum computer requirements
+  - having two cores and 4GB memory with swap memory at 16GB is theoretically possible
+  - four cores with 8GB memory and 12GB swap memory took 10+hrs to build for the first time
+
+### Installing Necessary Libraries
+- htop: used to monitor computer during builds
+```zsh
+sudo apt install htop
+```
+- git: updating code repository after changes
+```zsh
+sudo apt install git
+```
+- wormhole: easily transfer files over the network without needing an IP
+```zsh
+sudo apt install magic-wormhole
+```
+- curl: used to install nix / copies files from a url
+```zsh
+sudo apt install curl
+```
+- nix: environment shells / NixOS builds / etc
+```zsh
+sudo apt install nix
+```
+- ifconfig: used to see device's network information (specifically IP address)
+```zsh
+sudo apt install net-tools
+```
+- minicom: used to communicate with devices through UART
+```zsh
+sudo apt install minicom
+```
+- ssh: allows you to "login" to other computers and control them from the terminal
+```zsh
+sudo apt install openssh-server
+```
+
+---
 ### 1. Installing Nix 
    - [Nix Website](https://nixos.org/download/#nixos-iso)
    - Browsing for Nix Packages [Package Search Website](https://search.nixos.org/packages?ref=itsfoss.com)
@@ -18,13 +65,15 @@ Multi-user installation for Linux
 sh <(curl -L https://nixos.org/nix/install) --daemon
 ```
 
-Adding the flake feature
+- Adding the flake feature
+- the folder might already exist
 ```zsh
 sudo mkdir /etc/nix
 sudo nano /etc/nix/nix.conf
 ```
 - Add this to the config file
 - the first line is most important
+- if there's something already there, delete it
 ~~~
 # Nix Config File
 
@@ -43,12 +92,10 @@ auto-optimise-store = true
 
 ### 2. Download Repo from Github
 - This is an already made NixOS system for the DE10
-
 ```zsh
 git clone https://github.com/kevmck451/phase_array_fossn.git 
 ```
-
-cd into folder
+- cd into folder
 
 ---
 
@@ -111,6 +158,8 @@ zstdcat result/sd-image/*.img.zst | sudo dd of=/dev/mmcblk1 bs=4M status=progres
 - if you eject the sd card when it's done and reinsert it, it should say NixOS as the sd card name
 
 ---
+# 2. Interacting with the DE10-Nano
+
 
 ### 5. Starting up the DE10
 - put the SD card in the DE10
@@ -232,7 +281,10 @@ nixos-rebuild --target-host nixos@192.168.80.1 --fast --use-remote-sudo --flake 
 
 
 
+# Auxiliary
 
+
+### Increasing Swap Memory
 
 
 
