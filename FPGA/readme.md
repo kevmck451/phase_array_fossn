@@ -128,9 +128,9 @@ sudo swapon --show
 ```zsh
 sudo swapoff /swapfile
 ```
-- resize the swap file to 12GB
+- resize the swap file to 16GB
 ```zsh
-sudo dd if=/dev/zero of=/swapfile bs=1M count=12288
+sudo dd if=/dev/zero of=/swapfile bs=1M count=16384
 ```
 - set the correct permissions
 ```zsh
