@@ -1,9 +1,18 @@
 # Setup and Maintenance for the DE10-Nano
-1. First Time Setup Instructions
-2. Interacting with the DE10-Nano
+
+First Time Setup Instructions
+1. Programming Environment Setup
+2. Building SD Card Image
+3. First Connection to DE10-Nano
+
+Developing and Maintenance
+1. Updating OS Packages
+2. Library update maintenance
+3. Rebuilding software changes
+
 
 ---
-# 1. First Time Setup Instructions
+# First Time Setup Instructions
 - Building the necessary files for operating the DE10 Nano must be done with:
   - a pc with an intel processor running linux
   - Ubuntu is recommended, but other variants like lubuntu can work
@@ -16,15 +25,15 @@
 
 
 ---
-## Programming Environment Setup
+## 1. Programming Environment Setup
 
-### Computer Requirements
+### 1.1: Computer Requirements
 - recommended minimum computer requirements
   - having two cores and 4GB memory with swap memory at 16GB is theoretically possible
   - four cores with 8GB memory and 12GB swap memory took 10+hrs to build for the first time
 
 ---
-### Installing Necessary Libraries
+### 1.2: Installing Necessary Libraries
 - htop: used to monitor computer during builds
 ```zsh
 sudo apt install htop
@@ -73,7 +82,41 @@ sudo apt purge modemmanager
 ```
 
 ---
-### Increasing Swap Memory
+### 1.3: Installing Nix 
+   - [Nix Website](https://nixos.org/download/#nixos-iso)
+   - Browsing for Nix Packages [Package Search Website](https://search.nixos.org/packages?ref=itsfoss.com)
+
+
+Multi-user installation for Linux
+```zsh
+sh <(curl -L https://nixos.org/nix/install) --daemon
+```
+
+- Adding the flake feature
+- the folder might already exist
+```zsh
+sudo mkdir /etc/nix
+sudo nano /etc/nix/nix.conf
+```
+- Add this to the config file
+- the first line is most important
+- if there's something already there, delete it
+~~~
+# Nix Config File
+
+# enable flake feature
+experimental-features = nix-command flakes
+
+# specifies which users are trusted by the Nix daemon
+trusted-users = @root
+
+# automatically optimize the store by deduplicating files
+# performing other optimizations to reduce disk usage and improve performance
+auto-optimise-store = true
+~~~
+
+---
+### 1.4: Increasing Swap Memory
 What is Swap Memory and why it's important
 - check current swap memory size with htop or this;
 ```zsh
@@ -112,54 +155,17 @@ sudo nano /etc/fstab
 /swapfile none swap sw 0 0
 ~~~
 
-
 ---
-### 1. Installing Nix 
-   - [Nix Website](https://nixos.org/download/#nixos-iso)
-   - Browsing for Nix Packages [Package Search Website](https://search.nixos.org/packages?ref=itsfoss.com)
+## 2. Building SD Card Image
 
-
-Multi-user installation for Linux
-```zsh
-sh <(curl -L https://nixos.org/nix/install) --daemon
-```
-
-- Adding the flake feature
-- the folder might already exist
-```zsh
-sudo mkdir /etc/nix
-sudo nano /etc/nix/nix.conf
-```
-- Add this to the config file
-- the first line is most important
-- if there's something already there, delete it
-~~~
-# Nix Config File
-
-# enable flake feature
-experimental-features = nix-command flakes
-
-# specifies which users are trusted by the Nix daemon
-trusted-users = @root
-
-# automatically optimize the store by deduplicating files
-# performing other optimizations to reduce disk usage and improve performance
-auto-optimise-store = true
-~~~
-
----
-
-### 2. Download Repo from Github
-- This is an already made NixOS system for the DE10
+### 2.1: Build SD Card Image for DE10
+- This repo contains an already made NixOS system for the DE10
 ```zsh
 git clone https://github.com/kevmck451/phase_array_fossn.git 
 ```
-- cd into folder
-
----
-
-### 3. Build SD Card Image for DE10
-- this can only be performed on an intel processor with nix installed
+```zsh
+cd phase_array_fossn/FPGA
+```
 - this only needs to be done once
 - then updates can be run from the device itself with ```nix rebuild``` command
 
@@ -167,31 +173,23 @@ git clone https://github.com/kevmck451/phase_array_fossn.git
 ```zsh
 nix build .#nixosConfigurations.de10-nano -j1 -L
 ```
-- -j1 is for small cpu computers
+- add the -j1 flag if using small cpu computers (1 job built at a time)
 - -L is to see a verbose output as it builds
 - this will take some time the first time (8+ hours potentially)
 - there is no harm in stopping the build and restarting it
-- it could potentially reduce memory if needed 
-- might run into memory issues when building
-  - google how to make swap memory bigger
+- it could potentially reduce memory if needed
 - might run into 'lack of disk space' error
   - this might be due to tmp space not big enough
   - google remount /tmp with larger size
 ---
 
-### 4. Create Bootable Drive
-- this can be done on any computer
-
-- the build command will make a folder called "result"
-
+### 2.2: Create Bootable Drive
+- this part could be done on any computer
+- the ```nix build``` command from above makes a folder called "result"
 - inside that folder is sd-image folder
 - inside that is a .img.zst file
+- use zstdcat & dd to decompress the image and write it to the SD card
 
-- use etcher to put that onto the SD card 
-- you can also use zstdcat/dd
-   - this decompresses the image and writes it to the SD card
-
-#### 4.1: zstdcat/dd terminal method
 1. Insert SD card into computer
 2. Identify sd card's device name
    - not the mount point of the SD card, but the device name
@@ -215,10 +213,9 @@ zstdcat result/sd-image/*.img.zst | sudo dd of=/dev/mmcblk1 bs=4M status=progres
 - if you eject the sd card when it's done and reinsert it, it should say NixOS as the sd card name
 
 ---
-# 2. Interacting with the DE10-Nano
+## 3. First Connection to DE10-Nano
 
-
-### 5. Starting up the DE10
+### 3.1: Starting up the DE10
 - put the SD card in the DE10
 - set de10 mel switches to all 0 (up)
 - connect to the de10 through the UART mini usb connector
@@ -230,7 +227,7 @@ There are two ways we will connect to the DE10:
     
 ---
 
-#### 5.1: UART Connection on Linux
+#### 3.2: UART Connection on Linux
 - plug in the mini-usb cable into the UART connector (by the ethernet port)
 - the LEDs should light up immediately because it's getting power over the usb cable
   - even if the board is off
@@ -244,7 +241,7 @@ minicom -D /dev/ttyUSB0 -b 115200
 
 ---
 
-#### 5.2: SSH Connection
+#### 3.3: SSH Connection
 - plug in the micro-usb cable into the board
 - connection to the internet is required
 - SSH into FPGA
@@ -252,7 +249,7 @@ minicom -D /dev/ttyUSB0 -b 115200
 ssh nixos@192.168.80.1
 ```
 
-#### 5.3: SSH Connection with MacBook
+#### 3.4: SSH Connection with MacBook
 - this is done on the MacBook terminal
 - get intel linux ip address and username
 - Copy SSH key to connect without password
@@ -271,8 +268,7 @@ ssh nixos@192.168.80.1 -J kevmck@141.225.162.254
 ```
 
 ---
-
-### 6. Test FPGA wavdump functionality
+### 3.5 Test FPGA wavdump functionality
 - on macbook, ssh into fpga with jumping (from 5.3)
 - run the wavdump command with -f for fake mics
 - run with -r for raw output, not convolved
@@ -288,7 +284,7 @@ scp -J kevmck@141.225.162.254 nixos@192.168.80.1:/home/nixos/fake_mic_test.wav .
 - from here, changes made to code will need to be rebuilt
 
 ---
-# 2. Interacting with the DE10-Nano
+# Developing and Maintenance
 
 ## Using MacBook to control headless Intel Linux PC
 
