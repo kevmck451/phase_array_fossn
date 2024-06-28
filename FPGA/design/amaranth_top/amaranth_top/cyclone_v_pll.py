@@ -1,5 +1,5 @@
 # This file is also available under the terms of the MIT license.
-# See /LICENSE.mit and /README.md for more information.
+# See /LICENSE.mit and /readme.md for more information.
 
 # from galibert in #amaranth-lang 2023-11-07
 # https://libera.irclog.whitequark.org/amaranth-lang/2023-11-07#35193230;
