@@ -104,7 +104,7 @@ class FPGATop(Elaboratable):
 
         ws_pins = [
             (0, 9),
-            (1, 4),
+            (0, 4),
         ]
 
         mic_pins = [
