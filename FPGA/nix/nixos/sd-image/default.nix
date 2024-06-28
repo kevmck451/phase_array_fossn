@@ -115,7 +115,6 @@
     tmux
     nano
     htop
-    git
   ];
 
   services.openssh = {
