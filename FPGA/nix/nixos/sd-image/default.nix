@@ -113,6 +113,8 @@
     ]))
 
     tmux
+    nano
+    htop
   ];
 
   services.openssh = {
