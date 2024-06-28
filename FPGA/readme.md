@@ -306,12 +306,11 @@ scp -J kevmck@141.225.162.254 nixos@192.168.80.1:/home/nixos/fake_mic_test.wav .
 ---
 ## <u>3. Rebuilding Software Changes</u>
 
-### 3.1: Using MacBook to control headless Intel Linux PC
-
-- ssh into the intel linux comp
+- if using MacBook to control headless Intel Linux PC then ssh into intel linux pc
 ```zsh
-ssh kevmck@141.225.162.254
+ssh kevmck@141.225.167.131
 ```
+- from here you can either do this from the intel linux comp or ssh'd from macbook
 - cd into FPGA folder with nix flake file
 ```zsh
 cd Desktop/phase_array_fossn 
@@ -321,10 +320,7 @@ cd Desktop/phase_array_fossn
 git pull
 ```
 - get inside a nix shell to rebuild any changes
-- first time: make a 
 ```zsh
-# which one should be used???
-nix develop 
 nix develop --profile profiles/dev
 ```
 - note: if using a dash (nix-develop) nix would expect a default.nix file
@@ -338,8 +334,7 @@ nixos-rebuild --target-host nixos@192.168.80.1 --fast --use-remote-sudo --flake 
 nixos-rebuild --target-host nixos@192.168.80.1 --fast --use-remote-sudo --flake .#de10-nano switch -L 
 ```
 
-### 3.2: Using Intel Linux PC as main computer
-- TODO
+
 
 
 
