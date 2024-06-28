@@ -9,7 +9,7 @@ lmbda = c / frequency
 
 # Mic Configuration
 m = 4 # Rows
-n = 12 # Cols
+n = 4 # Cols
 
 d = 0.082333     # lmbda * 0.48
 sample_rate = 48000

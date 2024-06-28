@@ -30,7 +30,7 @@
 ### 1.1: Computer Requirements
 - recommended minimum computer requirements
   - having two cores and 4GB memory with swap memory at 16GB is theoretically possible
-  - four cores with 8GB memory and 12GB swap memory took 10+hrs to build for the first time
+  - four cores with 8GB memory and 16GB swap memory took 10+hrs to build for the first time
 
 ---
 ### 1.2: Installing Necessary Libraries
@@ -321,6 +321,7 @@ cd Desktop/phase_array_fossn
 git pull
 ```
 - get inside a nix shell to rebuild any changes
+- first time: make a 
 ```zsh
 # which one should be used???
 nix develop 
