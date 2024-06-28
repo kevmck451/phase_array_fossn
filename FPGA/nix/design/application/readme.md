@@ -1,5 +1,0 @@
-# Application
-
-
-
-## default.nix

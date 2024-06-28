@@ -1,4 +1,0 @@
-# Amaranth Top
-
-
-## default.nix

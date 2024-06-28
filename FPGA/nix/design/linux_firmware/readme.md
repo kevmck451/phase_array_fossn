@@ -1,6 +1,0 @@
-# Linux Firmware
-
-
-## default.nix
-
-
