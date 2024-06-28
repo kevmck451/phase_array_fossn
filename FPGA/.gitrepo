@@ -1,0 +1,12 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/ingydotnet/git-subrepo#readme
+;
+[subrepo]
+	remote = https://github.com/tpwrules/papa_fpga
+	branch = main
+	commit = 0eb14b9661d8a8bb948490c7ba166c549ae07e15
+	parent = c88de76cd2cd152fbb68400cb251c6fb7db0a8a6
+	method = merge
+	cmdver = 0.4.6

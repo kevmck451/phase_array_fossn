@@ -1,0 +1,12 @@
+[build-system]
+requires = ["setuptools >= 61.0", "cython>=3.0.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "application"
+version = "0.0.1"
+
+[project.scripts]
+wavdump = "application.wavdump:wavdump"
+console = "application.console:console"
+server = "application.server:server"

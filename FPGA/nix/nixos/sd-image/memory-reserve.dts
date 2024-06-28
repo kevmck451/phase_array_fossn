@@ -1,0 +1,25 @@
+// This file is also available under the terms of the MIT license.
+// See /LICENSE.mit and /README.md for more information.
+/dts-v1/;
+/plugin/;
+
+/{
+    compatible = "altr,socfpga";
+
+    fragment@0 {
+        target-path = "/";
+
+        __overlay__ {
+            reserved-memory {
+                #address-cells = <1>;
+                #size-cells = <1>;
+                ranges;
+
+                // last 16MiB of SDRAM
+                audio_reserved: audio-buffer@3f000000 {
+                    reg = <0x3f000000 0x1000000>;
+                };
+            };
+        };
+    };
+};
