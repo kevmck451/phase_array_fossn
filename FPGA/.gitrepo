@@ -6,7 +6,7 @@
 [subrepo]
 	remote = https://github.com/tpwrules/papa_fpga
 	branch = main
-	commit = 0eb14b9661d8a8bb948490c7ba166c549ae07e15
+	commit = 550676f3bb7ba86ed91c303ef43dcda528dab1fe
 	parent = c88de76cd2cd152fbb68400cb251c6fb7db0a8a6
 	method = merge
 	cmdver = 0.4.6
