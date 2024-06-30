@@ -1,13 +1,14 @@
 # Amaranth Implementation of Beamforming with Microphones
 
-## Updaing I/O Ports for FOSSN
+## FPGA Top
+- updating I/O Ports for FOSSN
 - this is located in fpga_top.py
 - DE1-Nano user manual page 28 of 118
 - we are using DE10-nano shield A
 - which is GPIO 0
 
 
-## Mic Order / Data lines
+### Mic Order / Data lines
 from front
 - d1 | d2
 - d3 | d4
