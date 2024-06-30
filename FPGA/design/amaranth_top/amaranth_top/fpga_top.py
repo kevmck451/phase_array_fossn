@@ -96,7 +96,7 @@ class FPGATop(Elaboratable):
                     )])
         add_resources()
 
-        # tuple of (connector, board index)
+        # tuple of (GPIO connector (0 or 1), Pin Number (1-40))
         sck_pins = [
             (0, 17),
             (0, 3),
@@ -108,14 +108,14 @@ class FPGATop(Elaboratable):
         ]
 
         mic_pins = [
-            (0, 13), # Ant 1 Mic 1 R/L
-            (0, 15), # Ant 1 Mic 2 R/L
-            (0, 7), # Ant 1 Mic 3 R/L
-            (0, 19), # Ant 1 Mic 4 R/L
-            (0, 2), # Ant 2 Mic 1 R/L
-            (0, 1), # Ant 2 Mic 2 R/L
-            (0, 6), # Ant 2 Mic 3 R/L
-            (0, 5), # Ant 2 Mic 4 R/L
+            (0, 13),    # Ant 1 Mic 1 R/L
+            (0, 15),    # Ant 1 Mic 2 R/L
+            (0, 7),     # Ant 1 Mic 3 R/L
+            (0, 19),    # Ant 1 Mic 4 R/L
+            (0, 2),     # Ant 2 Mic 1 R/L
+            (0, 1),     # Ant 2 Mic 2 R/L
+            (0, 6),     # Ant 2 Mic 3 R/L
+            (0, 5),     # Ant 2 Mic 4 R/L
         ]
 
         # set up HPS
