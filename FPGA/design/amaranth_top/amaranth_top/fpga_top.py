@@ -98,13 +98,21 @@ class FPGATop(Elaboratable):
 
         # tuple of (GPIO connector (0 or 1), Pin Number (1-40))
         sck_pins = [
-            (0, 17),
-            (0, 3),
+            (0, 17),    # A1
+            (0, 3),     # A2
+            (0, 10),    # A3
+            (0, 24),    # A4
+            (0, 38),    # A5
+            (0, 31)     # A6
         ]
 
         ws_pins = [
-            (0, 9),
-            (0, 4),
+            (0, 9),     # A1
+            (0, 4),     # A2
+            (0, 18),    # A3
+            (0, 32),    # A4
+            (0, 37),    # A5
+            (0, 23)     # A6
         ]
 
         mic_pins = [
@@ -112,10 +120,31 @@ class FPGATop(Elaboratable):
             (0, 15),    # Ant 1 Mic 2 R/L
             (0, 7),     # Ant 1 Mic 3 R/L
             (0, 19),    # Ant 1 Mic 4 R/L
+
             (0, 2),     # Ant 2 Mic 1 R/L
             (0, 1),     # Ant 2 Mic 2 R/L
             (0, 6),     # Ant 2 Mic 3 R/L
             (0, 5),     # Ant 2 Mic 4 R/L
+
+            (0, 16),    # Ant 3 Mic 1 R/L
+            (0, 14),    # Ant 3 Mic 2 R/L
+            (0, 20),    # Ant 3 Mic 3 R/L
+            (0, 8),     # Ant 3 Mic 4 R/L
+
+            (0, 28),    # Ant 4 Mic 1 R/L
+            (0, 26),    # Ant 4 Mic 2 R/L
+            (0, 34),    # Ant 4 Mic 3 R/L
+            (0, 22),    # Ant 4 Mic 4 R/L
+
+            (0, 39),    # Ant 5 Mic 1 R/L
+            (0, 40),    # Ant 5 Mic 2 R/L
+            (0, 35),    # Ant 5 Mic 3 R/L
+            (0, 36),    # Ant 5 Mic 4 R/L
+
+            (0, 25),    # Ant 6 Mic 1 R/L
+            (0, 27),    # Ant 6 Mic 2 R/L
+            (0, 21),    # Ant 6 Mic 3 R/L
+            (0, 33),    # Ant 6 Mic 4 R/L
         ]
 
         # set up HPS
@@ -162,13 +191,13 @@ class FPGATop(Elaboratable):
         ]
 
         # wire up microphone data bus
-        for ci, (conn, pin) in enumerate(sck_pins):
+        for (conn, pin) in sck_pins:
             buf = io.Buffer("o", platform.request(f"gpio{conn}", pin, dir="-"))
             m.submodules += buf
 
             m.d.comb += buf.o.eq(top.mic_sck)
 
-        for ci, (conn, pin) in enumerate(ws_pins):
+        for (conn, pin) in ws_pins:
             buf = io.Buffer("o", platform.request(f"gpio{conn}", pin, dir="-"))
             m.submodules += buf
 
