@@ -10,9 +10,9 @@ import numpy as np
 import matplotlib.style as mplstyle
 mplstyle.use('fast')
 
-CHUNK_SECS = 0.25
+CHUNK_SECS = 2.0 # 2.5
 SAMPLE_RATE = 48000
-CHAN_COUNT = 8
+CHAN_COUNT = 16
 
 def connect(addr, port):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -40,12 +40,16 @@ def recv_thread_fn(recv_q, sock):
 def animate(i):
     global recv_q
     bit = recv_q.get()
+    bit_size = 32767
+    bit = bit / bit_size
     for p in range(CHAN_COUNT):
-        plt.subplot(CHAN_COUNT, 1, p+1)
+        plt.subplot(CHAN_COUNT, 1, p + 1)
         plt.cla()
         plt.plot(range(len(bit)), bit[:, p])
-        plt.ylim([-32768, 32767])
-        plt.title(f"{i}, {p}")
+        plt.ylim([-1, 1])
+        plt.xticks([])
+        # plt.title(f"{i}, {p}")
+        plt.tight_layout(pad=0.5)
 
 def main():
     global recv_q
@@ -55,7 +59,7 @@ def main():
         daemon=True)
     recv_thread.start()
 
-    fig = plt.figure()
+    fig = plt.figure(figsize=(22,12))
     anim = FuncAnimation(fig, animate, interval=1000*CHUNK_SECS,
         cache_frame_data=False)
     plt.show()
