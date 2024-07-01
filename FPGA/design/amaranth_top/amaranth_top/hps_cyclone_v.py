@@ -4,7 +4,7 @@ from amaranth import *
 from amaranth.lib import wiring, enum
 from amaranth.lib.wiring import In, Out
 
-from .axi3 import AXI3Signature
+from .hps_axi3 import AXI3Signature
 
 class PortSize(enum.IntEnum, shape=2):
     BITS_32 = 0

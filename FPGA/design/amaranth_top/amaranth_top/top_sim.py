@@ -3,10 +3,10 @@ from amaranth.lib.wiring import connect
 from amaranth.sim.core import Simulator
 
 from .top import Top
-from .constants import MIC_FREQ_HZ
-from .mic import MicCapture
-from .convolve import Convolver
-from .bus import FakeAudioRAMBusWriteReceiver
+from .audio_constants import MIC_FREQ_HZ
+from .audio_mic import MicCapture
+from .audio_convolve import Convolver
+from .hps_bus import FakeAudioRAMBusWriteReceiver
 
 class SimTop(Elaboratable):
     def __init__(self):

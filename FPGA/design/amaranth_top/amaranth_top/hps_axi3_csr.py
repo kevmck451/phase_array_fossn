@@ -7,7 +7,7 @@ from amaranth.lib.fifo import SyncFIFO
 
 from amaranth_soc import csr
 
-from .axi3 import AXI3Signature
+from .hps_axi3 import AXI3Signature
 
 # design goals:
 #   * non horribly atrocious latency

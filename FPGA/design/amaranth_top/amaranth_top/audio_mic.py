@@ -5,9 +5,9 @@ from amaranth.lib.cdc import FFSynchronizer
 from amaranth_soc import csr
 from amaranth_soc.csr import Field
 
-from .constants import NUM_MICS, CAP_DATA_BITS
-from .stream import SampleStream
-from .misc import FFDelay
+from .audio_constants import NUM_MICS, CAP_DATA_BITS
+from .audio_stream import SampleStream
+from .audio_misc import FFDelay
 
 MIC_DATA_BITS = 24 # each word is a signed 24 bit number
 MIC_FRAME_BITS = 64 # 64 data bits per data frame from the microphone
@@ -407,7 +407,7 @@ class MicDemo(Component):
 
 def demo():
     from amaranth.sim.core import Simulator
-    from .constants import MIC_FREQ_HZ
+    from .audio_constants import MIC_FREQ_HZ
 
     top = MicDemo()
     sim = Simulator(top)

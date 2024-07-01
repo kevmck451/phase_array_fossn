@@ -4,9 +4,9 @@ from amaranth.utils import ceil_log2
 
 import numpy as np
 
-from .constants import NUM_MICS, CAP_DATA_BITS, NUM_CHANS, NUM_TAPS
-from .stream import SampleStream, SampleStreamFIFO
-from .misc import SignalConveyor
+from .audio_constants import NUM_MICS, CAP_DATA_BITS, NUM_CHANS, NUM_TAPS
+from .audio_stream import SampleStream, SampleStreamFIFO
+from .audio_misc import SignalConveyor
 
 COEFF_BITS = 19 # multiplier supports 18x19 mode
 
@@ -383,7 +383,7 @@ class ConvolverDemo(Component):
 def demo():
     from amaranth.sim.core import Simulator
 
-    from .constants import MIC_FREQ_HZ
+    from .audio_constants import MIC_FREQ_HZ
 
     assert NUM_CHANS >= NUM_MICS
 

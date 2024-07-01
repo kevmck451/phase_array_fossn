@@ -7,14 +7,14 @@ from amaranth.build import Resource, Pins, Attrs
 from amaranth_boards.de10_nano import DE10NanoPlatform
 
 from .top import Top
-from .constants import MIC_FREQ_HZ, NUM_MICS
-from .mic import MicCapture
-from .convolve import Convolver
-from .cyclone_v_pll import IntelPLL
-from .axi3_csr import AXI3CSRBridge
-from .cyclone_v_hps import CycloneVHPS
-from .bus import AudioRAMBus
-from .axi3 import AXI3Signature
+from .audio_constants import MIC_FREQ_HZ, NUM_MICS
+from .audio_mic import MicCapture
+from .audio_convolve import Convolver
+from .hps_pll_cyclone_v import IntelPLL
+from .hps_axi3_csr import AXI3CSRBridge
+from .hps_cyclone_v import CycloneVHPS
+from .hps_bus import AudioRAMBus
+from .hps_axi3 import AXI3Signature
 
 class AudioAdapter(Component):
     audio: In(AudioRAMBus())
@@ -96,6 +96,9 @@ class FPGATop(Elaboratable):
                     )])
         add_resources()
 
+        # -------------------------------------------------------------
+        # GPIO PIN ASSIGNMENTS
+        # -------------------------------------------------------------
         # tuple of (GPIO connector (0 or 1), Pin Number (1-40))
         sck_pins = [
             (0, 17),    # A1
@@ -146,6 +149,9 @@ class FPGATop(Elaboratable):
             (0, 21),    # Ant 6 Mic 3 R/L
             (0, 33),    # Ant 6 Mic 4 R/L
         ]
+        # -------------------------------------------------------------
+        # -------------------------------------------------------------
+        # -------------------------------------------------------------
 
         # set up HPS
         hps = CycloneVHPS()

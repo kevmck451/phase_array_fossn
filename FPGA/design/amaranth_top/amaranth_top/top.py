@@ -9,11 +9,11 @@ from amaranth_soc.csr import Field
 
 import numpy as np
 
-from .bus import AudioRAMBus
-from .constants import MIC_FREQ_HZ, NUM_TAPS, NUM_MICS, NUM_CHANS
-from .mic import MicCapture, MicCaptureRegs
-from .convolve import Convolver
-from .stream import SampleStreamFIFO, SampleWriter
+from .hps_bus import AudioRAMBus
+from .audio_constants import MIC_FREQ_HZ, NUM_TAPS, NUM_MICS, NUM_CHANS
+from .audio_mic import MicCapture, MicCaptureRegs
+from .audio_convolve import Convolver
+from .audio_stream import SampleStreamFIFO, SampleWriter
 
 class Blinker(Component):
     button_raw: In(1)

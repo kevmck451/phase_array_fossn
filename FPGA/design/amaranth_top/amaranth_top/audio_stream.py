@@ -5,8 +5,8 @@ from amaranth.lib.fifo import AsyncFIFO
 from amaranth_soc import csr
 from amaranth_soc.csr import Field
 
-from .bus import AudioRAMBus
-from .constants import CAP_DATA_BITS
+from .hps_bus import AudioRAMBus
+from .audio_constants import CAP_DATA_BITS
 
 # sample data in the system
 class SampleStream(Signature):
