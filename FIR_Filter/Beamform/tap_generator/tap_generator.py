@@ -60,7 +60,7 @@ for i in range(dir_samples):
         for y in range(m):
             for x in range(n):
                 # print(str(mic_dist_x[a,b]) + " " + str(mic_dist_y[a, b]) + " " + str(mic_dist_z[a, b]))
-                fir_taps[y,x,i,k], *crap = beamform.delay(mic_dist_x[y,x], mic_dist_y[y,x], mic_dist_z[y,x], (az), (el),
+                fir_taps[y,x,i,k], *crap = beamform.delay(mic_dist_x[y, x], mic_dist_y[y, x], mic_dist_z[y, x], (az), (el),
                                                           sample_rate, filter_length, synthetic_channels)
 
 print(fir_taps.shape)
@@ -72,7 +72,7 @@ az_samples = fir_taps.shape[3]
 y_t = np.empty_like(fir_taps).reshape(num_microphones, el_samples, az_samples, filter_length)
 
 
-# Flipped about Y origin
+# Assign taps to specific mic
 y_t[8] = fir_taps[0,0]
 y_t[9] = fir_taps[0,1]
 y_t[12] = fir_taps[0,2]

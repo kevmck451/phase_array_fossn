@@ -59,8 +59,8 @@ for i in range(dir_samples):
         for y in range(n):
             for x in range(m):
                 # print(str(mic_dist_x[a,b]) + " " + str(mic_dist_y[a, b]) + " " + str(mic_dist_z[a, b]))
-                fir_taps[y,x,i,k], *crap = beamform.delay(mic_dist_x[y,x], mic_dist_y[y,x], mic_dist_z[y,x], (az), (el),
-                                                    sample_rate, filter_length, win_length)
+                fir_taps[y,x,i,k], *crap = beamform.delay(mic_dist_x[y, x], mic_dist_y[y, x], mic_dist_z[y, x], (az), (el),
+                                                          sample_rate, filter_length, win_length)
 
 print(fir_taps.shape)
 

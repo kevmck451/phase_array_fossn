@@ -24,12 +24,12 @@ class Audio:
 
         # If given a filepath
         if self.path is not None:
-            # with wave.open(str(self.path), 'rb') as wav_file:
-            #     self.num_channels = wav_file.getnchannels()
-            # self.load_data(self.path, self.num_channels)
-            # if self.num_channels != self.num_channels:
-            #     self.data = self.data[:self.num_channels]
-            #     self.data = np.squeeze(self.data)
+            # with wave.open(str(hardware.path), 'rb') as wav_file:
+            #     hardware.num_channels = wav_file.getnchannels()
+            # hardware.load_data(hardware.path, hardware.num_channels)
+            # if hardware.num_channels != hardware.num_channels:
+            #     hardware.data = hardware.data[:hardware.num_channels]
+            #     hardware.data = np.squeeze(hardware.data)
 
             info = sf.info(self.path)
             self.load_data(self.path, info.channels)
@@ -63,32 +63,32 @@ class Audio:
         if num_ch > 1:
             self.data, samplerate = sf.read(str(filepath), dtype='float32')
             if samplerate != self.sample_rate:
-                # self.data = librosa.resample(y=self.data, orig_sr=samplerate, target_sr=self.sample_rate)
+                # hardware.data = librosa.resample(y=hardware.data, orig_sr=samplerate, target_sr=hardware.sample_rate)
                 num_samples = int((self.sample_rate / samplerate) * len(self.data))
                 self.data = resample(self.data, num_samples)
 
             # try:
-            #     self.data = self.data.reshape(-1, self.num_channels)  # Reshape to match the number of channels
+            #     hardware.data = hardware.data.reshape(-1, hardware.num_channels)  # Reshape to match the number of channels
             # except ValueError:
             #     # print("The audio data cannot be reshaped to match the number of channels.")
-            #     # print(f'Path: {self.path}')
-            #     # print(f'Num Channels: {self.num_channels}')
+            #     # print(f'Path: {hardware.path}')
+            #     # print(f'Num Channels: {hardware.num_channels}')
             #     return
 
 
             # Convert the interleaved data to deinterleaved format
             self.data = np.transpose(self.data.copy())  # Rows are channels / columns are data
-            # print(f'Data Shape: {self.data.shape} / Sample Rate: {self.sample_rate}')
+            # print(f'Data Shape: {hardware.data.shape} / Sample Rate: {hardware.sample_rate}')
             self.sample_length = round((self.data.shape[1] / self.sample_rate), 2)
             self.num_samples = len(self.data[1])
 
         else:
             self.data, samplerate = sf.read(str(filepath), dtype='float32')
             # average = np.mean(audio.data)
-            # self.data = self.data - average
+            # hardware.data = hardware.data - average
             if samplerate != self.sample_rate:
                 self.data = librosa.resample(y=self.data, orig_sr=samplerate, target_sr=self.sample_rate)
-                # self.data = resampy.resample(self.data, samplerate, self.sample_rate)
+                # hardware.data = resampy.resample(hardware.data, samplerate, hardware.sample_rate)
             self.sample_length = round((len(self.data) / self.sample_rate), 2)
             self.num_samples = len(self.data)
 
