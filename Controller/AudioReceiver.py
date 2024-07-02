@@ -4,6 +4,7 @@ import queue
 import numpy as np
 import time
 
+# For collecting RAW data from FPGA server
 class AudioReceiver:
     def __init__(self, chan_count):
         self.host = "192.168.80.1"

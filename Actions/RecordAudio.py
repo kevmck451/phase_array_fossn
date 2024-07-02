@@ -1,7 +1,6 @@
 
 from Controller.AudioReceiver import AudioReceiver
 
-
 from datetime import datetime
 import numpy as np
 import wave
@@ -9,9 +8,8 @@ import time
 import sys
 import select
 
-
+# For recording RAW data from FPGA
 def save_to_wav(data, sample_rate, chan_count, filename):
-
 
     if '.wav' not in filename:
         filename = f'{filename}.wav'
