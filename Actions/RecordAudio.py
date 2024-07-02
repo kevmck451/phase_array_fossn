@@ -1,25 +1,35 @@
+
+from Controller.AudioReceiver import AudioReceiver
+
+
+from datetime import datetime
 import numpy as np
 import wave
 import time
 import sys
 import select
 
-from Controller.AudioReceiver import AudioReceiver  # Ensure to replace with the actual filename
 
 def save_to_wav(data, sample_rate, chan_count, filename):
+
+
     if '.wav' not in filename:
         filename = f'{filename}.wav'
 
-    with wave.open(filename, 'wb') as wf:
+    file_path = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/2 FOSSN/Data/_Recordings'
+    file = f'{file_path}/{filename}'
+
+    with wave.open(file, 'wb') as wf:
         wf.setnchannels(chan_count)
         wf.setsampwidth(2)  # 2 bytes for int16
         wf.setframerate(sample_rate)
         wf.writeframes(data.tobytes())
 
+    print(f'Recording Saved: {file}')
 
 def main():
-    filename = 'test_file_1'
-    chan_count = 8
+    chan_count = 16
+    filename = datetime.now().strftime("%m-%d-%Y %I-%M-%S")
     audio_receiver = AudioReceiver(chan_count)
     audio_receiver.start_receiving()
 
@@ -41,7 +51,6 @@ def main():
     if collected_data:
         all_data = np.vstack(collected_data)
         save_to_wav(all_data, audio_receiver.sample_rate, audio_receiver.chan_count, filename)
-        print("Audio data saved to 'recorded_audio.wav'.")
 
 
 if __name__ == "__main__":
