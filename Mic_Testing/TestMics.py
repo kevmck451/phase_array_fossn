@@ -1,6 +1,9 @@
 from Controller.AudioReceiver import AudioReceiver
+
+from datetime import datetime
 import numpy as np
 import time
+import csv
 
 def calculate_rms(data):
     data = data / 32768
@@ -40,11 +43,22 @@ def test_mic(audio_receiver, chan_index, sample_duration, rms_range):
 
     else: return 0, 0
 
-if __name__ == "__main__":
+def export_to_csv(rms_values, peak_values, rms_range):
+    filename = datetime.now().strftime("%m-%d-%Y %I-%M-%S")
+    filename = f'MicTestResults {filename}.csv'
+    with open(filename, mode='w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(['Channel', 'Status', 'RMS', 'Peak'])
+        for i, (r, p) in enumerate(zip(rms_values, peak_values)):
+            status = 'PASSED' if rms_range[0] <= r <= rms_range[1] else 'FAILED'
+            writer.writerow([f'Ch{i+1}', status, r, p])
 
+if __name__ == "__main__":
     # for FPGA gain at 10
     # sudo server -r -g 10
-    rms_range = (0.20, 0.40)  # Example RMS range for pass/fail criteria
+    rms_mean = 0.2867 # from MasterMicTest.csv
+    rms_std = 0.0326 # from MasterMicTest.csv
+    rms_range = (rms_mean-rms_std, rms_mean+rms_std)
 
     chan_count = 8
     audio_receiver = AudioReceiver(chan_count)
@@ -68,3 +82,6 @@ if __name__ == "__main__":
             status = 'PASSED'
         else: status = 'failed'
         print(f'Ch{i+1}:\t{status}\t|\tRMS={r}\t|\tPeak={p}')
+
+    # if wanting to export results to csv file for comparison
+    # export_to_csv(rms_values, peak_values, rms_range)
