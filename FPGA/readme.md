@@ -250,6 +250,19 @@ minicom -D /dev/ttyUSB0 -b 115200
 ```zsh
 ssh nixos@192.168.80.1
 ```
+- save the address to your computer (optional)
+```zsh
+sudo nano /etc/hosts 
+```
+- add to the file
+~~~
+# DE10 Nano FPGA
+192.168.80.1 fpga
+~~~
+- now you can ssh into it with this command
+```zsh
+ssh nixos@fpga 
+```
 
 #### 3.4: SSH Connection with MacBook
 - this is done on the MacBook terminal
