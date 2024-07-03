@@ -26,7 +26,7 @@ def save_to_wav(data, sample_rate, chan_count, filename):
     print(f'Recording Saved: {file}')
 
 def main():
-    chan_count = 16
+    chan_count = 8 # 16
     filename = datetime.now().strftime("%m-%d-%Y %I-%M-%S")
     audio_receiver = AudioReceiver(chan_count)
 
