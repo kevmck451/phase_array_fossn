@@ -14,7 +14,7 @@ class AudioReceiver:
         self.chan_count = chan_count
         self.recv_q = queue.Queue(maxsize=10)
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.start_receiving() # TODO make sure this works
+        self.start_receiving()
 
     def connect(self):
         self.sock.connect((self.host, self.port))
@@ -51,7 +51,6 @@ class AudioReceiver:
 if __name__ == "__main__":
     chan_count = 8
     audio_receiver = AudioReceiver(chan_count)
-    # audio_receiver.start_receiving()
 
     while True:
         data = audio_receiver.get_audio_data()

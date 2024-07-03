@@ -29,7 +29,6 @@ def main():
     chan_count = 16
     filename = datetime.now().strftime("%m-%d-%Y %I-%M-%S")
     audio_receiver = AudioReceiver(chan_count)
-    # audio_receiver.start_receiving()
 
     collected_data = []
 

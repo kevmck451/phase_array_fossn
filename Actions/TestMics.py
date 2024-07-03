@@ -33,7 +33,6 @@ def test_mic(audio_receiver, chan_index, sample_duration, rms_range):
 if __name__ == "__main__":
     chan_count = 8
     audio_receiver = AudioReceiver(chan_count)
-    # audio_receiver.start_receiving()
 
     sample_duration = 2.0  # seconds
     rms_range = (0.1, 0.3)  # Example RMS range for pass/fail criteria
