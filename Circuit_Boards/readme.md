@@ -1,4 +1,13 @@
-# Ethernet Cable Configuration
+# Circuit Board Information
+
+---
+## Using Mics with Antennas
+- the mic symbol on the mic modules should be facing away from center when connected
+- before soldering mic pins to modules, check that the INMP441 chip is correctly placed from factory
+    - discard any that are not correctly aligned
+
+---
+## Ethernet Cable Configuration
 - RJ45 Ethernet connectors and cabling are used to connect the microphone antennas to the fpga shield
 - making the cables from scratch allowed for exact cable lengths
 - the antennas were designed to optimize the configuration of the mic module pins
