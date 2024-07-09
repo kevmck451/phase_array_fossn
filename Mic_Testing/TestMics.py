@@ -57,7 +57,7 @@ def export_to_csv(rms_values, peak_values, rms_range, mic_nums):
 
 if __name__ == "__main__":
     # for FPGA gain at 10
-    # sudo server -r -g 10
+    # sudo server -r -g 10 -c 8
     rms_mean = 0.2867 # from MasterMicTest.csv
     rms_std = 0.0326 # from MasterMicTest.csv
     rms_range = (rms_mean-rms_std, rms_mean+rms_std)
