@@ -16,7 +16,7 @@
 ## Testing Process
 - start FPGA server running in raw mode at gain level 10
 ```zsh
-sudo server -r -g 10 
+sudo server -r -g 10 -c 8
 ```
 - all mics were tested and results recorded in the MasterMicTest.csv in a quiet room
 - using this data, the rms range variable in ```TestMics.py``` was selected for pass / fail thresholds
