@@ -41,17 +41,19 @@ def test_mic(audio_receiver, chan_index, sample_duration, rms_range):
 
         return rms_value, peak
 
-    else: return 0, 0
+    else:
+        print('Error')
+        return 0, 0
 
-def export_to_csv(rms_values, peak_values, rms_range):
+def export_to_csv(rms_values, peak_values, rms_range, mic_nums):
     filename = datetime.now().strftime("%m-%d-%Y %I-%M-%S")
-    filename = f'MicTestResults {filename}.csv'
+    filename = f'results {filename}.csv'
     with open(filename, mode='w', newline='') as file:
         writer = csv.writer(file)
-        writer.writerow(['Channel', 'Status', 'RMS', 'Peak'])
-        for i, (r, p) in enumerate(zip(rms_values, peak_values)):
+        writer.writerow(['Channel', 'Status', 'RMS', 'Peak', 'MicNum'])
+        for i, (r, p, m) in enumerate(zip(rms_values, peak_values, mic_nums)):
             status = 'PASSED' if rms_range[0] <= r <= rms_range[1] else 'FAILED'
-            writer.writerow([f'Ch{i+1}', status, r, p])
+            writer.writerow([f'Ch{i+1}', status, r, p, m])
 
 if __name__ == "__main__":
     # for FPGA gain at 10
@@ -60,19 +62,26 @@ if __name__ == "__main__":
     rms_std = 0.0326 # from MasterMicTest.csv
     rms_range = (rms_mean-rms_std, rms_mean+rms_std)
 
+    iterations = 80
+    counter = 0
     chan_count = 8
     audio_receiver = AudioReceiver(chan_count)
     sample_duration = 2.0  # seconds
     mic_index = 0
     rms_values = []
     peak_values = []
+    mic_nums = []
 
-    while mic_index < chan_count:
-        input(f"Press 'Enter' to test mic {mic_index + 1}")
+    while counter < iterations:
+        mic_num = input(f"Enter Mic Number & press 'Enter' to test mic {mic_index + 1}: ")
+        mic_nums.append(mic_num)
         rms, peak = test_mic(audio_receiver, mic_index, sample_duration, rms_range)
         rms_values.append(rms)
         peak_values.append(peak)
-        mic_index += 1
+
+        if mic_index == 7: mic_index = 0
+        else: mic_index += 1
+        counter += 1
 
     print("All mics tested")
     print()
@@ -84,4 +93,4 @@ if __name__ == "__main__":
         print(f'Ch{i+1}:\t{status}\t|\tRMS={r}\t|\tPeak={p}')
 
     # if wanting to export results to csv file for comparison
-    # export_to_csv(rms_values, peak_values, rms_range)
+    export_to_csv(rms_values, peak_values, rms_range, mic_nums)
