@@ -11,7 +11,7 @@ NUM_MICS = 48
 # number of output channels to generate (slowest axis for coefficients)
 # limited to like 110 since that's how many DSP blocks we have spare and each
 # channel needs one DSP block
-NUM_CHANS = 75
+NUM_CHANS = 25
 
 # number of filter taps used for each channel (middle axis for coefficients)
 NUM_TAPS = 101
