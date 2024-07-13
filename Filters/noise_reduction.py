@@ -15,11 +15,12 @@ def noise_reduction_filter(audio_object):
         reduced_noise_data[channel, :] = nr.reduce_noise(
             y=audio_object.data[channel, :],
             sr=audio_object.sample_rate,
-            stationary=True,
-            # freq_mask_smooth_hz=1000,
-            # time_mask_smooth_ms=200,
-            use_tqdm=True,
-            n_jobs = -1
+            stationary=True, # stationary noise reduction
+            freq_mask_smooth_hz=1500, # default is 500Hz
+            time_mask_smooth_ms=800, # default is 50ms
+            use_tqdm=True, # show terminal progress bar
+            n_std_thresh_stationary = 2, # default is 1.5
+            n_jobs = -1 # use all available cores
         )
 
     reduced_noise_data = np.clip(reduced_noise_data, -1.0, 1.0)
