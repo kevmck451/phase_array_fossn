@@ -28,8 +28,13 @@ def low_pass_filter(audio_object, cutoff_freq, order=5):
 
     # Apply the high-pass filter to each channel
     filtered_data = np.zeros_like(audio_object.data)
-    for i in range(audio_object.data.shape[0]):
-        filtered_data[i, :] = low_pass(audio_object.data[i, :], normal_cutoff, order)
+
+    if audio_object.num_channels == 1:
+        filtered_data = low_pass(audio_object.data, normal_cutoff, order)
+
+    else:
+        for i in range(audio_object.data.shape[0]):
+            filtered_data[i, :] = low_pass(audio_object.data[i, :], normal_cutoff, order)
 
     return filtered_data
 

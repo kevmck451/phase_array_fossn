@@ -15,7 +15,13 @@ def normalize(audio_object, percentage=100):
         return data / (max_value * (percentage / 100.0))
 
     normalized_data = np.zeros_like(audio_object.data)
-    for i in range(audio_object.data.shape[0]):
-        normalized_data[i, :] = norm(audio_object.data[i, :])
+
+    if audio_object.num_channels == 1:
+        normalized_data = norm(audio_object.data)
+
+    else:
+
+        for i in range(audio_object.data.shape[0]):
+            normalized_data[i, :] = norm(audio_object.data[i, :])
 
     return normalized_data

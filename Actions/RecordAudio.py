@@ -1,6 +1,7 @@
 from Controller.AudioReceiver import AudioReceiver
 from Actions.save_to_wav import save_to_wav
 from Filters.high_pass import high_pass_filter
+from Filters.low_pass import low_pass_filter
 from Filters.normalize import normalize
 from Filters.audio import Audio
 
@@ -35,6 +36,7 @@ def Record_Audio():
         data = audio_receiver.get_audio_data()
         if data is not None:
             collected_data.append(data)
+            # print(collected_data)
 
             # Check if the chunk samples limit is exceeded
             total_samples = sum(len(d) for d in collected_data)
@@ -44,6 +46,8 @@ def Record_Audio():
                 # # process audio
                 # audio_object = Audio(data=all_data, sample_rate=audio_receiver.sample_rate, num_channels=audio_receiver.chan_count)
                 # all_data = high_pass_filter(audio_object, cutoff_freq=100)
+                # all_data = low_pass_filter(audio_object, cutoff_freq=10000)
+                # all_data = normalize(audio_object, 100)
 
                 filename = f"{chunk_start_time}_chunk_{chunk_index}"
                 save_to_wav(all_data, audio_receiver.sample_rate, audio_receiver.chan_count, filename)
@@ -61,6 +65,8 @@ def Record_Audio():
         # # process audio
         # audio_object = Audio(data=all_data, sample_rate=audio_receiver.sample_rate, num_channels=audio_receiver.chan_count)
         # all_data = high_pass_filter(audio_object, cutoff_freq=100)
+        # all_data = low_pass_filter(audio_object, cutoff_freq=10000)
+        # all_data = normalize(audio_object, 100)
 
         filename = f"{file_path}/{chunk_start_time}_chunk_{chunk_index}"
         save_to_wav(all_data, audio_receiver.sample_rate, audio_receiver.chan_count, filename)
