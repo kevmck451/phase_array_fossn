@@ -1,5 +1,8 @@
 from Controller.AudioReceiver import AudioReceiver
 from Actions.save_to_wav import save_to_wav
+from Filters.high_pass import high_pass_filter
+from Filters.normalize import normalize
+from Filters.audio import Audio
 
 from datetime import datetime
 import numpy as np
@@ -37,6 +40,11 @@ def Record_Audio():
             total_samples = sum(len(d) for d in collected_data)
             if total_samples >= chunk_samples:
                 all_data = np.vstack(collected_data)
+
+                # # process audio
+                # audio_object = Audio(data=all_data, sample_rate=audio_receiver.sample_rate, num_channels=audio_receiver.chan_count)
+                # all_data = high_pass_filter(audio_object, cutoff_freq=100)
+
                 filename = f"{chunk_start_time}_chunk_{chunk_index}"
                 save_to_wav(all_data, audio_receiver.sample_rate, audio_receiver.chan_count, filename)
 
@@ -49,6 +57,11 @@ def Record_Audio():
     # Save any remaining data
     if collected_data:
         all_data = np.vstack(collected_data)
+
+        # # process audio
+        # audio_object = Audio(data=all_data, sample_rate=audio_receiver.sample_rate, num_channels=audio_receiver.chan_count)
+        # all_data = high_pass_filter(audio_object, cutoff_freq=100)
+
         filename = f"{file_path}/{chunk_start_time}_chunk_{chunk_index}"
         save_to_wav(all_data, audio_receiver.sample_rate, audio_receiver.chan_count, filename)
 

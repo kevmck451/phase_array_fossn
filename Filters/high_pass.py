@@ -15,7 +15,6 @@ def high_pass_filter(audio_object, cutoff_freq, order=5):
     Order 7-10: Very steep roll-off. Useful for applications requiring precise frequency separation, but can be more computationally intensive and may introduce more phase distortion.
     '''
 
-    audio_object = audio_object
     nyquist = 0.5 * audio_object.sample_rate
     normal_cutoff = cutoff_freq / nyquist
 
