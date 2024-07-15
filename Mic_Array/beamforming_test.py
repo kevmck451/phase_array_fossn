@@ -79,10 +79,13 @@ def norm(data, percentage):
 def main():
     base_path = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/2 FOSSN/Data'
 
-    filepath = f'{base_path}/Tests/5_outdoor_testing/07-12-2024_02-49-21_chunk_1.wav'
-    temperature_fahrenheit = 90  # example temperature
-    direction = np.array([0, 0]) # beamforming direction (0 degrees azimuth, 0 degrees elevation)
-    export_tag = '_BF7'
+    # filepath = f'{base_path}/Tests/5_outdoor_testing/07-12-2024_02-49-21_chunk_1.wav'
+    filepath = f'{base_path}/Tests/7_hallway_tone/07-15-2024_03-25-28_chunk_1.wav'
+    # filepath = f'{base_path}Tests/7_hallway_tone/07-15-2024_03-33-35_chunk_1.wav'
+
+    temperature_fahrenheit = 74  # example temperature
+    direction = np.array([45, 45]) # beamforming direction (0 degrees azimuth, 0 degrees elevation)
+    export_tag = '_BF2_45-45'
 
     # Array configuration
     array_shape = (4, 12) # (rows, cols)
@@ -112,7 +115,7 @@ def main():
     # Create the new filename
     original_path = Path(filepath)
     new_filename = original_path.stem + export_tag + original_path.suffix
-    filepath_save = f'{base_path}/Tests/6_beamformed'
+    filepath_save = f'{base_path}/Tests/8_beamformed'
     new_filepath = f'{filepath_save}/{new_filename}'
 
     # Save the filtered audio to the new file
