@@ -11,13 +11,8 @@ import numpy as np
 
 if __name__ == '__main__':
 
-    # filepath = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/1 Acoustic/Data/Angel_Mount_Data/2 Flights/A6_Flight_2.wav'
-    filepath = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/1 Acoustic/Data/Angel_Mount_Data/2 Flights/A6_Flight_3.wav'
-    audio = Audio(filepath=filepath, num_channels=4)
-
-    # filepath = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/2 FOSSN/Data/Tests/5_outdoor_testing/07-12-2024_02-49-21_chunk_1.wav'
-    # audio = Audio(filepath=filepath, num_channels=48)
-
+    filepath = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/2 FOSSN/Data/Tests/5_outdoor_testing/07-12-2024_02-49-21_chunk_1.wav'
+    audio = Audio(filepath=filepath, num_channels=48)
 
     shape_og = audio.data.shape
     print(audio)
@@ -26,11 +21,11 @@ if __name__ == '__main__':
     audio.data = noise_reduction_filter(audio)
 
     # High Pass Filter
-    bottom_cutoff_freq = 500
+    bottom_cutoff_freq = 100
     audio.data = high_pass_filter(audio, bottom_cutoff_freq)
 
     # Low Pass Filter
-    top_cutoff_freq = 2000
+    top_cutoff_freq = 3000
     audio.data = low_pass_filter(audio, top_cutoff_freq)
 
     # Noise Reduction
@@ -53,7 +48,7 @@ if __name__ == '__main__':
 
     # Create the new filename with "_HPF" suffix
     original_path = Path(filepath)
-    new_filename = original_path.stem + "_processed20" + original_path.suffix
+    new_filename = original_path.stem + "_processed1" + original_path.suffix
     new_filepath = str(original_path.parent / new_filename)
 
     # Save the filtered audio to the new file

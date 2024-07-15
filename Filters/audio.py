@@ -6,6 +6,7 @@ import soundfile as sf
 import numpy as np
 import librosa
 import wave
+import os
 
 
 class Audio:
@@ -112,16 +113,49 @@ class Audio:
         return channel_stats
 
     # Function to export an object
+    # def export(self, **kwargs):
+    #     filepath = kwargs.get('filepath', None)
+    #     name = kwargs.get('name', self.name)
+    #     # Save/export the audio object
+    #     if filepath is not None:
+    #         if Path(name).suffix != '.wav':
+    #             filepath = f'{filepath}/{name}.wav'
+    #         else: filepath = f'{filepath}/{name}'
+    #         sf.write(f'{filepath}', self.data, self.sample_rate)
+    #     else:
+    #         if self.path is not None:
+    #             sf.write(f'{str(self.path)}', self.data, self.sample_rate)
+    #         else:
+    #             sf.write(f'{name}_export.wav', self.data, self.sample_rate)
+
     def export(self, **kwargs):
         filepath = kwargs.get('filepath', None)
         name = kwargs.get('name', self.name)
-        # Save/export the audio object
+
+        # Determine the full file path
         if filepath is not None:
+            # Ensure the name has a .wav suffix
             if Path(name).suffix != '.wav':
                 filepath = f'{filepath}/{name}.wav'
-            else: filepath = f'{filepath}/{name}'
-            sf.write(f'{filepath}', self.data, self.sample_rate)
-        else: sf.write(f'{name}_export.wav', self.data, self.sample_rate)
+            else:
+                filepath = f'{filepath}/{name}'
+        else:
+            if self.path is not None:
+                filepath = str(self.path)
+            else:
+                filepath = f'{name}_export.wav'
+
+        # Ensure the directory exists
+        output_dir = os.path.dirname(filepath)
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+
+        # Write the audio file
+        try:
+            sf.write(filepath, self.data, self.sample_rate)
+            print(f'File successfully written to {filepath}')
+        except Exception as e:
+            print(f'Error writing file to {filepath}: {e}')
 
     # Function to display the waveform of audio
     def waveform(self, **kwargs):

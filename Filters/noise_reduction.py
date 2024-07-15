@@ -8,7 +8,7 @@ from pathlib import Path
 import numpy as np
 
 
-def noise_reduction_filter(audio_object):
+def noise_reduction_filter(audio_object, std_threshold=2):
 
     reduced_noise_data = np.zeros_like(audio_object.data)
     for channel in range(audio_object.data.shape[0]):
@@ -16,10 +16,10 @@ def noise_reduction_filter(audio_object):
             y=audio_object.data[channel, :],
             sr=audio_object.sample_rate,
             stationary=True, # stationary noise reduction
-            freq_mask_smooth_hz=1500, # default is 500Hz
-            time_mask_smooth_ms=800, # default is 50ms
+            freq_mask_smooth_hz=2000, # default is 500Hz
+            time_mask_smooth_ms=1000, # default is 50ms
             use_tqdm=True, # show terminal progress bar
-            n_std_thresh_stationary = 2, # default is 1.5
+            n_std_thresh_stationary = std_threshold, # default is 1.5
             n_jobs = -1 # use all available cores
         )
 
