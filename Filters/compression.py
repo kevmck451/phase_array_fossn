@@ -16,26 +16,17 @@ def compressor(data, threshold, ratio, attack_time, release_time, sample_rate):
         channels=1
     )
 
-    # Split audio into chunks for progress tracking
-    chunk_size = 1000  # milliseconds per chunk
-    total_chunks = len(audio_segment) // chunk_size
-    chunks = [audio_segment[i * chunk_size:(i + 1) * chunk_size] for i in range(total_chunks + 1)]
+    # Apply compression
+    compressed_segment = compress_dynamic_range(
+        audio_segment,
+        threshold=threshold,
+        ratio=ratio,
+        attack=attack_time * 1000,  # convert seconds to milliseconds
+        release=release_time * 1000  # convert seconds to milliseconds
+    )
 
-    compressed_data = []
-
-    # Apply compression to each chunk
-    for chunk in tqdm(chunks, desc="Processing", unit="chunk"):
-        compressed_chunk = compress_dynamic_range(
-            chunk,
-            threshold=threshold,
-            ratio=ratio,
-            attack=attack_time * 1000,  # convert seconds to milliseconds
-            release=release_time * 1000  # convert seconds to milliseconds
-        )
-        compressed_data.append(np.array(compressed_chunk.get_array_of_samples()))
-
-    # Combine compressed chunks
-    compressed_data = np.concatenate(compressed_data)
+    # Convert compressed AudioSegment back to numpy array
+    compressed_data = np.array(compressed_segment.get_array_of_samples())
 
     # Normalize data to fit between 0 and 1
     max_val = np.max(np.abs(compressed_data))
@@ -45,28 +36,15 @@ def compressor(data, threshold, ratio, attack_time, release_time, sample_rate):
     return compressed_data.astype(np.float32)
 
 
-def compressor(data, threshold, ratio, attack_time, release_time, sample_rate):
-    from pippi import fx
-
-    fx.compressor(
-            snd,
-            ratio=4.0,
-            threshold=-30.0,
-            attack=0.2,
-            release=0.2
-    )
-
-
-
 if __name__ == '__main__':
     base_path = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/2 FOSSN/Data'
 
-    threshold = -20.0  # Example threshold in dB
-    ratio = 4.0  # Example ratio
+    threshold = -6.0  # Example threshold in dB
+    ratio = 2.0  # Example ratio
     attack_time = 0.01  # Example attack time in seconds
-    release_time = 1  # Example release time in seconds
+    release_time = 0.5 # Example release time in seconds
 
-    export_tag = '_comp5'
+    export_tag = '_comp7'
 
     filepath = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/2 FOSSN/Data/Tests/8_beamformed/07-15-2024_03-25-28_chunk_1_BF1_0-0_pr4.wav'
     audio = Audio(filepath=filepath, num_channels=1)
