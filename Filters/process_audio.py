@@ -18,10 +18,11 @@ if __name__ == '__main__':
     # filepath = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/2 FOSSN/Data/Tests/7_hallway_tone/07-15-2024_03-33-35_chunk_1.wav'
     # audio = Audio(filepath=filepath, num_channels=48)
 
-    filepath = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/2 FOSSN/Data/Tests/8_beamformed/07-15-2024_03-25-28_chunk_1_BF1_0-0.wav'
+    filepath = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/2 FOSSN/Data/Tests/10_beamformed/07-16-2024_03-25-22_chunk_1_BF1_45-0.wav'
     audio = Audio(filepath=filepath, num_channels=1)
 
-    export_tag = '_pr4'
+    export_tag = '_pr1'
+    filepath_save = f'{base_path}/Tests/10_beamformed'
 
     shape_og = audio.data.shape
     # print(audio)
@@ -33,13 +34,13 @@ if __name__ == '__main__':
 
     # High Pass Filter
     print('Passing High Freq')
-    bottom_cutoff_freq = 200
-    audio.data = high_pass_filter(audio, bottom_cutoff_freq)
+    bottom_cutoff_freq = 500
+    audio.data = high_pass_filter(audio, bottom_cutoff_freq, order=8)
 
     # Low Pass Filter
     print('Pass Low Freq')
     top_cutoff_freq = 3000
-    audio.data = low_pass_filter(audio, top_cutoff_freq)
+    audio.data = low_pass_filter(audio, top_cutoff_freq, order=8)
 
     # Noise Reduction
     # print('Reducing Noise')
@@ -60,7 +61,6 @@ if __name__ == '__main__':
     # Create the new filename
     original_path = Path(filepath)
     new_filename = original_path.stem + export_tag + original_path.suffix
-    filepath_save = f'{base_path}/Tests/8_beamformed'
     new_filepath = f'{filepath_save}/{new_filename}'
 
 

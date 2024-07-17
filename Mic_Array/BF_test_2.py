@@ -1,10 +1,7 @@
-
 from Filters.audio import Audio
 
-from pathlib import Path
 import numpy as np
-
-
+from pathlib import Path
 
 def fahrenheit_to_celsius(fahrenheit):
     return (fahrenheit - 32) * 5.0 / 9.0
@@ -12,7 +9,18 @@ def fahrenheit_to_celsius(fahrenheit):
 def calculate_speed_of_sound(temperature_celsius):
     return 331.3 + 0.606 * temperature_celsius
 
-def create_steering_vector(array_shape, mic_spacing, frequency, speed_of_sound, direction):
+def create_steering_vector(array_shape, mic_spacing, frequency, speed_of_sound, azimuth, elevation):
+    # Convert azimuth and elevation to radians
+    azimuth_rad = np.radians(azimuth)
+    elevation_rad = np.radians(elevation)
+
+    # Calculate the direction cosines
+    dx = np.cos(elevation_rad) * np.cos(azimuth_rad)
+    dy = np.cos(elevation_rad) * np.sin(azimuth_rad)
+    dz = np.sin(elevation_rad)
+
+    direction = np.array([dx, dy, dz])
+
     # Calculate the wavenumber
     wavelength = speed_of_sound / frequency
     k = 2 * np.pi / wavelength
@@ -27,20 +35,15 @@ def create_steering_vector(array_shape, mic_spacing, frequency, speed_of_sound, 
     mic_positions = np.stack((xx.ravel(), yy.ravel()), axis=-1)
 
     # Calculate steering vector
-    steering_vector = np.exp(1j * k * (mic_positions @ direction))
+    # The steering vector calculation involves the dot product of mic_positions and direction
+    steering_vector = np.exp(1j * k * (mic_positions @ direction[:2]))
     return steering_vector / np.sqrt(num_mics)
 
 def map_channels_to_positions(audio_data):
-    # Mapping based on the provided channel configuration
-    # Each antenna has 8 microphones in a 4x2 configuration:
-    # ch1 (1,0), ch2 (0,0), ch3 (1,1), ch4 (0,1), ch5 (3,0), ch6 (2,0), ch7 (3,1), ch8 (2,1)
-
     num_mics = 48
     num_samples = audio_data.shape[1]
-
     mapped_data = np.zeros((num_mics, num_samples))
 
-    # Corrected mapping
     antenna_offsets = [(0, 0), (0, 2), (0, 4), (2, 0), (2, 2), (2, 4)]
     channel_order = [(1, 0), (0, 0), (1, 1), (0, 1), (3, 0), (2, 0), (3, 1), (2, 1)]
 
@@ -48,7 +51,7 @@ def map_channels_to_positions(audio_data):
         offset_x, offset_y = antenna_offsets[i]
         for j in range(8):
             mic_x = offset_x + channel_order[j][0]
-            mic_y = (offset_y // 2) + channel_order[j][1]  # Adjusted to stay within 4 rows
+            mic_y = (offset_y // 2) + channel_order[j][1]
             mic_index = mic_y * 12 + mic_x
             if mic_index >= num_mics:
                 raise IndexError(f"Calculated mic_index {mic_index} is out of bounds for array size {num_mics}")
@@ -67,25 +70,21 @@ def beamform(audio_data, steering_vector):
 
 def norm(data, percentage):
     max_value = np.max(np.abs(data))
-    if max_value == 0:
+    if (max_value == 0):
         raise Exception('Max Value is Zero')
 
     data = np.nan_to_num(data)
 
     return data / (max_value * (percentage / 100.0))
 
-# -------------------
-# MAIN --------------
-# -------------------
 def main():
     base_path = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/2 FOSSN/Data'
-
-
     filepath = f'{base_path}/Tests/9_outdoor_testing/07-16-2024_03-25-22_chunk_1.wav'
 
     temperature_fahrenheit = 95  # example temperature
-    coordinates = [30, 0]
-    tag_index = 2
+    azimuth = 60  # degrees -80 to 80
+    elevation = 0  # degrees 0 - 60
+    tag_index = 3
     filepath_save = f'{base_path}/Tests/10_beamformed'
 
     # Array configuration
@@ -99,10 +98,8 @@ def main():
     print(f'Speed of Sound: {speed_of_sound}')
 
     # Create steering vector
-    direction = np.array(coordinates)  # beamforming direction (0 degrees azimuth, 0 degrees elevation)
-    steering_vector = create_steering_vector(array_shape, mic_spacing, frequency, speed_of_sound, direction)
+    steering_vector = create_steering_vector(array_shape, mic_spacing, frequency, speed_of_sound, azimuth, elevation)
     print('Creating Steering Vector')
-    # print(steering_vector)
 
     # Map channels to their correct positions
     audio = Audio(filepath=filepath, num_channels=48)
@@ -116,15 +113,14 @@ def main():
 
     # Create the new filename
     original_path = Path(filepath)
-    export_tag = f'_BF{tag_index}_{coordinates[0]}-{coordinates[1]}'
+    export_tag = f'_BF{tag_index}_{azimuth}-{elevation}'
     new_filename = original_path.stem + export_tag + original_path.suffix
-
     new_filepath = f'{filepath_save}/{new_filename}'
+
     # Save the filtered audio to the new file
     beamformed_audio_object = Audio(data=beamformed_audio, num_channels=1, sample_rate=48000)
     beamformed_audio_object.path = Path(new_filepath)
     beamformed_audio_object.export()
-
 
 if __name__ == '__main__':
     main()
