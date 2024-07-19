@@ -1,0 +1,30 @@
+Sound Source: small speaker 2kHz sine wave
+SPL (dB(C)): 88.0
+Distance (meters): 2.0
+Sound Power Level (SWL) in dB: 105.02
+-----------------------------------------------------
+Sound Source: small speaker semi truck idling
+SPL (dB(C)): 78.0
+Distance (meters): 2.0
+Sound Power Level (SWL) in dB: 95.02
+-----------------------------------------------------
+Sound Source: tank idling in orlando
+SPL (dB(C)): 88.0
+Distance (meters): 10.0
+Sound Power Level (SWL) in dB: 119.00
+-----------------------------------------------------
+Sound Source: tank idling in Eglin 2024
+SPL (dB(C)): 94.0
+Distance (meters): 5.0
+Sound Power Level (SWL) in dB: 118.98
+-----------------------------------------------------
+Sound Source: hexacopter hovering
+SPL (dB(C)): 98.0
+Distance (meters): 1.0
+Sound Power Level (SWL) in dB: 109.00
+-----------------------------------------------------
+Sound Source: angel uav propeller flying
+SPL (dB(C)): 105.0
+Distance (meters): 1.0
+Sound Power Level (SWL) in dB: 116.00
+-----------------------------------------------------
