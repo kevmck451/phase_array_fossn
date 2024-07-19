@@ -196,7 +196,7 @@
       };
       openssh = prev.openssh.overrideAttrs (old: {
         # we have to cross compile openssh ourselves for whatever reason
-        # but the tests take quite a long time to run
+        # but the design take quite a long time to run
         doCheck = false;
       });
 
