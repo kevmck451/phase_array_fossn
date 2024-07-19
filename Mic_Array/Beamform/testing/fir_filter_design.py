@@ -1,5 +1,5 @@
 import numpy as np
-import beamform
+from Mic_Array.Beamform.papa import beamform
 
 # Parameters
 m, n = 4, 4  # Microphone array dimensions
