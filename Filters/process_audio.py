@@ -3,6 +3,7 @@ from Filters.noise_reduction import noise_reduction_filter
 from Filters.high_pass import high_pass_filter
 from Filters.low_pass import low_pass_filter
 from Filters.normalize import normalize
+from Filters.down_sample import downsample
 from Filters.save_to_wav import save_to_wav
 from Filters.audio import Audio
 
@@ -18,11 +19,12 @@ if __name__ == '__main__':
     # filepath = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/2 FOSSN/Data/Tests/7_hallway_tone/07-15-2024_03-33-35_chunk_1.wav'
     # audio = Audio(filepath=filepath, num_channels=48)
 
-    filepath = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/2 FOSSN/Data/Tests/10_beamformed/07-16-2024_03-25-22_chunk_1_BF1_45-0.wav'
+    # filepath = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/2 FOSSN/Data/Tests/11_outdoor_testing/07-22-2024_01-36-01_chunk_1_MONO19.wav'
+    filepath = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/2 FOSSN/Data/Tests/12_beamformed/07-22-2024_01-36-01_chunk_1_BF1_0-0.wav'
     audio = Audio(filepath=filepath, num_channels=1)
 
-    export_tag = '_pr1'
-    filepath_save = f'{base_path}/Tests/10_beamformed'
+    export_tag = '_pr2'
+    filepath_save = f'{base_path}/Tests/12_beamformed'
 
     shape_og = audio.data.shape
     # print(audio)
@@ -53,7 +55,14 @@ if __name__ == '__main__':
 
     # Normalize
     print('Normalizing')
-    audio.data = normalize(audio)
+    percentage = 100
+    audio.data = normalize(audio, percentage)
+
+    # Down Sample Audio
+    print('Down Sampling')
+    new_sample_rate = 12000
+    audio.data = downsample(audio, new_sample_rate)
+    audio.sample_rate = new_sample_rate
 
     print(f'Max: {np.max(audio.data)}')
     print(f'Min: {np.min(audio.data)}')
