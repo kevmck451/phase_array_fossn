@@ -81,12 +81,12 @@ def main():
     base_path = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/2 FOSSN/Data'
 
 
-    filepath = f'{base_path}/Tests/9_outdoor_testing/07-16-2024_03-25-22_chunk_1.wav'
+    filepath = f'{base_path}/Tests/11_outdoor_testing/07-22-2024_01-36-01_chunk_1.wav'
 
-    temperature_fahrenheit = 95  # example temperature
-    coordinates = [30, 0]
-    tag_index = 2
-    filepath_save = f'{base_path}/Tests/10_beamformed'
+    temperature_fahrenheit = 86  # example temperature
+    coordinates = [0, 0]
+    tag_index = 1
+    filepath_save = f'{base_path}/Tests/12_beamformed'
 
     # Array configuration
     array_shape = (4, 12) # (rows, cols)
