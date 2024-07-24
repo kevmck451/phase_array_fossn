@@ -1,7 +1,7 @@
 
 
 from Filters.audio import Audio
-from Actions.save_to_wav import save_to_wav
+from Filters.save_to_wav import save_to_wav
 
 import noisereduce as nr
 from pathlib import Path
