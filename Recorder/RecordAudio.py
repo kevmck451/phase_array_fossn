@@ -1,5 +1,5 @@
 from Controller.AudioReceiver import AudioReceiver
-from Actions.save_to_wav import save_to_wav
+from Recorder.save_to_wav import save_to_wav
 from Filters.high_pass import high_pass_filter
 from Filters.low_pass import low_pass_filter
 from Filters.normalize import normalize
