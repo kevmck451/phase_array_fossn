@@ -3,7 +3,7 @@ from Mic_Array.FIR_Filter.time_delays import calculate_time_delays
 from Mic_Array.FIR_Filter.fir_filter import create_fir_filters
 
 
-def generate_fir_coeffs(mic_coords, theta, phi, temp_F, sample_rate, num_taps=201):
+def generate_fir_coeffs(mic_coords, theta, phi, temp_F, sample_rate=48000, num_taps=201):
     time_delays = calculate_time_delays(mic_coords, theta, phi, temp_F, sample_rate)
     fir_filter = create_fir_filters(time_delays, num_taps)
 

@@ -1,7 +1,9 @@
 from Mic_Array.FIR_Filter.mic_coordinates import generate_mic_coordinates
 from Mic_Array.FIR_Filter.generate_fir_coeffs import generate_fir_coeffs
+from Filters.down_sample import downsample
 from Filters.audio import Audio
 
+from scipy.signal import convolve
 from pathlib import Path
 import numpy as np
 
@@ -33,60 +35,75 @@ def map_channels_to_positions(audio_data):
     return mapped_data
 
 def beamform(audio_data, fir_coeffs):
-    beamformed_data = 0
+    num_mics, num_samples = audio_data.shape
+    rows, cols, num_coeffs = fir_coeffs.shape
+
+    assert num_mics == rows * cols, "Mismatch between audio data and FIR coefficients shape."
+
+    beamformed_data = np.zeros(num_samples + num_coeffs - 1)
+
+    for row_index in range(rows):
+        for col_index in range(cols):
+            mic_index = row_index * cols + col_index
+            filtered_signal = convolve(audio_data[mic_index], fir_coeffs[row_index, col_index], mode='full')
+            beamformed_data += filtered_signal
+
+    # Normalize the beamformed data
+    max_val = np.max(np.abs(beamformed_data))
+    if max_val != 0:
+        beamformed_data = beamformed_data / max_val
 
     return beamformed_data
-
-
-
-
-def norm(data, percentage):
-    max_value = np.max(np.abs(data))
-    if max_value == 0:
-        raise Exception('Max Value is Zero')
-
-    data = np.nan_to_num(data)
-
-    return data / (max_value * (percentage / 100.0))
 
 
 
 if __name__ == '__main__':
 
     base_path = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/2 FOSSN/Data'
-    filepath = f'{base_path}/Tests/11_outdoor_testing/07-22-2024_01-36-01_chunk_1.wav'
+    filepath = f'{base_path}/Tests/9_outdoor_testing/07-16-2024_03-25-22_chunk_1.wav'
 
     tag_index = 1
-    filepath_save = f'{base_path}/Tests/12_beamformed'
+    filepath_save = f'{base_path}/Tests/13_beamformed'
 
-    audio = Audio(filepath=filepath, num_channels=48)
-    mapped_audio_data = map_channels_to_positions(audio.data)
-
-    # angle is from behind array looking forward. center is (0, 0)
-    mic_coords = generate_mic_coordinates()
     theta = 0  # elevation angle
     phi = 0  # azimuth angle
     temp_F = 95  # temperature in Fahrenheit
-    sample_rate = 48000
 
-    fir_coeffs = generate_fir_coeffs(mic_coords, theta, phi, temp_F, sample_rate)
-    print(fir_coeffs.shape)
+    print('opening audio')
+    audio = Audio(filepath=filepath, num_channels=48)
+    print('mapping audio channels')
+    mapped_audio_data = map_channels_to_positions(audio.data)
+
+    print('generating mic coordinates')
+    # angle is from behind array looking forward. center is (0, 0)
+    mic_coords = generate_mic_coordinates()
+
+
+    print('generating fir coefficients')
+    fir_coeffs = generate_fir_coeffs(mic_coords, theta, phi, temp_F)
+    print(f'FIR Coeffs Shape: {fir_coeffs.shape}')
 
     # Perform beamforming
+    print('beamforming audio')
     beamformed_audio = beamform(mapped_audio_data, fir_coeffs)
     print(f'Beamformed Audio Shape: {beamformed_audio.shape}')
-    print('Normalizing')
-    beamformed_audio = norm(beamformed_audio, 100)
 
     # Create the new filename
+    print('packing audio')
     original_path = Path(filepath)
     export_tag = f'_BF{tag_index}_{theta}-{phi}'
     new_filename = original_path.stem + export_tag + original_path.suffix
-
     new_filepath = f'{filepath_save}/{new_filename}'
+
     # Save the filtered audio to the new file
     beamformed_audio_object = Audio(data=beamformed_audio, num_channels=1, sample_rate=48000)
     beamformed_audio_object.path = Path(new_filepath)
+
+    print('downsampling audio')
+    new_sample_rate = 12000
+    beamformed_audio_object.data = downsample(audio, new_sample_rate)
+    beamformed_audio_object.sample_rate = new_sample_rate
+
     beamformed_audio_object.export()
 
 
