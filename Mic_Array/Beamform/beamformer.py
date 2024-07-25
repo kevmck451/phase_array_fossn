@@ -5,6 +5,9 @@ from Filters.save_to_wav import save_to_wav
 from Filters.down_sample import downsample
 from Filters.audio import Audio
 
+
+from multiprocessing import Pool, cpu_count
+from functools import partial
 from scipy.signal import convolve
 from pathlib import Path
 import numpy as np
@@ -53,28 +56,54 @@ def beamform(audio_data, fir_coeffs):
 
     return beamformed_data
 
-def generate_beamformed_audio(mapped_audio_data, theta, phi, temp_F):
+def generate_beamformed_audio(mapped_audio_data, theta, phi, temp_F, mic_coords):
     print('generating fir coefficients')
     fir_coeffs = generate_fir_coeffs(mic_coords, theta, phi, temp_F)
     print('beamforming audio')
     beamformed_audio = beamform(mapped_audio_data, fir_coeffs)
-
+    print('-' * 40)
     return beamformed_audio
 
+def generate_beamformed_audio_iterative(mapped_audio_data, thetas, phi, temp_F, mic_coords):
+    beamformed_audio_data = np.zeros((len(thetas), audio.num_samples+200))
+    for i, theta in enumerate(thetas):
+        beamformed_audio_data[i, :] = generate_beamformed_audio(mapped_audio_data, theta, phi, temp_F, mic_coords)
+        print(f'Completed BF Data for {theta}')
+        print('-' * 40)
 
+    return beamformed_audio_data
+
+def generate_beamformed_audio_parallel(theta, mapped_audio_data, phi, temp_F, mic_coords):
+    return generate_beamformed_audio(mapped_audio_data, theta, phi, temp_F, mic_coords)
+
+def optimize_beamforming(thetas, mapped_audio_data, phi, temp_F, mic_coords):
+    beamformed_audio_data = np.zeros((len(thetas), audio.num_samples + 200))
+
+    # Create a partial function with the fixed arguments
+    partial_func = partial(generate_beamformed_audio_parallel, mapped_audio_data=mapped_audio_data, phi=phi, temp_F=temp_F, mic_coords=mic_coords)
+
+    with Pool(cpu_count()) as p:
+        results = p.map(partial_func, thetas)
+
+    for i, result in enumerate(results):
+        beamformed_audio_data[i, :] = result
+        print(f'Completed BF Data for {i}')
+
+    return beamformed_audio_data
 
 
 if __name__ == '__main__':
     start_time = time.time()
 
     base_path = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/2 FOSSN/Data'
-    filepath = f'{base_path}/Tests/9_outdoor_testing/diesel_sweep.wav'
+    # filepath = f'{base_path}/Tests/9_outdoor_testing/diesel_sweep.wav'
+    filepath = f'{base_path}/Tests/11_outdoor_testing/07-22-2024_01-36-01_chunk_1.wav'
 
     filepath_save = f'{base_path}/Tests/13_beamformed'
-    tag_index = '_(-90, 90)' # 1
+    tag_index = '_(-40, 40)-0' # 1
 
-    thetas = [-90, -80, -70, -60, -50, -40, -30, -20, -10, 0, 10, 20, 30, 40, 50, 60, 70, 80, 90]  # elevation angle: pos is right and neg is left
-    phi = 0  # azimuth angle
+    thetas = [-40, -30, -20, -10, 0, 10, 20, 30, 40]  # elevation angle: neg is left and pos is right
+    phi = 0  # azimuth angle: neg is below and pos is above
     temp_F = 90  # temperature in Fahrenheit
 
     print('opening audio')
@@ -88,18 +117,14 @@ if __name__ == '__main__':
     prep_time = time.time() - start_time
 
     # --------------------------------------------------------------
-
     bf_start_time = time.time()
 
-    beamformed_audio_data = np.zeros((len(thetas), audio.num_samples+200))
+    # Iterative Method: takes longer time
+    # beamformed_audio_data = generate_beamformed_audio_iterative(mapped_audio_data, thetas, phi, temp_F, mic_coords)
 
-    for i, theta in enumerate(thetas):
-        beamformed_audio_data[i, :] = generate_beamformed_audio(mapped_audio_data, theta, phi, temp_F)
-        print(f'Completed BF Data for {theta}')
-        print('-' * 40)
-
+    # Parallel Method: much shorter time
+    beamformed_audio_data = optimize_beamforming(thetas, mapped_audio_data, phi, temp_F, mic_coords)
     print(f'shape: {beamformed_audio_data.shape}')
-    print(beamformed_audio_data)
 
     beamform_time = time.time() - bf_start_time
 
@@ -122,10 +147,10 @@ if __name__ == '__main__':
     bottom_cutoff_freq = 500
     beamformed_audio_object.data = high_pass_filter(beamformed_audio_object, bottom_cutoff_freq)
 
-    # print('downsampling audio')
-    # new_sample_rate = 12000
-    # beamformed_audio_object.data = downsample(beamformed_audio_object, new_sample_rate)
-    # beamformed_audio_object.sample_rate = new_sample_rate
+    print('downsampling audio')
+    new_sample_rate = 20000
+    beamformed_audio_object.data = downsample(beamformed_audio_object, new_sample_rate)
+    beamformed_audio_object.sample_rate = new_sample_rate
 
     save_to_wav(beamformed_audio_object.data, beamformed_audio_object.sample_rate, beamformed_audio_object.num_channels, new_filepath)
 
