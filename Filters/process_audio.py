@@ -10,6 +10,47 @@ from Filters.audio import Audio
 from pathlib import Path
 import numpy as np
 
+
+def process_audio(audio, processing_list):
+
+    # Noise Reduction
+    print('Reducing Noise')
+    std_threshold = 0.5
+    audio.data = noise_reduction_filter(audio, std_threshold)
+
+    # High Pass Filter
+    print('Passing High Freq')
+    bottom_cutoff_freq = 500
+    audio.data = high_pass_filter(audio, bottom_cutoff_freq, order=8)
+
+    # Low Pass Filter
+    print('Pass Low Freq')
+    top_cutoff_freq = 3000
+    audio.data = low_pass_filter(audio, top_cutoff_freq, order=8)
+
+    # Noise Reduction
+    # print('Reducing Noise')
+    # audio.data = noise_reduction_filter(audio)
+
+    # Snip Ends which are garbage from NR
+    print('Truncating Edges')
+    if audio.num_channels == 1: audio.data = audio.data[50000:-50000]
+    else: audio.data = audio.data[:, 50000:-50000]
+
+    # Normalize
+    print('Normalizing')
+    percentage = 100
+    audio.data = normalize(audio, percentage)
+
+    # Down Sample Audio
+    print('Down Sampling')
+    new_sample_rate = 12000
+    audio.data = downsample(audio, new_sample_rate)
+    audio.sample_rate = new_sample_rate
+
+    return audio
+
+
 if __name__ == '__main__':
     base_path = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/2 FOSSN/Data'
 
