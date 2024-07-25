@@ -60,9 +60,9 @@ def generate_beamformed_audio(mapped_audio_data, theta, phi, temp_F, mic_coords)
     print('generating fir coefficients')
     fir_coeffs = generate_fir_coeffs(mic_coords, theta, phi, temp_F)
     print('beamforming audio')
-    beamformed_audio = beamform(mapped_audio_data, fir_coeffs)
     print('-' * 40)
-    return beamformed_audio
+
+    return beamform(mapped_audio_data, fir_coeffs)
 
 def generate_beamformed_audio_iterative(mapped_audio_data, thetas, phi, temp_F, mic_coords):
     beamformed_audio_data = np.zeros((len(thetas), audio.num_samples+200))
