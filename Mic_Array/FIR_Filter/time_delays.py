@@ -1,6 +1,6 @@
 
-from mic_coordinates import generate_mic_coordinates
-import mic_coordinates as mic_coord
+from Mic_Array.FIR_Filter.mic_coordinates import generate_mic_coordinates
+import Mic_Array.FIR_Filter.mic_coordinates as mic_coord
 
 import numpy as np
 import math

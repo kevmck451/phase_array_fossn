@@ -1,20 +1,16 @@
-# Mic Array
+# Mic Array / FIR Filter
 
-2. mic_coordinates
-3. time delays
+1. setup mic_coordinates
+2. calculate time delays
    - directional cosines
    - speed of sound
    - calculate time delays
    - convert to sample delay
-4. fir_filter
+3. generate fir_filter coeffs
    - generate sinc function
    - window function
-5. Convolution
-6. Summation
-7. Normalization
 
-
-Beamforming Process:
+   
 
 ## Microphone Array Grid:
  * Define the positions of the microphones in the array using an (x,y) coordinate system.
@@ -39,17 +35,7 @@ Beamforming Process:
  * blackman provides better side lob suppression at the cost of main lobe resolution
  * increasing the number of taps can increase main lob resolution at the cost of computational complexity
  * The result is a set of FIR filter coefficients for each microphone.
-
-## Convolution:
- * Convolve each microphone's input signal with its corresponding FIR filter coefficients.
- * Convolution is a process where the input signal is multiplied and summed with the FIR filter coefficients to produce a delayed output signal.
-
-## Summation:
- * Sum the delayed signals from all microphones.
- * This summation aligns the signals from the desired direction (beamforming), enhancing them while attenuating signals from other directions.
-
-## Normalization:
- * Bring values back into expected ranges
+ 
 
 
 

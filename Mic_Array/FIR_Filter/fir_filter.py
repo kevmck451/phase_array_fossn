@@ -1,10 +1,9 @@
 
 import matplotlib.pyplot as plt
 import numpy as np
-import math
 
 def generate_fir_coefficients(time_delay, num_taps):
-    time_index = np.arange(-num_taps // 2, num_taps // 2 + 1)
+    time_index = np.arange(-num_taps // 2, num_taps // 2)
     # print(time_index)
 
     # Calculate the ideal sinc filter centered at the delay
@@ -13,7 +12,7 @@ def generate_fir_coefficients(time_delay, num_taps):
     # plt.show()
 
     # Apply a window function to smooth the sinc function
-    window = np.blackman(num_taps + 1)
+    window = np.blackman(num_taps)
     coefficients = sinc_func * window
     # print(f'FIR coefficient shape: {fir_coefficients.shape}')
 
@@ -31,7 +30,7 @@ def create_fir_filters(time_delay_array, num_taps):
     # represents an ideal low-pass filter with a cutoff
     # at half the sampling rate
 
-    fir_coefficients = np.zeros((time_delay_array.shape[0] , time_delay_array.shape[1], num_taps+1))
+    fir_coefficients = np.zeros((time_delay_array.shape[0] , time_delay_array.shape[1], num_taps))
 
     for row in range(fir_coefficients.shape[0]):
         for col in range(fir_coefficients.shape[1]):
@@ -53,8 +52,8 @@ if __name__ == '__main__':
     sinc_func_high_res = np.sinc(t_high_res - delay)
 
     # Define the original time index for plotting window and FIR filter
-    t = np.arange(-num_taps // 2, num_taps // 2 + 1)
-    window = np.blackman(num_taps + 1)
+    t = np.arange(-num_taps // 2, num_taps // 2)
+    window = np.blackman(num_taps)
 
     # Plot the sinc function, window, and the resulting FIR filter
     plt.figure(figsize=(12, 6))
@@ -79,8 +78,8 @@ if __name__ == '__main__':
 
 
     # Compare Hamming and Blackman windows
-    hamming_window = np.hamming(num_taps + 1)
-    blackman_window = np.blackman(num_taps + 1)
+    hamming_window = np.hamming(num_taps)
+    blackman_window = np.blackman(num_taps)
 
     plt.figure(figsize=(12, 6))
     plt.plot(t, hamming_window, label='Hamming Window')
