@@ -54,36 +54,35 @@ if __name__ == '__main__':
     # audio = Audio(filepath=filepath, num_channels=48)
 
     # filepath = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/2 FOSSN/Data/Tests/11_outdoor_testing/07-22-2024_01-36-01_chunk_1_MONO19.wav'
-    filepath = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/2 FOSSN/Data/Tests/12_beamformed/07-22-2024_01-36-01_chunk_1_BF1_0-0.wav'
-    audio = Audio(filepath=filepath, num_channels=1)
 
-    export_tag = '_SW1'
-    filepath_save = f'{base_path}/Tests/12_beamformed'
+    filepath = f'{base_path}/Tests/13_beamformed/diesel_sweep_BF_(-90, 90)-(0, 30).wav'
+    audio = Audio(filepath=filepath, num_channels=114)
+
+    export_tag = '_Pro3'
+    filepath_save = f'{base_path}/Tests/13_beamformed'
 
     shape_og = audio.data.shape
     # print(audio)
 
-    std_threshold = 0.5
+    std_threshold = 2
     bottom_cutoff_freq = 500
     top_cutoff_freq = 3000
     normalize_percentage = 100
     new_sample_rate = 12000
 
-    print('Spectral Whitening')
-    audio.data = spectral_whitening(audio)
-    # print('Reducing Noise')
-    # audio.data = noise_reduction_filter(audio, std_threshold)
-    # print('Passing High Freq')
-    # audio.data = high_pass_filter(audio, bottom_cutoff_freq, order=8)
+    print('Reducing Noise')
+    audio.data = noise_reduction_filter(audio, std_threshold)
+    print('Passing High Freq')
+    audio.data = high_pass_filter(audio, bottom_cutoff_freq, order=8)
     # print('Pass Low Freq')
     # audio.data = low_pass_filter(audio, top_cutoff_freq, order=8)
     # print('Reducing Noise')
     # audio.data = noise_reduction_filter(audio)
-    # print('Normalizing')
-    # audio.data = normalize(audio, normalize_percentage)
-    # print('Down Sampling')
-    # audio.data = downsample(audio, new_sample_rate)
-    # audio.sample_rate = new_sample_rate
+    print('Normalizing')
+    audio.data = normalize(audio, normalize_percentage)
+    print('Down Sampling')
+    audio.data = downsample(audio, new_sample_rate)
+    audio.sample_rate = new_sample_rate
 
 
     # Create the new filename
