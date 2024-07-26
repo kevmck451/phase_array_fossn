@@ -1,10 +1,14 @@
+
+import Mic_Array.array_config as array_config
+
 import numpy as np
 
+
 # Array Configuration
-rows = 4
-cols = 12
-mic_spacing = 0.08  # meters - based on center freq
-num_mics = rows * cols
+rows = array_config.rows
+cols = array_config.cols
+mic_spacing = array_config.mic_spacing  # meters - based on center freq
+num_mics = array_config.num_mics
 
 def generate_mic_coordinates():
     '''

@@ -1,10 +1,11 @@
 from Mic_Array.FIR_Filter.mic_coordinates import generate_mic_coordinates
 from Mic_Array.FIR_Filter.generate_fir_coeffs import generate_fir_coeffs
+import Mic_Array.array_config as array_config
 from Filters.high_pass import high_pass_filter
 from Filters.save_to_wav import save_to_wav
 from Filters.down_sample import downsample
+from Filters.normalize import normalize
 from Filters.audio import Audio
-
 
 from multiprocessing import Pool, cpu_count
 from functools import partial
@@ -14,24 +15,14 @@ import numpy as np
 import time
 
 
-
 def map_channels_to_positions(audio_data):
     num_mics = 48
     num_samples = audio_data.shape[1]
 
     mapped_data = np.zeros((4, 12, num_samples))
 
-    mic_positions = [
-        (1, 0), (0, 0), (1, 1), (0, 1), (3, 0), (2, 0), (3, 1), (2, 1),
-        (1, 2), (0, 2), (1, 3), (0, 3), (3, 2), (2, 2), (3, 3), (2, 3),
-        (1, 4), (0, 4), (1, 5), (0, 5), (3, 4), (2, 4), (3, 5), (2, 5),
-        (1, 6), (0, 6), (1, 7), (0, 7), (3, 6), (2, 6), (3, 7), (2, 7),
-        (1, 8), (0, 8), (1, 9), (0, 9), (3, 8), (2, 8), (3, 9), (2, 9),
-        (1, 10), (0, 10), (1, 11), (0, 11), (3, 10), (2, 10), (3, 11), (2, 11)
-    ]
-
     for ch_index in range(num_mics):
-        mic_x, mic_y = mic_positions[ch_index]
+        mic_x, mic_y = array_config.mic_positions[ch_index]
         mapped_data[mic_x, mic_y, :] = audio_data[ch_index, :]
 
     return mapped_data
@@ -57,7 +48,7 @@ def beamform(audio_data, fir_coeffs):
     return beamformed_data
 
 def generate_beamformed_audio(mapped_audio_data, theta, phi, temp_F, mic_coords):
-    print('generating fir coefficients')
+    print(f'generating fir coefficients: {theta} | {phi}')
     fir_coeffs = generate_fir_coeffs(mic_coords, theta, phi, temp_F)
     print('beamforming audio')
     print('-' * 40)
@@ -91,19 +82,20 @@ def optimize_beamforming(thetas, mapped_audio_data, phi, temp_F, mic_coords):
 
     return beamformed_audio_data
 
-
+# -------------------------------------------------------------------------------------------------------------------
 if __name__ == '__main__':
     start_time = time.time()
 
     base_path = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/2 FOSSN/Data'
-    # filepath = f'{base_path}/Tests/9_outdoor_testing/diesel_sweep.wav'
-    filepath = f'{base_path}/Tests/11_outdoor_testing/07-22-2024_01-36-01_chunk_1.wav'
+    filepath = f'{base_path}/Tests/9_outdoor_testing/diesel_sweep.wav'
+    # filepath = f'{base_path}/Tests/11_outdoor_testing/07-22-2024_01-36-01_chunk_1.wav'
 
     filepath_save = f'{base_path}/Tests/13_beamformed'
-    tag_index = '_(-40, 40)-0' # 1
+    tag_index = '_(-90, 90)-(0, 30)' # 1
 
-    thetas = [-40, -30, -20, -10, 0, 10, 20, 30, 40]  # elevation angle: neg is left and pos is right
-    phi = 0  # azimuth angle: neg is below and pos is above
+    # elevation angle: neg is left and pos is right
+    thetas = [-90, -80, -70, -60, -50, -40, -30, -20, -10, 0, 10, 20, 30, 40, 50, 60, 70, 80, 90]
+    phis = [0, 5, 10, 15, 20, 25]  # azimuth angle: neg is below and pos is above
     temp_F = 90  # temperature in Fahrenheit
 
     print('opening audio')
@@ -122,15 +114,19 @@ if __name__ == '__main__':
     # Iterative Method: takes longer time
     # beamformed_audio_data = generate_beamformed_audio_iterative(mapped_audio_data, thetas, phi, temp_F, mic_coords)
 
+    list_of_data = list()
     # Parallel Method: much shorter time
-    beamformed_audio_data = optimize_beamforming(thetas, mapped_audio_data, phi, temp_F, mic_coords)
+    for phi in phis:
+        beamformed_audio_data = optimize_beamforming(thetas, mapped_audio_data, phi, temp_F, mic_coords)
+        list_of_data.append(beamformed_audio_data)
+        print('-' * 40)
+
+    beamformed_audio_data = np.vstack(list_of_data)
     print(f'shape: {beamformed_audio_data.shape}')
 
     beamform_time = time.time() - bf_start_time
 
-    # Processing and Packing Audio
     # --------------------------------------------------------------
-    # Create the new filename
     print('packing audio')
     original_path = Path(filepath)
     # export_tag = f'_BF{tag_index}_{theta}-{phi}'
@@ -139,13 +135,18 @@ if __name__ == '__main__':
     new_filepath = f'{filepath_save}/{new_filename}'
 
     # Save the filtered audio to the new file
-    beamformed_audio_object = Audio(data=beamformed_audio_data, num_channels=(len(thetas)), sample_rate=48000)
+    beamformed_audio_object = Audio(data=beamformed_audio_data, num_channels=(len(thetas)*len(phis)), sample_rate=48000)
     beamformed_audio_object.path = Path(new_filepath)
 
+    # --------------------------------------------------------------
     # High Pass Filter
     print('Passing High Freq')
     bottom_cutoff_freq = 500
     beamformed_audio_object.data = high_pass_filter(beamformed_audio_object, bottom_cutoff_freq)
+
+    print('Normalizing')
+    percentage = 100
+    beamformed_audio_object.data = normalize(beamformed_audio_object, percentage)
 
     print('downsampling audio')
     new_sample_rate = 20000
@@ -160,5 +161,3 @@ if __name__ == '__main__':
     print(f'Prep Time: {np.round(prep_time, 2)} secs')
     print(f'Beamform Time: {np.round((beamform_time/60), 2)} mins')
     print(f'Total Time: {np.round((total_time/60), 2)} mins')
-
-

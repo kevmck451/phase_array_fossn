@@ -29,7 +29,7 @@
 ## Create FIR Filters:
  * For each microphone, create a sinc function centered at the delay di
  * The sinc function represents the ideal low-pass filter that will be used to create the FIR filter
- * set cutoff frequency higher than desired frequency range of interest
+ * set cutoff frequency higher than desired frequency range of interest, which naturally is the nyquist frequency
  * The sinc function sinc(t−di) where t is the time index and di is the delay.
  * Apply a window function (e.g., Hamming, Hann, blackman) to the sinc function to truncate it to a finite length and smooth the edges.
  * blackman provides better side lob suppression at the cost of main lobe resolution
