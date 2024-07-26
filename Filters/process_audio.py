@@ -1,10 +1,12 @@
 
 from Filters.noise_reduction import noise_reduction_filter
+from Filters.spectral_whitening import spectral_whitening
 from Filters.high_pass import high_pass_filter
 from Filters.low_pass import low_pass_filter
 from Filters.normalize import normalize
 from Filters.down_sample import downsample
 from Filters.save_to_wav import save_to_wav
+
 from Filters.audio import Audio
 
 from pathlib import Path
@@ -12,41 +14,32 @@ import numpy as np
 
 
 def process_audio(audio, processing_list):
-
-    # Noise Reduction
-    print('Reducing Noise')
+    normalize_percentage = 100
+    new_sample_rate = 12000
     std_threshold = 0.5
-    audio.data = noise_reduction_filter(audio, std_threshold)
-
-    # High Pass Filter
-    print('Passing High Freq')
     bottom_cutoff_freq = 500
-    audio.data = high_pass_filter(audio, bottom_cutoff_freq, order=8)
-
-    # Low Pass Filter
-    print('Pass Low Freq')
     top_cutoff_freq = 3000
-    audio.data = low_pass_filter(audio, top_cutoff_freq, order=8)
 
-    # Noise Reduction
+
+    print('Spectral Whitening')
+    audio.data = spectral_whitening(audio)
+    # print('Reducing Noise')
+    # audio.data = noise_reduction_filter(audio, std_threshold)
+    # print('Passing High Freq')
+    # audio.data = high_pass_filter(audio, bottom_cutoff_freq, order=8)
+    # print('Pass Low Freq')
+    # audio.data = low_pass_filter(audio, top_cutoff_freq, order=8)
     # print('Reducing Noise')
     # audio.data = noise_reduction_filter(audio)
+    # print('Normalizing')
+    # audio.data = normalize(audio, normalize_percentage)
+    # print('Down Sampling')
+    # audio.data = downsample(audio, new_sample_rate)
+    # audio.sample_rate = new_sample_rate
 
-    # Snip Ends which are garbage from NR
-    print('Truncating Edges')
-    if audio.num_channels == 1: audio.data = audio.data[50000:-50000]
-    else: audio.data = audio.data[:, 50000:-50000]
 
-    # Normalize
-    print('Normalizing')
-    percentage = 100
-    audio.data = normalize(audio, percentage)
 
-    # Down Sample Audio
-    print('Down Sampling')
-    new_sample_rate = 12000
-    audio.data = downsample(audio, new_sample_rate)
-    audio.sample_rate = new_sample_rate
+
 
     return audio
 
@@ -64,49 +57,34 @@ if __name__ == '__main__':
     filepath = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/2 FOSSN/Data/Tests/12_beamformed/07-22-2024_01-36-01_chunk_1_BF1_0-0.wav'
     audio = Audio(filepath=filepath, num_channels=1)
 
-    export_tag = '_pr2'
+    export_tag = '_SW1'
     filepath_save = f'{base_path}/Tests/12_beamformed'
 
     shape_og = audio.data.shape
     # print(audio)
 
-    # Noise Reduction
-    print('Reducing Noise')
     std_threshold = 0.5
-    audio.data = noise_reduction_filter(audio, std_threshold)
-
-    # High Pass Filter
-    print('Passing High Freq')
     bottom_cutoff_freq = 500
-    audio.data = high_pass_filter(audio, bottom_cutoff_freq, order=8)
-
-    # Low Pass Filter
-    print('Pass Low Freq')
     top_cutoff_freq = 3000
-    audio.data = low_pass_filter(audio, top_cutoff_freq, order=8)
+    normalize_percentage = 100
+    new_sample_rate = 12000
 
-    # Noise Reduction
+    print('Spectral Whitening')
+    audio.data = spectral_whitening(audio)
+    # print('Reducing Noise')
+    # audio.data = noise_reduction_filter(audio, std_threshold)
+    # print('Passing High Freq')
+    # audio.data = high_pass_filter(audio, bottom_cutoff_freq, order=8)
+    # print('Pass Low Freq')
+    # audio.data = low_pass_filter(audio, top_cutoff_freq, order=8)
     # print('Reducing Noise')
     # audio.data = noise_reduction_filter(audio)
+    # print('Normalizing')
+    # audio.data = normalize(audio, normalize_percentage)
+    # print('Down Sampling')
+    # audio.data = downsample(audio, new_sample_rate)
+    # audio.sample_rate = new_sample_rate
 
-    # Snip Ends which are garbage from NR
-    print('Truncating Edges')
-    if audio.num_channels == 1: audio.data = audio.data[50000:-50000]
-    else: audio.data = audio.data[:, 50000:-50000]
-
-    # Normalize
-    print('Normalizing')
-    percentage = 100
-    audio.data = normalize(audio, percentage)
-
-    # Down Sample Audio
-    print('Down Sampling')
-    new_sample_rate = 12000
-    audio.data = downsample(audio, new_sample_rate)
-    audio.sample_rate = new_sample_rate
-
-    print(f'Max: {np.max(audio.data)}')
-    print(f'Min: {np.min(audio.data)}')
 
     # Create the new filename
     original_path = Path(filepath)
