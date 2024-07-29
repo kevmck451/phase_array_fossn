@@ -26,10 +26,11 @@ def crop(audio_object, start_time_s, end_time_s):
 if __name__ == '__main__':
     base_path = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/2 FOSSN/Data'
     filepath = f'{base_path}/Tests/9_outdoor_testing/07-16-2024_03-25-22_chunk_1.wav'
+    # filepath = f'{base_path}/Tests/10_beamformed/07-16-2024_03-25-22_chunk_1_BF_(-40, 40)-(0).wav'
     num_channels = 48
     audio = Audio(filepath=filepath, num_channels=num_channels)
-    start_time = 297 # s
-    end_time = 522 # s
+    start_time = 17 # s
+    end_time = 810 # s
     cropped_data = crop(audio, start_time, end_time)
 
     original_path = Path(filepath)

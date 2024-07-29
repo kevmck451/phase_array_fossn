@@ -1,6 +1,8 @@
 from Mic_Array.FIR_Filter.mic_coordinates import generate_mic_coordinates
 from Mic_Array.FIR_Filter.generate_fir_coeffs import generate_fir_coeffs
 import Mic_Array.array_config as array_config
+
+from Filters.noise_reduction import noise_reduction_filter
 from Filters.high_pass import high_pass_filter
 from Filters.save_to_wav import save_to_wav
 from Filters.down_sample import downsample
@@ -87,15 +89,16 @@ if __name__ == '__main__':
     start_time = time.time()
 
     base_path = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/2 FOSSN/Data'
-    filepath = f'{base_path}/Tests/9_outdoor_testing/diesel_sweep.wav'
+    # filepath = f'{base_path}/Tests/9_outdoor_testing/diesel_sweep.wav'
     # filepath = f'{base_path}/Tests/11_outdoor_testing/07-22-2024_01-36-01_chunk_1.wav'
+    filepath = f'{base_path}/Tests/9_outdoor_testing/07-16-2024_03-25-22_chunk_1.wav'
 
-    filepath_save = f'{base_path}/Tests/13_beamformed'
-    tag_index = '_(-90, 90)-(0, 30)' # 1
+    filepath_save = f'{base_path}/Tests/10_beamformed'
+    tag_index = '_(-40, 40)-(0)' # 1
 
     # elevation angle: neg is left and pos is right
-    thetas = [-90, -80, -70, -60, -50, -40, -30, -20, -10, 0, 10, 20, 30, 40, 50, 60, 70, 80, 90]
-    phis = [0, 5, 10, 15, 20, 25]  # azimuth angle: neg is below and pos is above
+    thetas = [-40,-30,-20,-10, 0, 10, 20,30,40]
+    phis = [0]  # azimuth angle: neg is below and pos is above
     temp_F = 90  # temperature in Fahrenheit
 
     print('opening audio')
@@ -139,10 +142,13 @@ if __name__ == '__main__':
     beamformed_audio_object.path = Path(new_filepath)
 
     # --------------------------------------------------------------
-    # High Pass Filter
+    print('Reducing Noise')
+    std_threshold = 0.5
+    # audio.data = noise_reduction_filter(audio, std_threshold)
+
     print('Passing High Freq')
     bottom_cutoff_freq = 500
-    beamformed_audio_object.data = high_pass_filter(beamformed_audio_object, bottom_cutoff_freq)
+    # beamformed_audio_object.data = high_pass_filter(beamformed_audio_object, bottom_cutoff_freq)
 
     print('Normalizing')
     percentage = 100

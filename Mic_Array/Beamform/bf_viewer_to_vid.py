@@ -9,19 +9,20 @@ from matplotlib.animation import FuncAnimation, FFMpegWriter
 if __name__ == '__main__':
     start_time = time.time()
     base_path = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/2 FOSSN/Data'
-    filename = 'diesel_sweep_BF_(-90, 90)-(0, 30)_Pro3'
-    filepath = f'{base_path}/Tests/13_beamformed/{filename}.wav'
+    filename = 'diesel_sweep_BF_(-60, 60)-(0)_2'
+    filepath = f'{base_path}/Tests/14_beamformed/{filename}.wav'
+    filepath_save = f'{base_path}/Tests/14_beamformed/{filename}_2.mp4'
 
-    field_of_view = (6, 19)
+    thetas = [-60, -55, -50, -45, -40, -35, -30, -35, -20, -15, -10, 5, 0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60]
+    phis = [0]
+    field_of_view = (len(phis), len(thetas))
     num_channels = field_of_view[0] * field_of_view[1]
-    thetas = [-90, -80, -70, -60, -50, -40, -30, -20, -10, 0, 10, 20, 30, 40, 50, 60, 70, 80, 90]
-    phis = [0, 5, 10, 15, 20, 25]
 
     audio = Audio(filepath=filepath, num_channels=num_channels)
     audio_load_time = time.time() - start_time
     print(f'Audio Load Time: {np.round((audio_load_time / 60), 2)} mins')
 
-    pop_time = 0.1 # in seconds
+    pop_time = 0.2 # in seconds
     short_term_time = 5 # in seconds
     long_term_time = 120 # in seconds
 
@@ -39,13 +40,14 @@ if __name__ == '__main__':
     print(f'Chunk Size: {chunk_size}')
 
     fig, ax = plt.subplots(1, 1, figsize=(20, 10))
-    cax = ax.imshow(np.flipud(array_rms_pop), cmap='viridis', vmin=0, vmax=0.1)
+    cax = ax.imshow(np.flipud(array_rms_pop), cmap='viridis', vmin=0, vmax=0.5)
     fig.colorbar(cax)
 
     ax.set_xticks(np.arange(field_of_view[1]))
     ax.set_yticks(np.arange(field_of_view[0]))
-    ax.set_xticklabels(np.linspace(-90, 90, field_of_view[1], dtype=int))
-    ax.set_yticklabels(np.flip(np.arange(0, field_of_view[0] * 5, 5, dtype=int)))
+    ax.set_xticklabels(np.linspace(thetas[0], thetas[-1], field_of_view[1], dtype=int))
+    if len(phis) > 1:
+        ax.set_yticklabels(np.flip(np.arange(0, phis[-1]+1, phis[1]-phis[0], dtype=int)))
 
     short_term_counter = 0
     long_term_counter = 0
@@ -95,6 +97,5 @@ if __name__ == '__main__':
     ani = FuncAnimation(fig, update, frames=range(0, audio.num_samples // chunk_size), repeat=False)
     writer = FFMpegWriter(fps=10, metadata=dict(artist='Me'), bitrate=1800)
 
-    filepath = f'{base_path}/Tests/13_beamformed/{filename}.mp4'
-    ani.save(filepath, writer=writer)
+    ani.save(filepath_save, writer=writer)
 
