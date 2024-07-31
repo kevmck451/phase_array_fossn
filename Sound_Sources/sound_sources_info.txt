@@ -28,3 +28,8 @@ SPL (dB(C)): 105.0
 Distance (meters): 1.0
 Sound Power Level (SWL) in dB: 116.00
 -----------------------------------------------------
+Sound Source: angel sound from speaker
+SPL (dB(C)): 81.0
+Distance (meters): 2.0
+Sound Power Level (SWL) in dB: 98.02
+-----------------------------------------------------
