@@ -31,8 +31,12 @@ def array_factor(N, d, wavelength, angles):
     return af
 
 # Array specifications
-N = 12  # Number of microphones
-d = 0.08  # Spacing between microphones in meters
+# N = 12  # Number of microphones
+# d = 0.08  # Spacing between microphones in meters
+
+N = 6  # Number of microphones
+d = 0.16  # Spacing between microphones in meters
+
 freq_lower = 100
 freq_top = 4000
 frequencies = np.arange(freq_lower, freq_top + 1, 10)  # Frequencies in Hz

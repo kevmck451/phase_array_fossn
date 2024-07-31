@@ -9,20 +9,22 @@ from matplotlib.animation import FuncAnimation, FFMpegWriter
 if __name__ == '__main__':
     start_time = time.time()
     base_path = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/2 FOSSN/Data'
-    filename = 'diesel_sweep_BF_(-60, 60)-(0)_2'
-    filepath = f'{base_path}/Tests/14_beamformed/{filename}.wav'
-    filepath_save = f'{base_path}/Tests/14_beamformed/{filename}_2.mp4'
+    # filename = 'angel_sweep_BF_(-90, 90)-(0)'
+    filename = 'angel_sweep_BF_(-90, 90)-(0)_Pro'
+    filepath = f'{base_path}/Tests/16_beamformed/{filename}.wav'
+    filepath_save = f'{base_path}/Tests/16_beamformed/{filename}_3.mp4'
 
-    thetas = [-60, -55, -50, -45, -40, -35, -30, -35, -20, -15, -10, 5, 0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60]
+    thetas = [-90, -80, -70, -60, -50, -40, -30, -20, -10, 0, 10, 20, 30, 40, 50, 60, 70, 80, 90]
     phis = [0]
     field_of_view = (len(phis), len(thetas))
     num_channels = field_of_view[0] * field_of_view[1]
+    rms_max = 0.08
 
     audio = Audio(filepath=filepath, num_channels=num_channels)
     audio_load_time = time.time() - start_time
     print(f'Audio Load Time: {np.round((audio_load_time / 60), 2)} mins')
 
-    pop_time = 0.2 # in seconds
+    pop_time = 0.5 # in seconds
     short_term_time = 5 # in seconds
     long_term_time = 120 # in seconds
 
@@ -40,7 +42,7 @@ if __name__ == '__main__':
     print(f'Chunk Size: {chunk_size}')
 
     fig, ax = plt.subplots(1, 1, figsize=(20, 10))
-    cax = ax.imshow(np.flipud(array_rms_pop), cmap='viridis', vmin=0, vmax=0.5)
+    cax = ax.imshow(np.flipud(array_rms_pop), cmap='viridis', vmin=0, vmax=rms_max)
     fig.colorbar(cax)
 
     ax.set_xticks(np.arange(field_of_view[1]))

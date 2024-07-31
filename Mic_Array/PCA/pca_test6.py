@@ -9,20 +9,23 @@ from tqdm import tqdm
 import h5py
 
 base_path = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/2 FOSSN/Data'
-filename = '07-16-2024_03-25-22_chunk_1_BF_(-40, 40)-(0)_c'
+# filename = 'angel_sweep_BF_(-70, 70)-(0)_Pro_1'
+filename = 'angel_sensitivity_BF_(-70, 70)-(0)_Pro_1'
 # filename = 'diesel_sweep_BF_(-70, 70)-0'
 # filepath = f'{base_path}/Tests/13_beamformed/old3/{filename}.wav'
-filepath = f'{base_path}/Tests/10_beamformed/{filename}.wav'
-filepath_save = f'{base_path}/PCA/testing1/{filename}_PCA_AD_2.mp4'
+filepath = f'{base_path}/Tests/16_beamformed/{filename}.wav'
+filepath_save = f'{base_path}/PCA/testing4/{filename}_PCA_AD_2.mp4'
 
-num_channels = 9
+
 chunk_size_seconds = 1  # Desired chunk size in seconds
-nperseg = 4096  # Adjust as needed
-angles = [-40, -30, -20, -10, 0, 10, 20, 30, 40]
-pca_components = 10
-threshold_multiplier = 18  # Increased threshold multiplier
-grid_scale = 0.75
-anom_y_lim = 8
+nperseg = 8192  # 512, 1024, 2048, 4096, 8192
+angles = [-70, -60, -50, -40, -30, -20, -10, 0, 10, 20, 30, 40, 50, 60, 70]
+pca_components = 5
+threshold_multiplier = 15
+grid_scale = 0.05
+anom_y_lim = 50
+baseline_calculations = 5 # first x seconds of audio use as pca threshold baseline
+num_channels = len(angles)
 
 audio = Audio(filepath=filepath, num_channels=num_channels)
 chunk_size = int(chunk_size_seconds * audio.sample_rate)
@@ -71,7 +74,7 @@ baseline_means = []
 baseline_stds = []
 
 for c in range(num_channels):
-    baseline_data = np.vstack(principal_components_list[c][:10])  # Using first 10 chunks as baseline
+    baseline_data = np.vstack(principal_components_list[c][:baseline_calculations])  # Using first x chunks as baseline
     baseline_means.append(np.mean(baseline_data, axis=0))
     baseline_stds.append(np.std(baseline_data, axis=0))
 
@@ -80,7 +83,7 @@ baseline_stds = np.array(baseline_stds)
 
 # Set up the figure and axis for the animation
 fig = plt.figure(figsize=(32, 8))
-gs = fig.add_gridspec(2, num_channels, height_ratios=[3, 1])
+gs = fig.add_gridspec(2, num_channels, height_ratios=[1, 1])
 axes_pca = []
 axes_anomaly = []
 sc_list = []
@@ -155,7 +158,7 @@ def update(frame):
         ax_anomaly.plot(np.arange(frame+1), anomaly_counts[i, :frame+1], color='blue')
 
         # Debugging statement
-        if frame < 10:
+        if frame < baseline_calculations:
             print(f"Channel {i}, Frame {frame}, Anomalies: {anomaly_count}")
 
     return sc_list + anomaly_texts + circles + [line for ax in axes_anomaly for line in ax.lines]

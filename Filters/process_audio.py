@@ -55,25 +55,26 @@ if __name__ == '__main__':
 
     # filepath = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/2 FOSSN/Data/Tests/11_outdoor_testing/07-22-2024_01-36-01_chunk_1_MONO19.wav'
 
-    filepath = f'{base_path}/Tests/13_beamformed/diesel_sweep_BF_(-90, 90)-(0, 30).wav'
-    audio = Audio(filepath=filepath, num_channels=114)
+    # filepath = f'{base_path}/Tests/13_beamformed/diesel_sweep_BF_(-90, 90)-(0, 30).wav'
+    filepath = f'{base_path}/Tests/15_outdoor_testing/angel_sweep.wav'
+    audio = Audio(filepath=filepath, num_channels=48)
 
-    export_tag = '_Pro3'
-    filepath_save = f'{base_path}/Tests/13_beamformed'
+    export_tag = '_Pro'
+    filepath_save = f'{base_path}/Tests/16_beamformed'
 
     shape_og = audio.data.shape
     # print(audio)
 
-    std_threshold = 2
-    bottom_cutoff_freq = 500
+    std_threshold = 0.5
+    bottom_cutoff_freq = 300
     top_cutoff_freq = 3000
     normalize_percentage = 100
-    new_sample_rate = 12000
+    new_sample_rate = 24000
 
     print('Reducing Noise')
     audio.data = noise_reduction_filter(audio, std_threshold)
     print('Passing High Freq')
-    audio.data = high_pass_filter(audio, bottom_cutoff_freq, order=8)
+    audio.data = high_pass_filter(audio, bottom_cutoff_freq)
     # print('Pass Low Freq')
     # audio.data = low_pass_filter(audio, top_cutoff_freq, order=8)
     # print('Reducing Noise')

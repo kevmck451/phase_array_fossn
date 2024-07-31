@@ -91,13 +91,16 @@ if __name__ == '__main__':
     base_path = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/2 FOSSN/Data'
     # filepath = f'{base_path}/Tests/9_outdoor_testing/diesel_sweep.wav'
     # filepath = f'{base_path}/Tests/11_outdoor_testing/07-22-2024_01-36-01_chunk_1.wav'
-    filepath = f'{base_path}/Tests/9_outdoor_testing/07-16-2024_03-25-22_chunk_1.wav'
+    # filepath = f'{base_path}/Tests/9_outdoor_testing/07-16-2024_03-25-22_chunk_1.wav'
+    # filepath = f'{base_path}/Tests/15_outdoor_testing/angel_sweep.wav'
+    filepath = f'{base_path}/Tests/15_outdoor_testing/angel_sensitivity.wav'
 
-    filepath_save = f'{base_path}/Tests/10_beamformed'
-    tag_index = '_(-40, 40)-(0)' # 1
+    filepath_save = f'{base_path}/Tests/16_beamformed'
+    tag_index = '_(-70, 70)-(0)_Pro_1' # 1
 
     # elevation angle: neg is left and pos is right
-    thetas = [-40,-30,-20,-10, 0, 10, 20,30,40]
+    # thetas = [-40,-30,-20,-10, 0, 10, 20,30,40]
+    thetas = [-70, -60, -50, -40, -30, -20, -10, 0, 10, 20, 30, 40, 50, 60, 70]
     phis = [0]  # azimuth angle: neg is below and pos is above
     temp_F = 90  # temperature in Fahrenheit
 
@@ -147,15 +150,15 @@ if __name__ == '__main__':
     # audio.data = noise_reduction_filter(audio, std_threshold)
 
     print('Passing High Freq')
-    bottom_cutoff_freq = 500
-    # beamformed_audio_object.data = high_pass_filter(beamformed_audio_object, bottom_cutoff_freq)
+    bottom_cutoff_freq = 1200
+    beamformed_audio_object.data = high_pass_filter(beamformed_audio_object, bottom_cutoff_freq)
 
     print('Normalizing')
     percentage = 100
     beamformed_audio_object.data = normalize(beamformed_audio_object, percentage)
 
     print('downsampling audio')
-    new_sample_rate = 20000
+    new_sample_rate = 6500
     beamformed_audio_object.data = downsample(beamformed_audio_object, new_sample_rate)
     beamformed_audio_object.sample_rate = new_sample_rate
 
