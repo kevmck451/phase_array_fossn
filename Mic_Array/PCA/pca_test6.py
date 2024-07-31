@@ -1,12 +1,14 @@
 from Filters.audio import Audio
-import numpy as np
+
+from matplotlib.animation import FFMpegWriter
+import matplotlib.animation as animation
 from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 from scipy.signal import stft
-import matplotlib.animation as animation
-from matplotlib.animation import FFMpegWriter
 from tqdm import tqdm
+import numpy as np
 import h5py
+
 
 base_path = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/2 FOSSN/Data'
 # filename = 'angel_sweep_BF_(-70, 70)-(0)_Pro_1'
@@ -14,16 +16,16 @@ filename = 'angel_sensitivity_BF_(-70, 70)-(0)_Pro_1'
 # filename = 'diesel_sweep_BF_(-70, 70)-0'
 # filepath = f'{base_path}/Tests/13_beamformed/old3/{filename}.wav'
 filepath = f'{base_path}/Tests/16_beamformed/{filename}.wav'
-filepath_save = f'{base_path}/PCA/testing4/{filename}_PCA_AD_2.mp4'
+filepath_save = f'{base_path}/PCA/testing5/{filename}_PCA_AD_2.mp4'
 
 
 chunk_size_seconds = 1  # Desired chunk size in seconds
-nperseg = 8192  # 512, 1024, 2048, 4096, 8192
+nperseg = 8192  # 512, 1024, 2048, 4096, 8192 16384
 angles = [-70, -60, -50, -40, -30, -20, -10, 0, 10, 20, 30, 40, 50, 60, 70]
 pca_components = 5
 threshold_multiplier = 15
-grid_scale = 0.05
-anom_y_lim = 50
+# grid_scale = 0.025
+anom_y_lim = 250
 baseline_calculations = 5 # first x seconds of audio use as pca threshold baseline
 num_channels = len(angles)
 
@@ -33,6 +35,7 @@ chunk_size = int(chunk_size_seconds * audio.sample_rate)
 # Function to process a chunk and apply PCA for a specific channel
 def process_chunk(chunk, nperseg, pca_components=15):
     frequencies, times, stft_matrix = stft(chunk.T, nperseg=nperseg, axis=0)
+    # print(stft_matrix.shape)
     num_time_bins = stft_matrix.shape[0]
     num_freq_bins = stft_matrix.shape[1]
     feature_matrix = np.abs(stft_matrix).reshape(num_time_bins, num_freq_bins)
@@ -94,8 +97,8 @@ circles = []
 for i in range(num_channels):
     ax_pca = fig.add_subplot(gs[0, i])
     sc = ax_pca.scatter([], [])
-    ax_pca.set_xlim(-grid_scale, grid_scale)
-    ax_pca.set_ylim(-grid_scale, grid_scale)
+    # ax_pca.set_xlim(-grid_scale, grid_scale)
+    # ax_pca.set_ylim(-grid_scale, grid_scale)
     ax_pca.set_xlabel('PC1')
     ax_pca.set_ylabel('PC2')
     ax_pca.set_title(f'Ch {angles[i]}°')
@@ -129,7 +132,8 @@ def update(frame):
     for i, (sc, anomaly_text, circle, ax_anomaly) in enumerate(zip(sc_list, anomaly_texts, circles, axes_anomaly)):
         global chunk_count_update
         if chunk_count_update%500 == 0:
-            print(f'Updating')
+            # print(f'Updating')
+            pass
         chunk_count_update += 1
         data = principal_components_list[i][frame][:, :2]
         mean = baseline_means[i][:2]
@@ -157,9 +161,16 @@ def update(frame):
         # Update the anomaly count plot
         ax_anomaly.plot(np.arange(frame+1), anomaly_counts[i, :frame+1], color='blue')
 
+        # Update the axis limits to encompass the circle plus a margin
+        margin = 2 * threshold_radius  # Adjust margin as needed
+        ax_pca = axes_pca[i]
+        ax_pca.set_xlim(mean[0] - threshold_radius - margin, mean[0] + threshold_radius + margin)
+        ax_pca.set_ylim(mean[1] - threshold_radius - margin, mean[1] + threshold_radius + margin)
+
         # Debugging statement
         if frame < baseline_calculations:
-            print(f"Channel {i}, Frame {frame}, Anomalies: {anomaly_count}")
+            if anomaly_count > 0:
+                print(f"Channel {i}, Frame {frame}, Anomalies: {anomaly_count}")
 
     return sc_list + anomaly_texts + circles + [line for ax in axes_anomaly for line in ax.lines]
 
@@ -170,3 +181,4 @@ ani = animation.FuncAnimation(fig, update, frames=num_chunks, interval=chunk_siz
 # Save the animation to a video file
 writer = FFMpegWriter(fps=fps, metadata=dict(artist='Me'), bitrate=1800)
 ani.save(filepath_save, writer=writer)
+print('DONE!!!!!')
