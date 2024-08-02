@@ -5,16 +5,19 @@ import matplotlib.pyplot as plt
 from scipy.signal import stft
 
 base_path = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/2 FOSSN/Data'
-filename = '07-22-2024_01-36-01_chunk_1_BF_(-40, 40)-0'
-filepath = f'{base_path}/Tests/13_beamformed/old3/{filename}.wav'
 
-num_channels = 9
+filename = 'angel_sweep_BF_(-70, 70)-(0)_Pro_2'
+# filename = 'angel_sensitivity_BF_(-70, 70)-(0)_Pro_1'
+
+filepath = f'{base_path}/Tests/16_beamformed/{filename}.wav'
+
+num_channels = 15
 
 audio = Audio(filepath=filepath, num_channels=num_channels)
 print("Audio data shape:", audio.data.shape)
 
 # Feature extraction using STFT
-nperseg = 1024 # 256
+nperseg = 8192 # 256
 frequencies, times, stft_matrix = stft(audio.data.T, nperseg=nperseg, axis=0)
 print("STFT matrix shape:", stft_matrix.shape)
 
@@ -28,7 +31,7 @@ feature_matrix = np.abs(stft_matrix).reshape(num_time_bins, num_freq_bins * num_
 print("Feature matrix shape:", feature_matrix.shape)
 
 # Apply PCA
-pca = PCA(n_components=20)  # Adjust number of components as needed
+pca = PCA(n_components=50)  # Adjust number of components as needed
 principal_components = pca.fit_transform(feature_matrix)
 
 # Plot the variance explained by each principal component
@@ -44,5 +47,13 @@ plt.figure()
 plt.scatter(principal_components[:, 0], principal_components[:, 1])
 plt.xlabel('Principal Component 1')
 plt.ylabel('Principal Component 2')
+plt.title('Principal Component Analysis')
+plt.show()
+
+
+plt.figure()
+plt.scatter(principal_components[:, 2], principal_components[:, 3])
+plt.xlabel('Principal Component 3')
+plt.ylabel('Principal Component 4')
 plt.title('Principal Component Analysis')
 plt.show()
