@@ -92,11 +92,11 @@ if __name__ == '__main__':
     # filepath = f'{base_path}/Tests/9_outdoor_testing/diesel_sweep.wav'
     # filepath = f'{base_path}/Tests/11_outdoor_testing/07-22-2024_01-36-01_chunk_1.wav'
     # filepath = f'{base_path}/Tests/9_outdoor_testing/07-16-2024_03-25-22_chunk_1.wav'
-    # filepath = f'{base_path}/Tests/15_outdoor_testing/angel_sweep.wav'
-    filepath = f'{base_path}/Tests/15_outdoor_testing/angel_sensitivity.wav'
+    filepath = f'{base_path}/Tests/15_outdoor_testing/angel_sweep.wav'
+    # filepath = f'{base_path}/Tests/15_outdoor_testing/angel_sensitivity.wav'
 
     filepath_save = f'{base_path}/Tests/16_beamformed'
-    tag_index = '_(-70, 70)-(0)_Pro_1' # 1
+    tag_index = '_(-70, 70)-(0)_Pro_5' # 1
 
     # elevation angle: neg is left and pos is right
     # thetas = [-40,-30,-20,-10, 0, 10, 20,30,40]
@@ -145,8 +145,8 @@ if __name__ == '__main__':
     beamformed_audio_object.path = Path(new_filepath)
 
     # --------------------------------------------------------------
-    print('Reducing Noise')
-    std_threshold = 0.5
+    # print('Reducing Noise')
+    # std_threshold = 0.5
     # audio.data = noise_reduction_filter(audio, std_threshold)
 
     print('Passing High Freq')
@@ -158,7 +158,7 @@ if __name__ == '__main__':
     beamformed_audio_object.data = normalize(beamformed_audio_object, percentage)
 
     print('downsampling audio')
-    new_sample_rate = 6500
+    new_sample_rate = 6400
     beamformed_audio_object.data = downsample(beamformed_audio_object, new_sample_rate)
     beamformed_audio_object.sample_rate = new_sample_rate
 
