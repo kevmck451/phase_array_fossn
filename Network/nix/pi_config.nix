@@ -78,6 +78,7 @@
      pkgs.dnsmasq
      pkgs.hostapd
      pkgs.iptables
+     pkgs.avahi
      ];
 
   # Some programs need SUID wrappers, can be configured further or are
