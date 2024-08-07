@@ -65,21 +65,27 @@ nixos-rebuild switch
 ```zsh
 arp -a   
 ```
-
 - after disconnection from ssh, i had to unplug pi and plug back in
-
 ```zsh
 arp -a   
 ```
+- ssh into pi
+```zsh
+ssh admin@192.168.0.137
+```
+```zsh
+git clone https://github.com/kevmck451/phase_array_fossn.git
+```
+```zsh
+cd /home/admin/phase_array_fossn
+git pull origin main
+sudo cp /home/admin/phase_array_fossn/Network/nix/pi_config.nix /etc/nixos/configuration.nix
+sudo nixos-rebuild switch
+```
+
 ```zsh
 
 ```
-
-
-
-
-
-
 
 
 
