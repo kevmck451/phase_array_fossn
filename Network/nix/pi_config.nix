@@ -79,6 +79,7 @@
      pkgs.hostapd
      pkgs.iptables
      pkgs.avahi
+     pkgs.nss-mdns
      ];
 
   # Some programs need SUID wrappers, can be configured further or are
