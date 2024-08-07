@@ -1,6 +1,5 @@
-# Edit this configuration file to define what should be installed on
-# your system. Help is available in the configuration.nix(5) man page, on
-# https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
+
+# FOSNN Raspberry Pi NixOS for Access Point
 
 { config, lib, pkgs, ... }:
 
@@ -21,6 +20,12 @@
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
   networking.networkmanager.enable = true;  # Easiest to use and most distros use this by default.
 
+  # Enable mDNS/Bonjour/Avahi
+  services.avahi = {
+    enable = true;
+    nssmdns = true;
+  };
+
   # Set your time zone.
   time.timeZone = "America/Chicago";
 
@@ -39,7 +44,7 @@
   # Enable the X11 windowing system.
   # services.xserver.enable = true;
 
-# Configure keymap in X11
+  # Configure keymap in X11
   # services.xserver.xkb.layout = "us";
   # services.xserver.xkb.options = "eurosign:e,caps:escape";
 
