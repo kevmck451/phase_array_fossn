@@ -17,6 +17,7 @@ class AudioReceiver:
         self.start_receiving()
 
     def connect(self):
+        print('attempting to connect')
         self.sock.connect((self.host, self.port))
 
     def recv_thread_fn(self):
