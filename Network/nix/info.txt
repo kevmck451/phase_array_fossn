@@ -1,0 +1,23 @@
+I want to create a NixOS configuration file for a Raspberry Pi that will essentially function as an access point for several purposes. The setup details are as follows:
+
+1.	FPGA Device Connection:
+    o	The FPGA device is connected to the Raspberry Pi over Ethernet over USB through the USB port.
+    o	The FPGA’s IP address is 192.168.80.1.
+    o	I need to access the FPGA from any computer connected to the Raspberry Pi’s wireless network.
+
+2.	Wireless Network Configuration:
+    o	The wireless network, created using a USB wireless network adapter attached to the Pi, should be called Phased_Array.
+    o	The wireless network should have no password (open network).
+
+3.	Internet Connectivity:
+    o	The Ethernet port on the Raspberry Pi will be connected to my school’s internet for testing and updates.
+    o	Any device connected to the Phased_Array network should also have access to the internet through the Ethernet port when it is connected.
+    o	When out in the field, the Ethernet connection will not be available, and I will use the Pi's wireless network to access the FPGA's server.
+
+4.	Home Network Configuration:
+    o	The Raspberry Pi should also connect to my home network called KM 5 with the password XXXX for regular home use.
+
+5.	Additional Requirements:
+    o	Raspberry Pi is running NixOS.
+    o	DHCP services for devices connected to the Phased_Array network.
+    o	Enable NAT to share the Ethernet internet connection with the devices connected to the Phased_Array network when the Ethernet is connected.
