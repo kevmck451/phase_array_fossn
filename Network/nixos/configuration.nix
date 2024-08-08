@@ -1,5 +1,5 @@
 
-# FOSNN Raspberry Pi NixOS for Access Point
+# FOSNN Access Point with NixOS on Raspberry Pi 4
 
 { config, lib, pkgs, ... }:
 
@@ -8,6 +8,68 @@
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
     ];
+
+  # Host APD Setup
+  services.hostapd.enable = true;
+  services.hostapd.radios.wlp1s0u1u4 = {
+    channel = 6;
+    networks.wlp1s0u1u4 = {
+      ssid = "Phased_Array";
+      authentication.mode = "none";
+    };
+
+    settings.hw_mode = "g";
+  };
+
+  # DHCP Server
+#  services.dnsmasq = {
+#    enable = true;
+#
+#    settings = {
+#      bind-interfaces = true;
+#      interface = [ "usb0" "wlp1s0u1u4" "wlan0"];
+#      dhcp-range = [
+#        "usb0,192.168.80.100,192.168.80.200,255.255.255.0,12h"
+#        "wlp1s0u1u3,192.168.81.100,192.168.81.200,255.255.255.0,12h"
+#        "wlan0,192.168.82.100,192.168.82.200,255.255.255.0,12h"
+#      ];
+#    };
+#  };
+
+  # Network Interfaces Configuration
+#  networking.interfaces = {
+#    eth0 = {
+#      useDHCP = true;
+#    };
+#    usb0 = {
+#      useDHCP = false;
+#      ipv4.addresses = [
+#        {
+#          address = "192.168.80.1";
+#          prefixLength = 24;
+#        }
+#      ];
+#    };
+#    wlan0 = {
+#      useDHCP = true;
+#    };
+#    wlp1s0u1u3 = {
+#      useDHCP = false;
+#    };
+#  };
+#
+#  networking.bridges = {
+#    br0.interfaces = [ "eth0" "usb0" "wlan0" "wlp1s0u1u4" ];  # Bridge interfaces together
+#  };
+#
+#  networking.nat = {
+#    enable = true;
+#    externalInterface = "eth0";  # Assuming eth0 connects to the internet
+#    internalInterfaces = [ "br0" ];  # NAT traffic from the bridge
+#  };
+#
+#  networking.defaultGateway = "eth0";  # Set default gateway to Ethernet
+
 
   # Use the extlinux boot loader. (NixOS wants to enable GRUB by default)
   boot.loader.grub.enable = false;
@@ -31,7 +93,7 @@
 
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
-   networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
+#   networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
   # Select internationalisation properties.
   # i18n.defaultLocale = "en_US.UTF-8";
@@ -68,6 +130,20 @@
      ];
    };
 
+#  security.pam.services.sshd.allowNullPassword = true;
+
+  # Allow the user to log in as root without a password.
+#  users.users.root.initialHashedPassword = "";
+
+  # Allow passwordless sudo from nixos user
+#  security.sudo = {
+#    enable = true;
+#    wheelNeedsPassword = false;
+#  };
+
+  # Automatically log in at the virtual consoles.
+  services.getty.autologinUser = "nixos";
+
   # List packages installed in system profile. To search, run:
   # $ nix search wget
    environment.systemPackages = with pkgs; [
@@ -93,13 +169,25 @@
   # List services that you want to enable:
 
   # Enable the OpenSSH daemon.
-   services.openssh.enable = true;
+     services.openssh.enable = true;
+#   services.openssh = {
+#     enable = true;
+#     settings.PermitRootLogin = "yes";
+#     settings.PermitEmptyPasswords = "yes";
+#   };
 
   # Open ports in the firewall.
   # networking.firewall.allowedTCPPorts = [ ... ];
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.
    networking.firewall.enable = false;
+
+  # enable flakes and experimental commands
+  # and make the root user always trusted
+#  nix.extraOptions = ''
+#    experimental-features = nix-command flakes
+#    trusted-users = @wheel
+#  '';
 
   # Copy the NixOS configuration file and link it from the resulting system
   # (/run/current-system/configuration.nix). This is useful in case you
