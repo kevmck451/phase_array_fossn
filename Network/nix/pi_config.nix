@@ -36,9 +36,26 @@
     };
   };
 
+  # Network Interfaces Configuration
   networking.interfaces = {
-    eth0.useDHCP = true;  # Assuming eth0 is your Ethernet interface
-    wlan0.useDHCP = true;  # Assuming wlan0 is your built-in wireless interface
+    eth0 = {
+      useDHCP = true;
+    };
+    usb0 = {
+      useDHCP = false;
+      ipv4.addresses = [
+        {
+          address = "192.168.80.1";
+          prefixLength = 24;
+        }
+      ];
+    };
+    wlan0 = {
+      useDHCP = true;
+    };
+    wlp1s0u1u3 = {
+      useDHCP = false;
+    };
   };
 
   networking.bridges = {
