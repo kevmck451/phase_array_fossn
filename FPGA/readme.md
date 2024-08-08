@@ -52,7 +52,7 @@ sudo apt install curl
 ```
 - nix: environment shells / NixOS builds / etc
 ```zsh
-sudo apt install nix
+sudo apt install nixos
 ```
 - ifconfig: used to see device's network information (specifically IP address)
 ```zsh
@@ -97,8 +97,8 @@ sh <(curl -L https://nixos.org/nix/install) --daemon
 - Adding the flake feature
 - the folder might already exist
 ```zsh
-sudo mkdir /etc/nix
-sudo nano /etc/nix/nix.conf
+sudo mkdir /etc/nixos
+sudo nano /etc/nixos/nixos.conf
 ```
 - Add this to the config file
 - the first line is most important
@@ -173,7 +173,7 @@ cd phase_array_fossn/FPGA
 
 - run the command:
 ```zsh
-nix build .#nixosConfigurations.de10-nano -L
+nixos build .#nixosConfigurations.de10-nano -L
 ```
 - add the -j1 flag if using small cpu computers (1 job built at a time)
 - -L is to see a verbose output as it builds
@@ -335,7 +335,7 @@ git pull
 - cd into FPGA folder
 - get inside a nix shell to rebuild any changes
 ```zsh
-nix develop --profile profiles/dev
+nixos develop --profile profiles/dev
 ```
 - note: if using a dash (nix-develop) nix would expect a default.nix file
   - not using the dash, signifies using a nix.flake file

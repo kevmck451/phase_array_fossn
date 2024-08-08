@@ -76,7 +76,7 @@
   # Enables the generation of /boot/extlinux/extlinux.conf
   boot.loader.generic-extlinux-compatible.enable = true;
 
-  networking.hostName = "pi-nix"; # Define your hostname.
+  networking.hostName = "pi-nixos"; # Define your hostname.
 
   # Pick only one of the below networking options.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -145,7 +145,7 @@
 #  services.getty.autologinUser = "nixos";
 
   # List packages installed in system profile. To search, run:
-  # $ nix search wget
+  # $ nixos search wget
    environment.systemPackages = with pkgs; [
      pkgs.nano
      pkgs.git
@@ -179,14 +179,14 @@
 
   # enable flakes and experimental commands
   # and make the root user always trusted
-#  nix.extraOptions = ''
-#    experimental-features = nix-command flakes
+#  nixos.extraOptions = ''
+#    experimental-features = nixos-command flakes
 #    trusted-users = @wheel
 #  '';
 
   # Copy the NixOS configuration file and link it from the resulting system
-  # (/run/current-system/configuration.nix). This is useful in case you
-  # accidentally delete configuration.nix.
+  # (/run/current-system/configuration.nixos). This is useful in case you
+  # accidentally delete configuration.nixos.
   # system.copySystemConfiguration = true;
 
   # This option defines the first version of NixOS you have installed on this particular machine,
@@ -204,7 +204,7 @@
   # Do NOT change this value unless you have manually inspected all the changes it would make to your configuration,
   # and migrated your data accordingly.
   #
-  # For more information, see `man configuration.nix` or https://nixos.org/manual/nixos/stable/options#opt-system.state>
+  # For more information, see `man configuration.nixos` or https://nixos.org/manual/nixos/stable/options#opt-system.state>
   system.stateVersion = "23.11"; # Did you read the comment?
 
 }

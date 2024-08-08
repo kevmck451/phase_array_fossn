@@ -5,7 +5,7 @@
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-23.11";
     nixos-generators = {
-      url = "github:nix-community/nixos-generators";
+      url = "github:nixos-community/nixos-generators";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
@@ -15,7 +15,7 @@
     nixosModules = {
       system = {
         disabledModules = [
-          "profiles/base.nix"
+          "profiles/base.nixos"
         ];
 
         system.stateVersion = "23.11";
@@ -23,7 +23,7 @@
       users = {
         users.users = {
           admin = {
-            password = "nix";
+            password = "nixos";
             isNormalUser = true;
             extraGroups = [ "wheel" ];
           };

@@ -2,8 +2,8 @@
 
 {
   imports = [
-    (modulesPath + "/profiles/minimal.nix")
-    (modulesPath + "/installer/sd-card/sd-image.nix")
+    (modulesPath + "/profiles/minimal.nixos")
+    (modulesPath + "/installer/sd-card/sd-image.nixos")
   ];
 
   boot.loader.generic-extlinux-compatible.enable = true;
@@ -218,7 +218,7 @@
   # enable flakes and experimental commands
   # and make the root user always trusted
   nix.extraOptions = ''
-    experimental-features = nix-command flakes
+    experimental-features = nixos-command flakes
     trusted-users = @wheel
   '';
 

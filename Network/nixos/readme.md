@@ -5,30 +5,31 @@
 - [Tutorial](https://mtlynch.io/nixos-pi4/)
 
 ```zsh
-sudo nix-channel --update
-nix-env -iA nixos.git
+sudo nixos-channel --update
+nixos-env -iA nixos.git
 ```
 - [YouTube Tutorial](https://www.youtube.com/watch?v=VIuPRL6Ucgk&list=WL&index=4)
 ```zsh
 git clone https://github.com/kevmck451/phase_array_fossn.git
 ```
 ```zsh
-cd phase_array_fossn/Network/nix/pi_sdcard
+cd phase_array_fossn/Network/nixos/sd-image
 ```
 ```zsh
-sudo nix build --extra-experimental-features nix-command --extra-experimental-features flakes .#packages.aarch64-linux.sdcard
+sudo nixos build --extra-experimental-features nixos-command --extra-experimental-features flakes .#packages.aarch64-linux.sdcard
 ```
 
 ## On Mac
 ```zsh
-scp nixos@192.168.0.137:~/phase_array_fossn/Network/nix/pi_sdcard/flake.lock ~/Downloads/
+scp nixos@192.168.0.137:~/phase_array_fossn/Network/nixos/sd-image/flake.lock ~/Downloads/
 ```
+scp nixos@192.168.0.143:~/etc/nixos/hardware-configuration.nix ~/Downloads/
 ```zsh
-scp -r nixos@192.168.0.137:~/phase_array_fossn/Network/nix/pi_sdcard/result ~/Downloads/
+scp -r nixos@192.168.0.137:~/phase_array_fossn/Network/nixos/sd-image/result ~/Downloads/
 ```
 - remove sd card from pi and flash with new sd card image
 ```zsh
-cd phase_array_fossn/Network/nix/pi_sdcard
+cd phase_array_fossn/Network/nixos/sd-image
 ```
 ```zsh
 zstd -d result/sd-image/*.img.zst -o ~/Downloads/extracted_image.img        
@@ -46,13 +47,13 @@ ssh admin@192.168.0.137
 sudo -s
 ```
 ```zsh
-nix-channel --update
+nixos-channel --update
 ```
 ```zsh
 nixos-generate-config
 ```
 ```zsh
-nano /etc/nixos/configuration.nix
+nano /etc/nixos/configuration.nixos
 ```
 - everything is in the pi_config.nix file
 ```zsh
@@ -79,15 +80,15 @@ git clone https://github.com/kevmck451/phase_array_fossn.git
 ```zsh
 cd /home/admin/phase_array_fossn
 git pull origin main
-sudo cp /home/admin/phase_array_fossn/Network/nix/pi_config.nix /etc/nixos/configuration.nix
+sudo cp /home/admin/phase_array_fossn/Network/nixos/configuration.nixos /etc/nixos/configuration.nixos
 sudo nixos-rebuild switch
 ```
 
 ```zsh
-
+ssh admin@pi-nixos.local  
 ```
-
-
+- pi IP on school: 141.225.162.166
+- pi IP at home: 192.168.0.137
 
 
 ```zsh
