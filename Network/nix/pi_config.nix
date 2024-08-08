@@ -10,16 +10,16 @@
     ];
 
   # Host APD Setup
-  services.hostapd.enable = true;
-  services.hostapd.radios.wlp1s0u1u3 = {
-    channel = 6;
-    networks.wlp1s0u1u3 = {
-      ssid = "Phased_Array";
-      authentication.mode = "none";
-    };
-
-    settings.hw_mode = "g";
-  };
+#  services.hostapd.enable = true;
+#  services.hostapd.radios.wlp1s0u1u3 = {
+#    channel = 6;
+#    networks.wlp1s0u1u3 = {
+#      ssid = "Phased_Array";
+#      authentication.mode = "none";
+#    };
+#
+#    settings.hw_mode = "g";
+#  };
 
   # DHCP Server
 #  services.dnsmasq = {
@@ -93,7 +93,7 @@
 
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
-   networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
+#   networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
   # Select internationalisation properties.
   # i18n.defaultLocale = "en_US.UTF-8";
@@ -130,19 +130,19 @@
      ];
    };
 
-  security.pam.services.sshd.allowNullPassword = true;
+#  security.pam.services.sshd.allowNullPassword = true;
 
   # Allow the user to log in as root without a password.
-  users.users.root.initialHashedPassword = "";
+#  users.users.root.initialHashedPassword = "";
 
   # Allow passwordless sudo from nixos user
-  security.sudo = {
-    enable = true;
-    wheelNeedsPassword = false;
-  };
+#  security.sudo = {
+#    enable = true;
+#    wheelNeedsPassword = false;
+#  };
 
   # Automatically log in at the virtual consoles.
-  services.getty.autologinUser = "nixos";
+#  services.getty.autologinUser = "nixos";
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
@@ -184,10 +184,10 @@
 
   # enable flakes and experimental commands
   # and make the root user always trusted
-  nix.extraOptions = ''
-    experimental-features = nix-command flakes
-    trusted-users = @wheel
-  '';
+#  nix.extraOptions = ''
+#    experimental-features = nix-command flakes
+#    trusted-users = @wheel
+#  '';
 
   # Copy the NixOS configuration file and link it from the resulting system
   # (/run/current-system/configuration.nix). This is useful in case you
