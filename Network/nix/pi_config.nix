@@ -9,6 +9,36 @@
       ./hardware-configuration.nix
     ];
 
+  # Host APD Setup
+  services.hostapd.enable = true;
+  services.hostapd.radios.wlp1s0u1u3 = {
+    channel = 6;
+    networks.wlp1s0u1u3 = {
+      ssid = "Phased_Array";
+      authentication.mode = "none";
+    };
+
+    settings.hw_mode = "g";
+  };
+
+  # DHCP Server
+  services.dnsmasq = {
+    enable = true;
+
+    settings = {
+      bind-interfaces = true;
+      interface = [ "usb0" ];
+      dhcp-range = [ "192.168.80.100,192.168.80.200,255.255.255.0,12h" ];
+    };
+  };
+
+  # hardcode USB ethernet gadget address for easy access
+  networking.interfaces.usb0.ipv4.addresses = [ {
+    address = "192.168.80.1";
+    prefixLength = 24;
+  } ];
+
+
   # Use the extlinux boot loader. (NixOS wants to enable GRUB by default)
   boot.loader.grub.enable = false;
   # Enables the generation of /boot/extlinux/extlinux.conf
@@ -68,6 +98,20 @@
      ];
    };
 
+  security.pam.services.sshd.allowNullPassword = true;
+
+  # Allow the user to log in as root without a password.
+  users.users.root.initialHashedPassword = "";
+
+  # Allow passwordless sudo from nixos user
+  security.sudo = {
+    enable = true;
+    wheelNeedsPassword = false;
+  };
+
+  # Automatically log in at the virtual consoles.
+  services.getty.autologinUser = "nixos";
+
   # List packages installed in system profile. To search, run:
   # $ nix search wget
    environment.systemPackages = with pkgs; [
@@ -93,13 +137,25 @@
   # List services that you want to enable:
 
   # Enable the OpenSSH daemon.
-   services.openssh.enable = true;
+  #   services.openssh.enable = true;
+   services.openssh = {
+     enable = true;
+     settings.PermitRootLogin = "yes";
+     settings.PermitEmptyPasswords = "yes";
+   };
 
   # Open ports in the firewall.
   # networking.firewall.allowedTCPPorts = [ ... ];
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.
    networking.firewall.enable = false;
+
+  # enable flakes and experimental commands
+  # and make the root user always trusted
+  nix.extraOptions = ''
+    experimental-features = nix-command flakes
+    trusted-users = @wheel
+  '';
 
   # Copy the NixOS configuration file and link it from the resulting system
   # (/run/current-system/configuration.nix). This is useful in case you
