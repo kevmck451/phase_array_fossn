@@ -22,53 +22,53 @@
   };
 
   # DHCP Server
-  services.dnsmasq = {
-    enable = true;
-
-    settings = {
-      bind-interfaces = true;
-      interface = [ "usb0" "wlp1s0u1u3" "wlan0"];
-      dhcp-range = [
-        "usb0,192.168.80.100,192.168.80.200,255.255.255.0,12h"
-        "wlp1s0u1u3,192.168.81.100,192.168.81.200,255.255.255.0,12h"
-        "wlan0,192.168.82.100,192.168.82.200,255.255.255.0,12h"
-      ];
-    };
-  };
+#  services.dnsmasq = {
+#    enable = true;
+#
+#    settings = {
+#      bind-interfaces = true;
+#      interface = [ "usb0" "wlp1s0u1u3" "wlan0"];
+#      dhcp-range = [
+#        "usb0,192.168.80.100,192.168.80.200,255.255.255.0,12h"
+#        "wlp1s0u1u3,192.168.81.100,192.168.81.200,255.255.255.0,12h"
+#        "wlan0,192.168.82.100,192.168.82.200,255.255.255.0,12h"
+#      ];
+#    };
+#  };
 
   # Network Interfaces Configuration
-  networking.interfaces = {
-    eth0 = {
-      useDHCP = true;
-    };
-    usb0 = {
-      useDHCP = false;
-      ipv4.addresses = [
-        {
-          address = "192.168.80.1";
-          prefixLength = 24;
-        }
-      ];
-    };
-    wlan0 = {
-      useDHCP = true;
-    };
-    wlp1s0u1u3 = {
-      useDHCP = false;
-    };
-  };
-
-  networking.bridges = {
-    br0.interfaces = [ "eth0" "usb0" "wlan0" "wlp1s0u1u3" ];  # Bridge interfaces together
-  };
-
-  networking.nat = {
-    enable = true;
-    externalInterface = "eth0";  # Assuming eth0 connects to the internet
-    internalInterfaces = [ "br0" ];  # NAT traffic from the bridge
-  };
-
-  networking.defaultGateway = "eth0";  # Set default gateway to Ethernet
+#  networking.interfaces = {
+#    eth0 = {
+#      useDHCP = true;
+#    };
+#    usb0 = {
+#      useDHCP = false;
+#      ipv4.addresses = [
+#        {
+#          address = "192.168.80.1";
+#          prefixLength = 24;
+#        }
+#      ];
+#    };
+#    wlan0 = {
+#      useDHCP = true;
+#    };
+#    wlp1s0u1u3 = {
+#      useDHCP = false;
+#    };
+#  };
+#
+#  networking.bridges = {
+#    br0.interfaces = [ "eth0" "usb0" "wlan0" "wlp1s0u1u3" ];  # Bridge interfaces together
+#  };
+#
+#  networking.nat = {
+#    enable = true;
+#    externalInterface = "eth0";  # Assuming eth0 connects to the internet
+#    internalInterfaces = [ "br0" ];  # NAT traffic from the bridge
+#  };
+#
+#  networking.defaultGateway = "eth0";  # Set default gateway to Ethernet
 
 
   # Use the extlinux boot loader. (NixOS wants to enable GRUB by default)
