@@ -332,7 +332,7 @@ cd Desktop/phase_array_fossn
 ```zsh
 git pull
 ```
-- cd into FGPA folder
+- cd into FPGA folder
 - get inside a nix shell to rebuild any changes
 ```zsh
 nix develop --profile profiles/dev
