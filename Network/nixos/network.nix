@@ -83,11 +83,8 @@
   # Bridge configuration -----------------------------------
   networking.bridges.br0.interfaces = [ "end0" "wlp1s0u1u4" ];
 
-  # todo: add NAT for wireless connection to AP
 
-
-  # Ensure these iptables rules are applied on boot
-# Ensure these iptables rules are applied on boot
+# iptables rules are applied on boot
   systemd.services.iptables = {
     description = "Load iptables rules";
     after = [ "network.target" ];
