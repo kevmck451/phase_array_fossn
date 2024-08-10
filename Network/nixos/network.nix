@@ -16,15 +16,21 @@
   # set up wireless access point
   networking.networkmanager.unmanaged = [ "Phased_Array:wlp1s0u1u4" ];
 
-  # set up wireless access point
-  networking.networkmanager.unmanaged = [ "Phased_Array:wlp1s0u1u4" ]
-    ++ lib.optional config.services.hostapd.enable "Phased_Array:${config.services.hostapd.interface}";
   services.hostapd = {
     enable = true;
-    interface = "wlp1s0u1u4";
-    hwMode = "g";
-    ssid = "Phased_Array";
-    wpaPassphrase = "123456";
+    radios = {
+      wlp1s0u1u4 = {
+        band = "g"; # Equivalent to hwMode = "g"
+        networks = {
+          network1 = {
+            ssid = "Phased_Array";
+            authentication = {
+              wpaPassword = "123456789";
+            };
+          };
+        };
+      };
+    };
   };
 
   # set up wireless DNS
