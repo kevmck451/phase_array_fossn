@@ -22,8 +22,6 @@
                 address = "192.168.0.200";
                 prefixLength = 24;
             }];
-            ipv4.gateway = "192.168.0.1";
-
             wifi = {
                 ssid = "KM 5";
                 psk = "m2d2jkl9123";
