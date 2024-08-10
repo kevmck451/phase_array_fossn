@@ -21,12 +21,12 @@
 
     # Virtual LANS
     vlans = {
-        vlan2 = {
+        vlan_fpga = {
             id = 2;
             interface = "end0";
         };
 
-        vlan3 = {
+        vlan_macbk = {
             id = 3;
             interface = "end0";
         };
