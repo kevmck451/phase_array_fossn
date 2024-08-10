@@ -12,7 +12,7 @@
     domain = "pi-nix";
     search = [ "pi-nix" ];
     interfaces = {
-        end0.ipv4.address = [{
+        end0.ipv4.addresses = [{
             address = "192.168.0.143";
             prefixLength = 24;
         }];
