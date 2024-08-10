@@ -17,6 +17,17 @@
             address = "192.168.0.143";
             prefixLength = 24;
         }];
+        vlan2.ipv4.addresses = [{
+            address = "192.168.2.1";
+            prefixLength = 24;
+        }];
+        vlan3.ipv4.addresses = [{
+            address = "192.168.3.1";
+            prefixLength = 24;
+        }];
+
+
+
     };
 
     # Virtual LANS
