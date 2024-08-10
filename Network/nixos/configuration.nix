@@ -31,9 +31,6 @@
   # Set your time zone.
   time.timeZone = "America/Chicago";
 
-  # Select Internationalistation Properties
-  i18n.defaultLocale = "enCA.UTF-8";
-
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.admin = {
     isNormalUser = true;
