@@ -12,21 +12,24 @@ import h5py
 
 base_path = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/2 FOSSN/Data'
 
-filename = 'angel_sweep_BF_(-70, 70)-(0)_Pro_2'
-# filename = 'angel_sensitivity_BF_(-70, 70)-(0)_Pro_1'
+# filename = 'sweep_angel_100m_BF_(-70, 70)-(0)'
+# filename = 'sweep_semi_100m_BF_(-70, 70)-(0)'
+# filename = 'distance_160-50m_BF_(-70, 70)-(0)'
+filename = 'cars_drive_by_150m_BF_(-70, 70)-(0)'
 
-filepath = f'{base_path}/Tests/16_beamformed/{filename}.wav'
-filepath_save = f'{base_path}/PCA/testing5/{filename}_PCA_AD_4.mp4'
+
+filepath = f'{base_path}/Tests/18_beamformed/{filename}.wav'
+filepath_save = f'{base_path}/PCA/testing6/{filename}_PCA_AD_1.mp4'
 
 
 chunk_size_seconds = 1  # Desired chunk size in seconds
-nperseg = 8192  # 512, 1024, 2048, 4096, 8192 16384
+nperseg = 16384  # 512, 1024, 2048, 4096, 8192 16384
 angles = [-70, -60, -50, -40, -30, -20, -10, 0, 10, 20, 30, 40, 50, 60, 70]
 pca_components = 5
-threshold_multiplier = 15
+threshold_multiplier = 10 # 15
 # grid_scale = 0.025
-anom_y_lim = 150
-baseline_calculations = 5 # first x seconds of audio use as pca threshold baseline
+anom_y_lim = 50
+baseline_calculations = 10 # first x seconds of audio use as pca threshold baseline
 num_channels = len(angles)
 
 audio = Audio(filepath=filepath, num_channels=num_channels)
