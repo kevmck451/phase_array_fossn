@@ -23,12 +23,12 @@
     vlans = {
         vlan2 = {
             id = 2;
-            interface = "end1";
+            interface = "end0";
         };
 
         vlan3 = {
             id = 3;
-            interface = "end1";
+            interface = "end0";
         };
 
     };
