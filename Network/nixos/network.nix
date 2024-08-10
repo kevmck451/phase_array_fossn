@@ -3,11 +3,13 @@
 
 {
 
-  networking.hostName = "pi-nix"; # Define your hostname.
+  networking.hostName = "pi-nix";
+  networking.domain = "phased.array";
 
 
-  # Easiest to use and most distros use this by default.
+  # Enable Networking
   networking.networkmanager.enable = true;
+
 
 
   environment.systemPackages = with pkgs; [

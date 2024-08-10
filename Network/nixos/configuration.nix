@@ -10,13 +10,22 @@
       ./network.nix
     ];
 
-  # Use the extlinux boot loader. (NixOS wants to enable GRUB by default)
+
+#  boot.loader.grub.enable = false;
+#  boot.loader.generic-extlinux-compatible.enable = true;
+
+  # BOOTLOADER
   boot.loader.grub.enable = false;
-  # Enables the generation of /boot/extlinux/extlinux.conf
-  boot.loader.generic-extlinux-compatible.enable = true;
+  boot.loader.grub.device = "/dev/sda";
+  boot.loader.grub.useOSProber = true;
+
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
   # Set your time zone.
   time.timeZone = "America/Chicago";
+
+  # Select Internationalistation Properties
+  i18n.defaultLocale = "enCA.UTF-8";
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
    users.users.admin = {
@@ -47,7 +56,11 @@
   # Enable the OpenSSH daemon.
    services.openssh.enable = true;
 
-
+   # Configure Keymap in X11
+   services.xserver = {
+     layout = "us";
+     xkbVariant = "";
+   };
 
   # For more information, see `man configuration.nix` or https://nixos.org/manual/nixos/stable/options#opt-system.state>
   system.stateVersion = "23.11"; # Did you read the comment?
