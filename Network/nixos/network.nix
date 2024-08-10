@@ -31,6 +31,21 @@
   hardware.enableRedistributableFirmware = true;
   networking.wireless.enable = true;
 
+  # Wireless network connection for wlan0
+  networking.wireless.networks = {
+    wlan0 = {
+      ssid = "KM 5";
+      psk = "m2d2jkl9123";  # Use your actual Wi-Fi password
+      ipv4 = {
+        addresses = [{
+          address = "192.168.0.200"; # Set this according to your network
+          prefixLength = 24;
+        }];
+        gateway = "192.168.0.1"; # Your Wi-Fi router IP
+      };
+    };
+  };
+
    # Wireless Access Point
    networking.networkmanager.unmanaged = [ "Phased_Array:wlp1s0u1u4" ];
 
