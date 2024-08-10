@@ -17,6 +17,18 @@
             address = "192.168.0.143";
             prefixLength = 24;
         }];
+        wlan0 = {
+            ipv4.addresses = [{
+                address = "192.168.0.200";
+                prefixLength = 24;
+            }];
+            ipv4.gateway = "192.168.0.1";
+
+            wifi = {
+                ssid = "KM 5";
+                psk = "m2d2jkl9123";
+            };
+        };
     };
   };
 
@@ -30,14 +42,6 @@
   # Wireless Service
   hardware.enableRedistributableFirmware = true;
   networking.wireless.enable = true;
-
-  # Wireless network connection for wlan0
-  networking.wireless.networks = {
-    wlan0 = {
-      ssid = "KM 5";
-      psk = "m2d2jkl9123";
-    };
-  };
 
    # Wireless Access Point
    networking.networkmanager.unmanaged = [ "Phased_Array:wlp1s0u1u4" ];
