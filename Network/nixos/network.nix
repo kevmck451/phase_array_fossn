@@ -28,8 +28,7 @@
 
   # set up wireless static IP address
   networking.interfaces.wlp1s0u1u4.ip4 = lib.mkOverride 0 [ ];
-  networking.interfaces.wlp1s0u1u4.ipv4.addresses =
-    lib.optionals config.services.hostapd.enable [{ address = "10.0.0.1"; prefixLength = 24; }];
+  networking.interfaces.wlp1s0u1u4.ipv4.addresses = lib.optionals config.services.hostapd.enable [{ address = "10.0.0.1"; prefixLength = 24; }];
 
 
   # set up wireless DNS
