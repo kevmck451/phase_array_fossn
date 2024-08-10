@@ -22,7 +22,6 @@
         wlan0.useDHCP = true;
         wlp1s0u1u4.useDHCP = false;
     };
-    sysctl."net.ipv4.ip_forward" = true;
   };
 
 
@@ -84,7 +83,9 @@
   networking.bridges.br0.interfaces = [ "end0" "wlp1s0u1u4" ];
 
 
-# iptables rules are applied on boot
+  # iptables rules are applied on boot
+
+  systemd.sysctl."net.ipv4.ip_forward" = true;
   systemd.services.iptables = {
     description = "Load iptables rules";
     after = [ "network.target" ];
