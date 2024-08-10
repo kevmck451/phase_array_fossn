@@ -18,6 +18,23 @@
             prefixLength = 24;
         }];
     };
+
+    # Virtual LANS
+    vlans = {
+        vlan_fpga = {
+            id = 2;
+            interface = "end0";
+
+        };
+
+        vlan_macbk = {
+            id = 3;
+            interface = "end0";
+
+        };
+
+    };
+
   };
 
   # Enable Networking
