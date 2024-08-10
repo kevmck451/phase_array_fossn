@@ -16,31 +16,29 @@
   # set up wireless access point
   networking.networkmanager.unmanaged = [ "Phased_Array:wlp1s0u1u4" ];
 
-  services.hostapd = {
-    enable = true;
-    radios = {
-      wlp1s0u1u4 = {
-        band = "g"; # Equivalent to hwMode = "g"
-        networks = {
-          network1 = {
-            ssid = "Phased_Array";
-            authentication = {
-              wpaPassword = "123456789";
-            };
-          };
-        };
-      };
-    };
-  };
+   # Host APD Setup
+   services.hostapd.enable = true;
+   services.hostapd.radios.wlp1s0u1u4 = {
+     channel = 6;
+     networks.wlp1s0u1u4 = {
+       ssid = "Phased_Array";
+       authentication.mode = "none";
+     };
+     settings.hw_mode = "g";
+   };
 
   # set up wireless DNS
   services.dnsmasq = lib.optionalAttrs config.services.hostapd.enable {
     enable = true;
-    extraConfig = ''
-      interface=wlp1s0u1u4
-      bind-interfaces
-      dhcp-range=10.0.0.10,10.0.0.254,24h
-    '';
+    settings = {
+       bind-interfaces = true;
+       interface = [ "wlp1s0u1u3" "wlan0"]; # "usb0"
+       dhcp-range = [
+#         "usb0,192.168.80.100,192.168.80.200,255.255.255.0,12h"
+         "wlp1s0u1u4,192.168.81.100,192.168.81.200,255.255.255.0,12h"
+         "wlan0,192.168.82.100,192.168.82.200,255.255.255.0,12h"
+       ];
+     };
   };
 
   networking.firewall.allowedUDPPorts = lib.optionals config.services.hostapd.enable [53 67];
