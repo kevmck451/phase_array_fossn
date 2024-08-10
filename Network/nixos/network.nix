@@ -67,7 +67,7 @@
   services.haveged.enable = config.services.hostapd.enable;
 
   # Bridge configuration
-  networking.bridges.br0.interfaces = [ "end0" "wlp1s0u1u4" ];
+  networking.bridges.br0.interfaces = [ "end0" "wlp1s0u1u4" "wlan0" ];
 
 
 
