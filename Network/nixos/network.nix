@@ -22,10 +22,10 @@
       wlp1s0u1u4 = {
         band = "g"; # Equivalent to hwMode = "g"
         networks = {
-          network1 = {
+          wlp1s0u1u4 = {  # The network name must match the radio name
             ssid = "Phased_Array";
             authentication = {
-              wpaPassword = "123456";
+              open = true; # This sets the network to be open (no password)
             };
           };
         };
@@ -46,10 +46,14 @@
   networking.firewall.allowedUDPPorts = lib.optionals config.services.hostapd.enable [53 67];
   services.haveged.enable = config.services.hostapd.enable;
 
-  # Bridge configuration
+  # Bridge configuration with static IP
   networking.bridges.br0.interfaces = [ "end0" "wlp1s0u1u4" ];
+  networking.interfaces.br0.ipv4.addresses = [{
+    address = "192.168.0.143";
+    prefixLength = 24;
+  }];
 
-  # Set Static IP for VLANs (not for bridged interfaces)
+  # Set Static IP for VLANs
   networking.interfaces = {
     vlan2.ipv4.addresses = [{
       address = "192.168.2.1";
@@ -64,7 +68,7 @@
   # Default gateway and nameserver configuration
   networking.defaultGateway = {
     address = "192.168.0.1";
-    interface = "end0";
+    interface = "br0";  # Use br0 as the interface for the gateway
   };
   networking.nameservers = [ "192.168.0.1" ];
   networking.domain = "pi-nix";
