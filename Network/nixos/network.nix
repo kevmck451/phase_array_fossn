@@ -22,6 +22,7 @@
         wlan0.useDHCP = true;
         wlp1s0u1u4.useDHCP = false;
     };
+    sysctl."net.ipv4.ip_forward" = true;
   };
 
 
@@ -83,21 +84,20 @@
   networking.bridges.br0.interfaces = [ "end0" "wlp1s0u1u4" ];
 
   # todo: add NAT for wireless connection to AP
-  sysctl."net.ipv4.ip_forward" = true;
+
 
   # Ensure these iptables rules are applied on boot
+# Ensure these iptables rules are applied on boot
   systemd.services.iptables = {
     description = "Load iptables rules";
     after = [ "network.target" ];
-    serviceConfig = {
-      ExecStart = ''
-        ${pkgs.iptables}/bin/iptables -t nat -A POSTROUTING -o wlan0 -j MASQUERADE;
-        ${pkgs.iptables}/bin/iptables -A FORWARD -i wlp1s0u1u4 -o wlan0 -j ACCEPT;
-        ${pkgs.iptables}/bin/iptables -A FORWARD -i wlan0 -o wlp1s0u1u4 -m state --state RELATED,ESTABLISHED -j ACCEPT
-      '';
-      Type = "oneshot";
-      RemainAfterExit = true;
-    };
+    serviceConfig.ExecStart = ''
+      ${pkgs.iptables}/bin/iptables -t nat -A POSTROUTING -o wlan0 -j MASQUERADE;
+      ${pkgs.iptables}/bin/iptables -A FORWARD -i wlp1s0u1u4 -o wlan0 -j ACCEPT;
+      ${pkgs.iptables}/bin/iptables -A FORWARD -i wlan0 -o wlp1s0u1u4 -m state --state RELATED,ESTABLISHED -j ACCEPT
+    '';
+    serviceConfig.Type = "oneshot";
+    serviceConfig.RemainAfterExit = true;
   };
 
 
