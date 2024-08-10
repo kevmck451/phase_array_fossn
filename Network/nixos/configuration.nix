@@ -1,5 +1,5 @@
 
-# Raspberry Pi Access Point Nix Configuration
+# Raspberry Pi NixOS Configuration
 
 { config, lib, pkgs, ... }:
 

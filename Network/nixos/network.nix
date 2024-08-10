@@ -1,3 +1,5 @@
+# Raspberry Pi Access Point Nix Configuration
+
 { config, lib, pkgs, ... }:
 
 {
