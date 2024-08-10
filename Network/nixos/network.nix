@@ -19,8 +19,10 @@
             address = "192.168.0.143";
             prefixLength = 24;
         }];
-        wlan0.useDHCP = true;
-        wlp1s0u1u4.useDHCP = false;
+        wlan0.ipv4.addresses = [{
+            address = "192.168.0.140";
+            prefixLength = 24;
+        }];
     };
   };
 
@@ -74,13 +76,14 @@
 
 
   # Firewall Configuration --------------------------------
-  networking.firewall.allowedUDPPorts = lib.optionals config.services.hostapd.enable [53 67 68]; # DHCP
-  networking.firewall.allowedTCPPorts = lib.optionals config.services.hostapd.enable [22]; # ssh
+#  networking.firewall.allowedUDPPorts = lib.optionals config.services.hostapd.enable [53 67 68]; # DHCP
+#  networking.firewall.allowedTCPPorts = lib.optionals config.services.hostapd.enable [22]; # ssh
   services.haveged.enable = config.services.hostapd.enable;
 
 
   # Bridge configuration -----------------------------------
-  networking.bridges.br0.interfaces = [ "end0" "wlp1s0u1u4" ];
+#  networking.bridges.br0.interfaces = [ "end0" "wlp1s0u1u4" ];
+  networking.bridges.br0.interfaces = [ "wlan0" "wlp1s0u1u4" ];
 
 
   # iptables rules are applied on boot
