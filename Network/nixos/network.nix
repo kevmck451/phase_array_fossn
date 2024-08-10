@@ -2,7 +2,7 @@
 
 {
 
-  # Set Static IP
+  # Set Static IP ----------------------------------------
   networking = {
     defaultGateway = {
         address = "192.168.0.1";
@@ -20,25 +20,29 @@
     };
   };
 
-  # Packages
+
+  # Packages -------------------------------------------
   environment.systemPackages = with pkgs; [
      hostapd
      dnsmasq
      bridge-utils
   ];
 
-  # Wireless Service
+
+  # Wireless Service ------------------------------------
   hardware.enableRedistributableFirmware = true;
   networking.wireless.enable = true;
 
-  # Wireless Network Configuration
+
+  # Wireless Network Configuration ----------------------
   networking.wireless.networks = {
     "KM 5" = {
       psk = "m2d2jkl9123";
     };
   };
 
-   # Wireless Access Point
+
+   # Wireless Access Point --------------------------------
    networking.networkmanager.unmanaged = [ "Phased_Array:wlp1s0u1u4" ];
 
    services.hostapd.enable = true;
@@ -51,7 +55,8 @@
      settings.hw_mode = "g";
    };
 
-  # DNS Configuration
+
+  # DNS Configuration -------------------------------------
   services.dnsmasq = lib.optionalAttrs config.services.hostapd.enable {
     enable = true;
     settings = {
@@ -63,14 +68,14 @@
      };
   };
 
+
+  # Firewall Configuration --------------------------------
   networking.firewall.allowedUDPPorts = lib.optionals config.services.hostapd.enable [53 67];
   services.haveged.enable = config.services.hostapd.enable;
 
-  # Bridge configuration
-  networking.bridges.br0.interfaces = [ "end0" "wlp1s0u1u4" "wlan0" ];
 
-
-
+  # Bridge configuration -----------------------------------
+  networking.bridges.br0.interfaces = [ "end0" "wlp1s0u1u4" ];
 
 
 }
