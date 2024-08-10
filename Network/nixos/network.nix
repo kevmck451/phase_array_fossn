@@ -85,7 +85,9 @@
 
   # iptables rules are applied on boot
 
-  systemd.sysctl."net.ipv4.ip_forward" = true;
+  networking.sysctlSettings = {
+    "net.ipv4.ip_forward" = "1";
+  };
   systemd.services.iptables = {
     description = "Load iptables rules";
     after = [ "network.target" ];
