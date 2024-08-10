@@ -24,7 +24,10 @@
         networks = {
           wlp1s0u1u4 = {  # The network name must match the radio name
             ssid = "Phased_Array";
-            # No authentication block means the network is open (no password)
+            authentication = {
+              wpa2 = false;  # Explicitly disable WPA2 (to ensure the network is open)
+              sae = false;   # Disable WPA3-SAE explicitly
+            };
           };
         };
       };
