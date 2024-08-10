@@ -87,14 +87,17 @@
 
   # Ensure these iptables rules are applied on boot
   systemd.services.iptables = {
-  description = "Load iptables rules";
-  after = [ "network.target" ];
-  serviceConfig = {
-    ExecStart = "${pkgs.iptables}/bin/iptables -t nat -A POSTROUTING -o wlan0 -j MASQUERADE";
-    ExecStart += "${pkgs.iptables}/bin/iptables -A FORWARD -i wlp1s0u1u4 -o wlan0 -j ACCEPT";
-    ExecStart += "${pkgs.iptables}/bin/iptables -A FORWARD -i wlan0 -o wlp1s0u1u4 -m state --state RELATED,ESTABLISHED -j ACCEPT";
-    Type = "oneshot";
-    RemainAfterExit = true;
+    description = "Load iptables rules";
+    after = [ "network.target" ];
+    serviceConfig = {
+      ExecStart = ''
+        ${pkgs.iptables}/bin/iptables -t nat -A POSTROUTING -o wlan0 -j MASQUERADE;
+        ${pkgs.iptables}/bin/iptables -A FORWARD -i wlp1s0u1u4 -o wlan0 -j ACCEPT;
+        ${pkgs.iptables}/bin/iptables -A FORWARD -i wlan0 -o wlp1s0u1u4 -m state --state RELATED,ESTABLISHED -j ACCEPT
+      '';
+      Type = "oneshot";
+      RemainAfterExit = true;
+    };
   };
 
 
