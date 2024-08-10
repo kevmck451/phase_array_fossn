@@ -6,7 +6,7 @@
   networking = {
     defaultGateway = {
         address = "192.168.0.1";
-        interface = "end0";
+        interface = "br0";
     };
     nameservers = [ "192.168.0.1" ];
     domain = "pi-nix";
@@ -19,14 +19,14 @@
     };
   };
 
-  # packages
+  # Packages
   environment.systemPackages = with pkgs; [
      hostapd
      dnsmasq
      bridge-utils
   ];
 
-  # add wireless service
+  # Wireless Service
   hardware.enableRedistributableFirmware = true;
   networking.wireless.enable = true;
 
@@ -43,14 +43,14 @@
      settings.hw_mode = "g";
    };
 
-  # DNS
+  # DNS Configuration
   services.dnsmasq = lib.optionalAttrs config.services.hostapd.enable {
     enable = true;
     settings = {
        bind-interfaces = true;
-       interface = [ "wlp1s0u1u3"];
+       interface = [ "br0" ];
        dhcp-range = [
-         "wlp1s0u1u4,192.168.81.100,192.168.81.200,255.255.255.0,12h"
+         "br0,192.168.81.100,192.168.81.200,255.255.255.0,12h"
        ];
      };
   };
