@@ -10,8 +10,8 @@
         interface = "end0";
     };
     nameservers = [ "192.168.0.1" ];
-    domain = "phased.array";
-    search = [ "phased.array" ];
+    domain = "pi-nix";
+    search = [ "pi-nix" ];
     interfaces = {
         end0.ipv4.address = [{
             address = "192.168.0.143";
@@ -20,8 +20,7 @@
     };
   };
 
-  networking.hostName = "pi-nix";
-  networking.domain = "phased.array";
+  networking.domain = "pi-nix";
 
   # Enable Networking
   networking.networkmanager.enable = true;
