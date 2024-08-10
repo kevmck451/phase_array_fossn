@@ -15,7 +15,7 @@
 #  boot.loader.generic-extlinux-compatible.enable = true;
 
   # BOOTLOADER
-  boot.loader.grub.enable = false;
+  boot.loader.grub.enable = true;
   boot.loader.grub.device = "/dev/sda";
   boot.loader.grub.useOSProber = true;
 
