@@ -20,8 +20,6 @@
     };
   };
 
-  networking.domain = "pi-nix";
-
   # Enable Networking
   networking.networkmanager.enable = true;
 
