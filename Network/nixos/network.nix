@@ -9,9 +9,9 @@
         interface = "br0";
     };
     nameservers = [ "192.168.0.1" ];
-    domain = "pi-nix";
+    domain = "local";
     search = [ "pi-nix" ];
-    hostName = "pi-nix";  # <-- Set your hostname here
+    hostName = "pi-nix";
     interfaces = {
         br0.ipv4.addresses = [{
             address = "192.168.0.143";
