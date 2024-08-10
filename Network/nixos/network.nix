@@ -23,14 +23,12 @@
     vlans = {
         vlanfpga = {
             id = 2;
-            interface = "end0";
-
+            interface = "end1";
         };
 
         vlanmacbk = {
             id = 3;
-            interface = "end0";
-
+            interface = "end1";
         };
 
     };
