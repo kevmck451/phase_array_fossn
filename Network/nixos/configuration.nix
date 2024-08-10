@@ -16,6 +16,7 @@
   boot.loader.grub.useOSProber = true;
   boot.kernelModules = [ "8021q" ];
 
+  swapDevices = [ { device = "/swapfile"; size = 1024; } ];
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
