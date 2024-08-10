@@ -1,5 +1,5 @@
 
-# FOSNN Access Point with NixOS on Raspberry Pi 4
+# Raspberry Pi Access Point Nix Configuration
 
 { config, lib, pkgs, ... }:
 
@@ -9,10 +9,6 @@
       ./hardware-configuration.nix
       ./network.nix
     ];
-
-
-#  boot.loader.grub.enable = false;
-#  boot.loader.generic-extlinux-compatible.enable = true;
 
   # BOOTLOADER
   boot.loader.grub.enable = true;
