@@ -24,9 +24,7 @@
         networks = {
           wlp1s0u1u4 = {  # The network name must match the radio name
             ssid = "Phased_Array";
-            authentication = {
-              open = true; # This sets the network to be open (no password)
-            };
+            # No authentication block means the network is open (no password)
           };
         };
       };
