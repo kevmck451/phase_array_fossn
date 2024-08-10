@@ -3,6 +3,51 @@
 
 {
 
+  # packages
+  environment.systemPackages = with pkgs; [
+     hostapd
+     dnsmasq
+     bridge-utils
+     ];
+
+  # add wireless service
+  hardware.enableRedistributableFirmware = true;
+  networking.wireless.enable = true;
+
+  # set up wireless access point
+  networking.networkmanager.unmanaged = [ "Phased_Array:wlp1s0u1u4" ]
+    ++ lib.optional config.services.hostapd.enable "Phased_Array:${config.services.hostapd.interface}";
+  services.hostapd = {
+    enable = true;
+    interface = "wlp1s0u1u4";
+    hwMode = "g";
+    ssid = "Phased_Array";
+    wpaPassphrase = "123456";
+  };
+
+
+  # set up wireless static IP address
+  networking.interfaces.wlp1s0u1u4.ip4 = lib.mkOverride 0 [ ];
+  networking.interfaces.wlp1s0u1u4.ipv4.addresses =
+    lib.optionals config.services.hostapd.enable [{ address = "10.0.0.1"; prefixLength = 24; }];
+
+
+  # set up wireless DNS
+  services.dnsmasq = lib.optionalAttrs config.services.hostapd.enable {
+    enable = true;
+    extraConfig = ''
+      interface=wlp1s0u1u4
+      bind-interfaces
+      dhcp-range=10.0.0.10,10.0.0.254,24h
+    '';
+  };
+
+  networking.firewall.allowedUDPPorts = lib.optionals config.services.hostapd.enable [53 67];
+  services.haveged.enable = config.services.hostapd.enable;
+
+  # Finally, bridge ethernet and wifi
+  networking.bridges.br0.interfaces = [ "end0" "wlp1s0u1u4" ];
+
   # Set Static IP
   networking = {
     defaultGateway = {
@@ -45,19 +90,6 @@
     };
 
   };
-
-  # Enable Networking
-#  networking.networkmanager.enable = true;
-#
-#  environment.systemPackages = with pkgs; [
-#     pkgs.dnsmasq
-#     pkgs.hostapd
-#     pkgs.iptables
-#     pkgs.avahi
-#     pkgs.nssmdns
-#     ];
-#
-#  networking.firewall.enable = false;
 
 
 
