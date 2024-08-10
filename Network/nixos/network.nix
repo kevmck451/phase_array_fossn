@@ -21,17 +21,17 @@
   };
 
   # Enable Networking
-  networking.networkmanager.enable = true;
-
-  environment.systemPackages = with pkgs; [
-     pkgs.dnsmasq
-     pkgs.hostapd
-     pkgs.iptables
-     pkgs.avahi
-     pkgs.nssmdns
-     ];
-
-  networking.firewall.enable = false;
+#  networking.networkmanager.enable = true;
+#
+#  environment.systemPackages = with pkgs; [
+#     pkgs.dnsmasq
+#     pkgs.hostapd
+#     pkgs.iptables
+#     pkgs.avahi
+#     pkgs.nssmdns
+#     ];
+#
+#  networking.firewall.enable = false;
 
 
 
