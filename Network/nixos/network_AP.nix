@@ -1,8 +1,9 @@
-# Raspberry Pi Access Point Nix Configuration
+
 
 { config, lib, pkgs, ... }:
 
 {
+
 
   # Set Static IP ----------------------------------------
   networking = {
@@ -15,10 +16,15 @@
     search = [ "pi-nix" ];
     hostName = "pi-nix";
     interfaces = {
-        br0.ipv4.addresses = [{
-            address = "192.168.0.143";
+        wlan0.ipv4.addresses = [{
+            address = "192.168.0.200";
             prefixLength = 24;
         }];
+    };
+    wireless.networks = {
+      "KM 5" = {
+      psk = "m2d2jkl9123";
+      };
     };
   };
 
@@ -30,18 +36,6 @@
      bridge-utils
   ];
 
-
-  # Wireless Service ------------------------------------
-  hardware.enableRedistributableFirmware = true;
-  networking.wireless.enable = true;
-
-
-  # Wireless Network Configuration ----------------------
-  networking.wireless.networks = {
-    "KM 5" = {
-      psk = "m2d2jkl9123";
-    };
-  };
 
 
    # Wireless Access Point --------------------------------
@@ -57,27 +51,29 @@
      settings.hw_mode = "g";
    };
 
-
   # DNS Configuration -------------------------------------
   services.dnsmasq = lib.optionalAttrs config.services.hostapd.enable {
     enable = true;
     settings = {
        bind-interfaces = true;
-       interface = [ "br0" ];
+       interface = [ "wlp1s0u1u4" ];
        dhcp-range = [
-         "br0,192.168.81.100,192.168.81.200,255.255.255.0,12h"
+         "br0,192.168.0.201,192.168.0.250,255.255.255.0,12h"
        ];
      };
   };
 
 
-  # Firewall Configuration --------------------------------
-  networking.firewall.allowedUDPPorts = lib.optionals config.services.hostapd.enable [53 67];
-  services.haveged.enable = config.services.hostapd.enable;
-
-
   # Bridge configuration -----------------------------------
-  networking.bridges.br0.interfaces = [ "end0" "wlp1s0u1u4" ];
+  networking.bridges.br0.interfaces = [ "wlan0" "wlp1s0u1u4" ];
+
+
+
+
+
+
+
+
 
 
 }

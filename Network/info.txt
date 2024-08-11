@@ -21,3 +21,13 @@ I want to create a NixOS configuration file for a Raspberry Pi that will essenti
     o	Raspberry Pi is running NixOS.
     o	DHCP services for devices connected to the Phased_Array network.
     o	Enable NAT to share the Ethernet internet connection with the devices connected to the Phased_Array network when the Ethernet is connected.
+
+
+
+
+
+I want to ssh into my raspberry pi through a wireless network
+
+the wireless interface is wlp1s0u1u4
+
+
