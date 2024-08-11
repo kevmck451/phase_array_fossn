@@ -72,8 +72,6 @@
 
 
   # Firewall Configuration --------------------------------
-  networking.firewall.allowedUDPPorts = lib.optionals config.services.hostapd.enable [53 67];
-  networking.firewall.allowedTCPPorts = [ 22 ];
   services.haveged.enable = config.services.hostapd.enable;
 
 
