@@ -32,9 +32,6 @@
       wireless.enable = true;
   };
 
-  networking.interfaces.wlan0.metric = 200;
-  networking.interfaces.end0.metric = 100;
-
 
   # Packages -------------------------------------------
   environment.systemPackages = with pkgs; [
