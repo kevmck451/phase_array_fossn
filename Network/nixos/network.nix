@@ -85,8 +85,6 @@
     prefixLength = 24;
   }];
 
-  # Enable IP forwarding globally
-  networking.ipv4.forwarding = true;
 
 # Enable the firewall and configure NAT
   networking.firewall = {
