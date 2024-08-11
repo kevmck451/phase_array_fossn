@@ -19,10 +19,6 @@
             address = "192.168.0.200";
             prefixLength = 24;
           }];
-          wifi = {
-            ssid = "KM 5";
-            psk = "m2d2jkl9123";
-          };
         };
         end0.ipv4.addresses = [{
           address = "192.168.0.143";
@@ -30,7 +26,13 @@
         }];
       };
       wireless.enable = true;
+      wireless.networks = {
+        "KM 5" = {
+        psk = "m2d2jkl9123";
+        };
+      };
   };
+
 
 
   # Packages -------------------------------------------
