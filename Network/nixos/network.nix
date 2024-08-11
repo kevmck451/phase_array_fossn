@@ -14,6 +14,7 @@
     domain = "local";
     search = [ "pi-nix" ];
     hostName = "pi-nix";
+    nat.enable = true;
     firewall.enable = false;
     interfaces = {
         br0.ipv4.addresses = [{
@@ -92,16 +93,19 @@
 #    allowedTCPPorts = [ 22 ];    # Example: allow SSH
 #  };
 
-# NAT configuration to allow wlp1s0u1u4 to access the internet via br0 (end0 or wlan0)
-  networking.nat = {
-    enable = true;
-
-    # External interfaces: those that connect to the internet
-    externalInterfaces = [ "end0" "wlan0" ];
-
-    # Internal interface: the one connected to the devices
-    internalInterfaces = [ "wlp1s0u1u4" ];
-  };
+systemd.services.custom-nat = {
+  description = "Custom NAT setup for wlp1s0u1u4";
+  after = [ "network.target" ];
+  serviceConfig.ExecStart = ''
+    ${pkgs.iptables}/bin/iptables -t nat -A POSTROUTING -o end0 -j MASQUERADE
+    ${pkgs.iptables}/bin/iptables -t nat -A POSTROUTING -o wlan0 -j MASQUERADE
+    ${pkgs.iptables}/bin/iptables -A FORWARD -i wlp1s0u1u4 -o end0 -m state --state RELATED,ESTABLISHED -j ACCEPT
+    ${pkgs.iptables}/bin/iptables -A FORWARD -i end0 -o wlp1s0u1u4 -j ACCEPT
+    ${pkgs.iptables}/bin/iptables -A FORWARD -i wlp1s0u1u4 -o wlan0 -m state --state RELATED,ESTABLISHED -j ACCEPT
+    ${pkgs.iptables}/bin/iptables -A FORWARD -i wlan0 -o wlp1s0u1u4 -j ACCEPT
+  '';
+  wantedBy = [ "multi-user.target" ];
+};
 
 
 
