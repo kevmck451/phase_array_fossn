@@ -14,7 +14,6 @@
     domain = "local";
     search = [ "pi-nix" ];
     hostName = "pi-nix";
-    nat.enable = true;
     firewall.enable = false;
     interfaces = {
         br0.ipv4.addresses = [{
