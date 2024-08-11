@@ -7,26 +7,33 @@
 
   # Set Static IP ----------------------------------------
   networking = {
-    defaultGateway = {
-        address = "192.168.0.1";
-        interface = "br0";
-    };
-    nameservers = [ "192.168.0.1" ];
-    domain = "local";
-    search = [ "pi-nix" ];
-    hostName = "pi-nix";
-    interfaces = {
-        wlan0.ipv4.addresses = [{
+      defaultGateway.address = "192.168.0.1";
+      nameservers = [ "192.168.0.1" ];
+      domain = "local";
+      search = [ "pi-nix" ];
+      hostName = "pi-nix";
+
+      interfaces = {
+        wlan0 = {
+          ipv4.addresses = [{
             address = "192.168.0.200";
             prefixLength = 24;
+          }];
+          wifi = {
+            ssid = "KM 5";
+            psk = "m2d2jkl9123";
+          };
+        };
+        end0.ipv4.addresses = [{
+          address = "192.168.0.143";
+          prefixLength = 24;
         }];
-    };
-    wireless.networks = {
-      "KM 5" = {
-      psk = "m2d2jkl9123";
       };
-    };
+      wireless.enable = true;
   };
+
+  networking.interfaces.wlan0.metric = 200;
+  networking.interfaces.end0.metric = 100;
 
 
   # Packages -------------------------------------------
