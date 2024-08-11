@@ -16,7 +16,7 @@
     hostName = "pi-nix";
     interfaces = {
         br0.ipv4.addresses = [{
-            address = "192.168.0.143";
+            address = "192.168.1.143";
             prefixLength = 24;
         }];
     };
@@ -65,7 +65,7 @@
        bind-interfaces = true;
        interface = [ "br0" ];
        dhcp-range = [
-         "br0,192.168.81.100,192.168.81.200,255.255.255.0,12h"
+         "br0,192.168.1.100,192.168.1.200,255.255.255.0,12h"
        ];
      };
   };
@@ -73,6 +73,7 @@
 
   # Firewall Configuration --------------------------------
   networking.firewall.allowedUDPPorts = lib.optionals config.services.hostapd.enable [53 67];
+  networking.firewall.allowedTCPPorts = [ 22 ];
   services.haveged.enable = config.services.hostapd.enable;
 
 
