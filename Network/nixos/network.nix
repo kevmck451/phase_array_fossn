@@ -82,4 +82,21 @@
   networking.bridges.br0.interfaces = [ "end0" "wlp1s0u1u4" ];
 
 
+  networking.interfaces.wlan0.ipv4.addresses = [{
+    address = "192.168.2.1";
+    prefixLength = 24;
+  }];
+
+  networking.firewall.interfaces.wlan0.forward = true;
+  networking.firewall.interfaces.br0.forward = true;
+
+  networking.nat = {
+    enable = true;
+    externalInterface = "br0";
+    internalInterfaces = [ "wlan0" ];
+  };
+
+
+
+
 }
