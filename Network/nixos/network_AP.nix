@@ -7,20 +7,17 @@
 
   # Set Static IP ----------------------------------------
   networking = {
-      defaultGateway.address = "192.168.0.1";
+      defaultGateway = {
+        address = "192.168.0.1";
+        interface = "br0";
+      };
       nameservers = [ "192.168.0.1" ];
       domain = "local";
       search = [ "pi-nix" ];
       hostName = "pi-nix";
 
       interfaces = {
-        wlan0 = {
-          ipv4.addresses = [{
-            address = "192.168.0.200";
-            prefixLength = 24;
-          }];
-        };
-        end0.ipv4.addresses = [{
+        br0.ipv4.addresses = [{
           address = "192.168.0.143";
           prefixLength = 24;
         }];
