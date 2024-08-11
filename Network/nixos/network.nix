@@ -90,11 +90,16 @@
   # Enable IP forwarding globally
   networking.ipv4.forwarding = true;
 
-  # Enable the firewall and configure NAT
+# Enable the firewall and configure NAT
   networking.firewall = {
     enable = true;
-    allowedTCPForwarding = true; # Allow TCP forwarding globally
-    trustedInterfaces = [ "br0" "wlan0" "wlp1s0u1u4" ]; # Trust br0 and wlan0 interfaces
+
+    # Combine all trusted interfaces here
+    trustedInterfaces = [ "br0" "wlan0" "wlp1s0u1u4" ];
+
+    # Allow specific forwarding rules as needed
+    allowedUDPPorts = [ 53 67 ]; # Example: allow DNS and DHCP
+    allowedTCPPorts = [ 22 ];    # Example: allow SSH
   };
 
   # NAT configuration to allow wlan0 to access br0 (and beyond)
