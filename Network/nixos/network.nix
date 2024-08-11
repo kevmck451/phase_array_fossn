@@ -72,7 +72,6 @@
 
 
   # Firewall Configuration --------------------------------
-  networking.firewall.trustedInterfaces = [ "wlan0" "wlp1s0u1u4"];
   networking.firewall.allowedUDPPorts = lib.optionals config.services.hostapd.enable [53 67];
   networking.firewall.allowedTCPPorts = [ 22 ];
   services.haveged.enable = config.services.hostapd.enable;
@@ -95,7 +94,7 @@
   networking.firewall = {
     enable = true;
     allowedTCPForwarding = true; # Allow TCP forwarding globally
-    trustedInterfaces = [ "br0" "wlan0" ]; # Trust br0 and wlan0 interfaces
+    trustedInterfaces = [ "br0" "wlan0" "wlp1s0u1u4" ]; # Trust br0 and wlan0 interfaces
   };
 
   # NAT configuration to allow wlan0 to access br0 (and beyond)
