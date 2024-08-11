@@ -7,8 +7,7 @@
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
-#      ./network.nix
-      ./network_AP.nix
+      ./network.nix
     ];
 
   # BOOTLOADER
