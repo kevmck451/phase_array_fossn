@@ -7,7 +7,6 @@
   # Set Static IP ----------------------------------------
   networking.firewall.enable = false;
   networking.useDHCP = true;
-  networking.bridges.br0 = { interfaces = [ "wlp1s0u1u4" "enp1s0u1u2" ]; };
 
   # Packages -------------------------------------------
   environment.systemPackages = with pkgs; [
@@ -37,16 +36,19 @@
 
 
   # DNS Configuration -------------------------------------
-#  services.dnsmasq = lib.optionalAttrs config.services.hostapd.enable {
-#    enable = true;
-#    settings = {
-#       bind-interfaces = true;
-#       interface = [ "wlp1s0u1u4" ];
-#       dhcp-range = [
-#         "wlp1s0u1u4,192.168.1.100,192.168.1.200,255.255.255.0,12h"
-#       ];
-#     };
-#  };
+  services.dnsmasq = lib.optionalAttrs config.services.hostapd.enable {
+    enable = true;
+    settings = {
+       bind-interfaces = true;
+       interface = [ "wlp1s0u1u4" ];
+       dhcp-range = [
+         "wlp1s0u1u4,192.168.1.100,192.168.1.200,255.255.255.0,12h"
+       ];
+     };
+  };
+
+  networking.dhcpcd.denyInterfaces = [ "wlp1s0u1u4" ];
+
 
 
   # Firewall Configuration --------------------------------
