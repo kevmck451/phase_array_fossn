@@ -6,6 +6,7 @@
 
   # Set Static IP ----------------------------------------
   networking.firewall.enable = false;
+  networking.useDHCP = true;
 
   # Packages -------------------------------------------
   environment.systemPackages = with pkgs; [
@@ -20,17 +21,9 @@
   networking.wireless.enable = true;
 
 
-  # Wireless Network Configuration ----------------------
-  networking.wireless.networks = {
-    "KM 5" = {
-      psk = "m2d2jkl9123";
-    };
-  };
 
 
    # Wireless Access Point --------------------------------
-   networking.networkmanager.unmanaged = [ "Phased_Array:wlp1s0u1u4" ];
-
    services.hostapd.enable = true;
    services.hostapd.radios.wlp1s0u1u4 = {
      channel = 6;
