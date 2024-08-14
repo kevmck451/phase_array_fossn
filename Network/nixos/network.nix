@@ -12,7 +12,7 @@
   environment.systemPackages = with pkgs; [
      hostapd
      dnsmasq
-     bridge-utils
+    # bridge-utils
   ];
 
 
@@ -36,16 +36,16 @@
 
 
   # DNS Configuration -------------------------------------
-  services.dnsmasq = lib.optionalAttrs config.services.hostapd.enable {
-    enable = true;
-    settings = {
-       bind-interfaces = true;
-       interface = [ "wlp1s0u1u4" ];
-       dhcp-range = [
-         "wlp1s0u1u4,192.168.1.100,192.168.1.200,255.255.255.0,12h"
-       ];
-     };
-  };
+#  services.dnsmasq = lib.optionalAttrs config.services.hostapd.enable {
+#    enable = true;
+#    settings = {
+#       bind-interfaces = true;
+#       interface = [ "wlp1s0u1u4" ];
+#       dhcp-range = [
+#         "wlp1s0u1u4,192.168.1.100,192.168.1.200,255.255.255.0,12h"
+#       ];
+#     };
+#  };
 
 
   # Firewall Configuration --------------------------------
