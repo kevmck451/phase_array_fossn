@@ -39,6 +39,8 @@
     extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
     # empty password
     hashedPassword = "$6$QgXrKw0FqewNXb$NzqM6h5vtDrTykUKShy/ZgG/zr.sotnRugnrXjRe6Q98Sr8rOmPTEdxPVlHmThEmMePHg9t18ge5yPFsOzGJN/";
+    # of KevMcK@MacBook-Pro
+    openssh.authorizedKeys.keys = [ "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIObSliOBCGrWo+1YOA3z9l9+XCsWdqQ7MLhB/q2DDCTc KevMcK@MacBook-Pro.local" ];
     packages = with pkgs; [
 
     ];
@@ -57,6 +59,9 @@
 
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
+  services.openssh.settings.PasswordAuthentication = false;
+  services.openssh.settings.PermitRootLogin = "no";
+
   programs.nix-ld.enable = true;
 
   # For more information, see `man configuration.nix` or https://nixos.org/manual/nixos/stable/options#opt-system.state>
