@@ -10,10 +10,10 @@
       ./network.nix
     ];
 
-  # BOOTLOADER
-  boot.loader.grub.enable = true;
-  boot.loader.grub.device = "/dev/sda";
-  boot.loader.grub.useOSProber = true;
+  # BOOTLOADER, rpis always basically need extlinux compatible
+  boot.loader.grub.enable = false;
+  boot.loader.generic-extlinux-compatible.enable = true;
+
   boot.kernelModules = [ "8021q" ];
   boot.kernel.sysctl = {
     "net.ipv4.conf.all.forwarding" = true;
