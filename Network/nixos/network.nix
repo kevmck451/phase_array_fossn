@@ -5,7 +5,7 @@
 {
 
   # Set Static IP ----------------------------------------
-  network.firewall.enable = false;
+  networking.firewall.enable = false;
 
   # Packages -------------------------------------------
   environment.systemPackages = with pkgs; [
