@@ -49,7 +49,11 @@
        dhcp-range = [
          "wlp1s0u1u4,192.168.1.100,192.168.1.200,255.255.255.0,12h"
        ];
-       port = 0;
+       # just use google. there should be some way to replicate the local system's resolution but couldn't figure
+       # it out before we gave up soooo.
+       # dnsmasq is advertising itself to dhcp clients of course but also the local system is using it for whatever
+       # reason?
+       server = [ "8.8.8.8" ];
      };
   };
 
