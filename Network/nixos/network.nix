@@ -5,24 +5,7 @@
 {
 
   # Set Static IP ----------------------------------------
-  networking = {
-    defaultGateway = {
-        address = "192.168.0.1";
-        interface = "br0";
-    };
-    nameservers = [ "192.168.0.1" ];
-    domain = "local";
-    search = [ "pi-nix" ];
-    nat.enable = true;
-    firewall.enable = false;
-    interfaces = {
-        br0.ipv4.addresses = [{
-            address = "192.168.1.143";
-            prefixLength = 24;
-        }];
-    };
-  };
-
+  network.firewall.enable = false;
 
   # Packages -------------------------------------------
   environment.systemPackages = with pkgs; [
@@ -64,9 +47,9 @@
     enable = true;
     settings = {
        bind-interfaces = true;
-       interface = [ "br0" ];
+       interface = [ "wlp1s0u1u4" ];
        dhcp-range = [
-         "br0,192.168.1.100,192.168.1.200,255.255.255.0,12h"
+         "wlp1s0u1u4,192.168.1.100,192.168.1.200,255.255.255.0,12h"
        ];
      };
   };
@@ -74,10 +57,6 @@
 
   # Firewall Configuration --------------------------------
   services.haveged.enable = config.services.hostapd.enable;
-
-
-  # Bridge configuration -----------------------------------
-  networking.bridges.br0.interfaces = [ "end0" "wlp1s0u1u4" ];
 
 
 # Enable the firewall and configure NAT
