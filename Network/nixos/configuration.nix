@@ -62,7 +62,6 @@
 
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
-  services.qemuGuest.enable = true;
   programs.nix-ld.enable = true;
 
   # For more information, see `man configuration.nix` or https://nixos.org/manual/nixos/stable/options#opt-system.state>
