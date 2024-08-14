@@ -13,7 +13,6 @@
     nameservers = [ "192.168.0.1" ];
     domain = "local";
     search = [ "pi-nix" ];
-    hostName = "pi-nix";
     nat.enable = true;
     firewall.enable = false;
     interfaces = {

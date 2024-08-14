@@ -19,6 +19,8 @@
     "net.ipv4.conf.all.forwarding" = true;
   };
 
+  networking.hostName = "pi-nix";
+
   swapDevices = [ { device = "/swapfile"; size = 1024; } ];
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
