@@ -33,24 +33,19 @@
   # Set your time zone.
   time.timeZone = "America/Chicago";
 
-  # Define a user account. Don't forget to set a password with ‘passwd’.
+  users.mutableUsers = false; # get password etc from configuration file
   users.users.admin = {
     isNormalUser = true;
     extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
+    # empty password
+    hashedPassword = "$6$QgXrKw0FqewNXb$NzqM6h5vtDrTykUKShy/ZgG/zr.sotnRugnrXjRe6Q98Sr8rOmPTEdxPVlHmThEmMePHg9t18ge5yPFsOzGJN/";
     packages = with pkgs; [
 
     ];
   };
 
-  security.sudo.extraRules= [
-    { users = [ "admin" ];
-      commands = [
-        { command = "ALL";
-          options = [ "NOPASSWD" ];
-        }
-      ];
-    }
-  ];
+  # disable password for sudo
+  security.sudo.wheelNeedsPassword = false;
 
   nixpkgs.config.allowUnfree = true;
 
