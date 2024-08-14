@@ -8,6 +8,11 @@
   networking.firewall.enable = false;
   networking.useDHCP = true;
 
+    networking.interfaces.wlp1s0u1u4.ipv4.addresses = [ {
+    address = "192.168.1.1";
+    prefixLength = 24;
+  } ];
+
   # Packages -------------------------------------------
   environment.systemPackages = with pkgs; [
      hostapd
