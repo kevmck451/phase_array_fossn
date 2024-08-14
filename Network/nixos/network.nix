@@ -7,6 +7,7 @@
   # Set Static IP ----------------------------------------
   networking.firewall.enable = false;
   networking.useDHCP = true;
+  networking.bridges.br0 = { interfaces = [ "wlp1s0u1u4" "enp1s0u1u2" ]; };
 
   # Packages -------------------------------------------
   environment.systemPackages = with pkgs; [
