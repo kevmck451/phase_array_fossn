@@ -5,7 +5,7 @@
 
 {
   imports =
-    [ # Include the results of the hardware scan.
+    [
       ./hardware-configuration.nix
       ./network.nix
     ];
@@ -50,7 +50,6 @@
 
   # disable password for sudo
   security.sudo.wheelNeedsPassword = false;
-
   nixpkgs.config.allowUnfree = true;
 
   # Configure Keymap in X11
