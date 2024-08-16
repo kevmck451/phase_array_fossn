@@ -296,4 +296,4 @@ ssh nixos@fpga
 ssh pi@acousticpi
 ```
 
-
+pi ip on school: 141.225.163.221 or pi-nix
