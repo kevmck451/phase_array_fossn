@@ -16,7 +16,7 @@ buildPythonPackage rec {
     sha256 = "sha256-sw/bkTdrnPhBhrnk5yyXCbEK4kMo+PdEvoMJ9aaZbsE=";
   };
 
-  propagatedBuildInputs = [ cython ];
+  propagatedBuildInputs = [ pytz smbus2 ];
 
   # doCheck = false;
 
