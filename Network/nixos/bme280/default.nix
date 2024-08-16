@@ -13,7 +13,7 @@ buildPythonPackage rec {
     owner = "rm-hull";
     repo = "bme280";
     rev = "${version}";
-    sha256 = "sha256-sw/bkTdrnPhBhrnk5yyXCbEK4kMo+PdEvoMJ9aaZbsE=";
+    sha256 = "sha256-1Wkzx7b7aNsCc4LhNhuWi5sfXgMeq+MA17lJw+XjxYM=";
   };
 
   propagatedBuildInputs = [ pytz smbus2 ];
