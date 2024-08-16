@@ -31,6 +31,7 @@
     pkgs.git
     pkgs.tmux
     pkgs.htop
+    wormhole-william
   ];
 
   # Set your time zone.
