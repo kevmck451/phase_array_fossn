@@ -2,7 +2,7 @@
 
 { config, lib, pkgs, ... }:
 {
-    enivronment.systemPackages = [
+    environment.systemPackages = [
         (pkgs.python3.withPackages (p: [
             (p.callPackage ./bme280 {})
         ]))
