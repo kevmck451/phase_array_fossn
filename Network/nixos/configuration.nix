@@ -39,7 +39,7 @@
   users.mutableUsers = false; # get password etc from configuration file
   users.users.admin = {
     isNormalUser = true;
-    extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
+    extraGroups = [ "wheel" "i2c" ]; # Enable ‘sudo’ for the user.
     # empty password
     hashedPassword = "$6$QgXrKw0FqewNXb$NzqM6h5vtDrTykUKShy/ZgG/zr.sotnRugnrXjRe6Q98Sr8rOmPTEdxPVlHmThEmMePHg9t18ge5yPFsOzGJN/";
     # of KevMcK@MacBook-Pro

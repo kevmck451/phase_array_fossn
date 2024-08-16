@@ -3,8 +3,10 @@
 { config, lib, pkgs, ... }:
 {
     enivronment.systemPackages = [
-        (python3.withPackages (p: [
+        (pkgs.python3.withPackages (p: [
             (p.callPackage ./bme280 {})
         ]))
     ];
+
+    hardware.i2c.enable = true;
 }
