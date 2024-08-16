@@ -8,6 +8,7 @@
     [
       ./hardware-configuration.nix
       ./network.nix
+      ./temp_sensor.nix
     ];
 
   # BOOTLOADER, rpis always basically need extlinux compatible
@@ -68,4 +69,5 @@
   # For more information, see `man configuration.nix` or https://nixos.org/manual/nixos/stable/options#opt-system.state>
   system.stateVersion = "23.11"; # Did you read the comment?
 
+  # for nixpkgs 205fd4226592
 }
