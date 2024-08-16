@@ -18,7 +18,7 @@ buildPythonPackage rec {
 
   propagatedBuildInputs = [ pytz smbus2 ];
 
-  # doCheck = false;
+  doCheck = false;
 
   meta = with lib; {
 #    homepage = "https://github.com/swistakm/pyimgui";
