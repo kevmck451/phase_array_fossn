@@ -14,6 +14,6 @@ while True:
     # date = bme280_data.timestamp.split(" ")[0]
     # time = bme280_data.timestamp.split(' ')[0].split('+')[0].split('.')[0] # need to correct time zone
     humidity  = int(bme280_data.humidity)
-    ambient_temperature = int((bme280_data.temperature - 32) * 5.0 / 9.0)
+    ambient_temperature = int((bme280_data.temperature * 9/5) + 32)
     print(f'Temp: {ambient_temperature} F\t|\tHumid: {humidity} %')
     sleep(1)
