@@ -89,7 +89,7 @@ class Server:
     def send_all(self, message):
         for client in self.client_list:
             try:
-                print('sending disconnect message')
+                print('sending message')
                 client.socket.sendall(message.encode())
             except Exception as e:
                 print(f"Error sending message to {client.name}: {e}")

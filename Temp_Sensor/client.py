@@ -17,9 +17,7 @@ class Sender_Client:
         self.connect_thread.start()
         self.heartbeat_thread = None
         self.heartbeat_attempt = 0
-        self.controller = None
-        self.disconnect_thread = None
-
+        self.wait_for_response_thread = None
 
     def ensure_connection(self):
         print('Attempting to Connect with Temp Server')
@@ -36,8 +34,8 @@ class Sender_Client:
                 self.connected = True
                 self.heartbeat_thread = threading.Thread(target=self.heartbeat, daemon=True)
                 self.heartbeat_thread.start()
-                self.disconnect_thread = threading.Thread(target=self.wait_for_response, daemon=True)
-                self.disconnect_thread.start()
+                self.wait_for_response_thread = threading.Thread(target=self.wait_for_response, daemon=True)
+                self.wait_for_response_thread.start()
 
             except Exception as e:
                 # print(f"Error connecting to the server: {e}")
