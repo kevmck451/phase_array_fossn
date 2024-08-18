@@ -61,19 +61,21 @@
       description = "Custom NAT setup for wlp1s0u1u4";
       after = [ "network.target" ];
       serviceConfig.ExecStart = ''
-        # ${pkgs.iptables}/bin/iptables -t nat -A POSTROUTING -d 192.168.80.0/24 -j ACCEPT
         ${pkgs.iptables}/bin/iptables -t nat -A POSTROUTING -o end0 -j MASQUERADE
         ${pkgs.iptables}/bin/iptables -A FORWARD -i wlp1s0u1u4 -o end0 -m state --state RELATED,ESTABLISHED -j ACCEPT
         ${pkgs.iptables}/bin/iptables -A FORWARD -i end0 -o wlp1s0u1u4 -j ACCEPT
-        # ${pkgs.iptables}/bin/iptables -A FORWARD -i wlp1s0u1u4 -o enp1s0u1u2 -m state --state RELATED,ESTABLISHED -j ACCEPT
-        # ${pkgs.iptables}/bin/iptables -A FORWARD -i enp1s0u1u2 -o wlp1s0u1u4 -j ACCEPT
-        # ${pkgs.iptables}/bin/iptables -A FORWARD -i enp1s0u1u2 -o wlp1s0u1u4 -m state --state RELATED,ESTABLISHED -j ACCEPT
-        # ${pkgs.iptables}/bin/iptables -A FORWARD -i wlp1s0u1u4 -o enp1s0u1u2 -j ACCEPT
       '';
       wantedBy = [ "multi-user.target" ];
     };
 
-
+        # ${pkgs.iptables}/bin/iptables -t nat -A POSTROUTING -d 192.168.80.0/24 -j ACCEPT
+  #      ${pkgs.iptables}/bin/iptables -t nat -A POSTROUTING -o end0 -j MASQUERADE
+  #      ${pkgs.iptables}/bin/iptables -A FORWARD -i wlp1s0u1u4 -o end0 -m state --state RELATED,ESTABLISHED -j ACCEPT
+  #      ${pkgs.iptables}/bin/iptables -A FORWARD -i end0 -o wlp1s0u1u4 -j ACCEPT
+        # ${pkgs.iptables}/bin/iptables -A FORWARD -i wlp1s0u1u4 -o enp1s0u1u2 -m state --state RELATED,ESTABLISHED -j ACCEPT
+        # ${pkgs.iptables}/bin/iptables -A FORWARD -i enp1s0u1u2 -o wlp1s0u1u4 -j ACCEPT
+        # ${pkgs.iptables}/bin/iptables -A FORWARD -i enp1s0u1u2 -o wlp1s0u1u4 -m state --state RELATED,ESTABLISHED -j ACCEPT
+        # ${pkgs.iptables}/bin/iptables -A FORWARD -i wlp1s0u1u4 -o enp1s0u1u2 -j ACCEPT
 
 
 }
