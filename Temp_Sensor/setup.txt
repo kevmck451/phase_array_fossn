@@ -1,0 +1,92 @@
+408  sudo su
+  409  i2cdetect
+  410  i2cdetect /dev/i2c-0
+  411  i2cdetect i2c-0
+  412  i2cdetect 0
+  413  sudo i2cdetect 0
+  414  sudo i2cdetect 1
+  415  sudo i2cdetect 2
+  416  sudo i2cdetect 3
+  417  sudo i2cdetect 4
+  418  sudo i2cdetect 1
+  419  sudo i2cdetect 1
+  420  sudo i2cdetect 1
+  421  sudo i2cdetect 2
+  422  lsmod | grep i2c
+  423  sudo i2cdetect 2
+  424  sudo i2cdetect 2
+  425  sudo i2cdetect 3
+  426  sudo i2cdetect 3
+  427  exit
+  428  sudo python3
+  429  ls
+  430  wget https://github.com/rm-hull/bme280/archive/refs/heads/master.tar.gz
+  431  curl https://github.com/rm-hull/bme280/archive/refs/heads/master.tar.gz
+  432  ls
+  433  curl https://github.com/rm-hull/bme280/archive/refs/heads/master.tar.gz -O out.tar.gz
+  434  curl -o out.tar.gz https://github.com/rm-hull/bme280/archive/refs/heads/master.tar.gz
+  435  ls
+  436  ls -alh
+  437  curl https://github.com/rm-hull/bme280/archive/refs/heads/master.tar.gz > out.tar.gz
+  438  ls
+  439  ls -alh
+  440  curl https://github.com/rm-hull/bme280/archive/refs/heads/master.zip > out.tar.gz
+  441  git clone https://github.com/rm-hull/bme280
+  442  ls
+  443  cd bme280/
+  444  ls
+  445  python3
+  446  sudo python3
+  447  exit
+  448  sudo python3
+  449  ls
+  450  cd bme280/
+  451  sudo python3
+  452  cd
+  453  edxit
+  454  exit
+  455  wormhole-william send a_file
+  456  git pull
+  457  exit
+  458  ls /dev
+  459  ls
+  460  cat /proc/device-tree/soc/usb@7e980000/name
+  461  cat /proc/device-tree/soc/usb@7e980000/compatible
+  462  cat /proc/device-tree/soc/i2c@7e205000/compatible
+  463  cat /proc/device-tree/soc/i2c@7e205000/pinctrl-
+  464  cat /proc/device-tree/soc/i2c@7e205000/pinctrl-names
+  465  nix-shell -p i2c-utils
+  466  nix-shell -p i2cutils
+  467  nix-shell -p i2c-tools
+  468  nix-shell -p i2c-tools -p 'python3.withPackages (p: [ p.smbus ])'
+  469  nix-shell -p i2c-tools -p 'python3.withPackages (p: [ p.smbus2 ])'
+  470  nix-shell -p i2c-tools -p 'python3.withPackages (p: [ p.smbus2 p.pytz ])'
+  471  ls
+  472  rm -r bme280/ master.tar.gz out.tar.gz
+  473  rm -rf bme280/ master.tar.gz out.tar.gz
+  474  sudo rm -rf bme280/ master.tar.gz out.tar.gz
+  475  python3
+  476  ls
+  477  cd phase_array_fossn/
+  478  git pull
+  479  history | grep switch
+  480  sudo nixos-rebuild switch
+  481  git pull
+  482  sudo nixos-rebuild switch
+  483  git pull
+  484  sudo nixos-rebuild switch
+  485  git pull
+  486  sudo nixos-rebuild switch
+  487  sudo nixos-rebuild switch > a_file 2>&1
+  488  nix-shell -p wormhole-william
+  489  sudo nixos-rebuild switch
+  490  git pull
+  491  sudo nixos-rebuild switch
+  492  python3
+  493  python3 Temp_Sensor/temp_sensor_server.py
+  494  ls -alh /dev/i2c-3
+  495  sudo udevadm trigger
+  496  ls -alh /dev/i2c-3
+  497  reboot
+  498  sudo reboot
+  499  journalctl -fu temp-sensor

@@ -13,8 +13,7 @@
 
 
   systemd.services.temp-sensor = {
-      description = "Custom NAT setup for wlp1s0u1u4";
-      after = [ "network.target" ];
+      description = "Temperature Sensor";
       serviceConfig.ExecStart = let
         coolBmeEnabledPython3 = (pkgs.python3.withPackages (p: [
             (p.callPackage ./bme280 {})
