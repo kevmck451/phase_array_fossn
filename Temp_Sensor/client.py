@@ -79,18 +79,19 @@ class Sender_Client:
             print("Not connected. Unable to send data.")
 
     def wait_for_response(self):
-        try:
-            response = self.socket.recv(1024).decode()
-            print(response)
-            if 'server_disconnecting' in response:
-                self.connected = False
-            else:
-                print(f'Message: {response}')
-        except OSError as e:
-            if e.errno == 9:  # Bad file descriptor error
-                print("Socket already closed.")
-            else:
-                raise  # Re-raise any unexpected errors
+        while self.connected:
+            try:
+                response = self.socket.recv(1024).decode()
+                print(response)
+                if 'server_disconnecting' in response:
+                    self.connected = False
+                else:
+                    print(f'Message: {response}')
+            except OSError as e:
+                if e.errno == 9:  # Bad file descriptor error
+                    print("Socket already closed.")
+                else:
+                    raise  # Re-raise any unexpected errors
 
     def close_connection(self):
         try:
