@@ -4,8 +4,8 @@ from dataclasses import dataclass
 import threading
 import socket
 import time
-# import bme280
-# import smbus2
+import bme280
+import smbus2
 
 
 
