@@ -51,7 +51,10 @@ https://github.com/rm-hull/bme280/tags
 
 #### add script to automatic start up with Nix
 
-
+- check output of print statements
+```zsh
+journalctl -fu temp-sensor
+```
 
 
 

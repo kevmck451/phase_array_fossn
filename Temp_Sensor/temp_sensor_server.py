@@ -11,8 +11,9 @@ bme280.load_calibration_params(bus,address)
 
 while True:
     bme280_data = bme280.sample(bus,address)
-    timestamp = bme280_data.timestamp
+    date = bme280_data.timestamp.split(" ")[0]
+    time = bme280_data.timestamp.split(' ')[0].split('+')[0].split('.')[0] # need to correct time zone
     humidity  = int(bme280_data.humidity)
-    ambient_temperature = int(bme280_data.temperature)
-    print(f'Time: {timestamp}\t|\tTemp: {ambient_temperature}\t|\tHumid: {humidity}')
+    ambient_temperature = int((bme280_data.temperature - 32) * 5.0 / 9.0)
+    print(f'Temp: {ambient_temperature} F\t|\tHumid: {humidity} %')
     sleep(1)
