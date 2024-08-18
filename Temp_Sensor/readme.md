@@ -57,6 +57,12 @@ journalctl -fu temp-sensor
 ```
 
 
-
-
+#### gitpull 
+```zsh
+sudo -s
+sudo nano /etc/resolv.conf
+```
+~~~
+change nameserver = 8.8.8.8
+~~~
 
