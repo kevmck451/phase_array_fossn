@@ -36,7 +36,7 @@ class Sender_Client:
                 self.connected = True
                 self.heartbeat_thread = threading.Thread(target=self.heartbeat, daemon=True)
                 self.heartbeat_thread.start()
-                self.disconnect_thread = threading.Thread(target=self.wait_for_disconnect, daemon=True)
+                self.disconnect_thread = threading.Thread(target=self.wait_for_response, daemon=True)
                 self.disconnect_thread.start()
 
             except Exception as e:
@@ -80,12 +80,14 @@ class Sender_Client:
         else:
             print("Not connected. Unable to send data.")
 
-    def wait_for_disconnect(self):
+    def wait_for_response(self):
         try:
             response = self.socket.recv(1024).decode()
             print(response)
             if 'server_disconnecting' in response:
                 self.connected = False
+            else:
+                print(f'Message: {response}')
         except OSError as e:
             if e.errno == 9:  # Bad file descriptor error
                 print("Socket already closed.")
