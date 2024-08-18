@@ -1,11 +1,30 @@
 
-import temp_sensor
 
 from dataclasses import dataclass
 import threading
 import socket
 import time
-import numpy as np
+# import bme280
+# import smbus2
+
+
+
+def get_temp():
+    port = 3
+    address = 0x76
+    bus = smbus2.SMBus(port)
+
+    bme280.load_calibration_params(bus, address)
+
+    bme280_data = bme280.sample(bus, address)
+    # date = bme280_data.timestamp.split(" ")[0]
+    # time = bme280_data.timestamp.split(' ')[0].split('+')[0].split('.')[0] # need to correct time zone
+    # humidity = int(bme280_data.humidity)
+    ambient_temperature = int((bme280_data.temperature * 9 / 5) + 32)
+
+    return ambient_temperature
+
+
 
 class Server:
     def __init__(self, host='0.0.0.0', port=12345):
@@ -37,7 +56,7 @@ class Server:
                     print('client disconnecting')
 
                 elif 'temp_requested' in message:
-                    air_temp = str(temp_sensor.get_temp())
+                    air_temp = str(get_temp())
                     self.send_all(air_temp)
 
                 else:
@@ -46,7 +65,6 @@ class Server:
 
     def run(self):
         self.running = True
-        self.controller.server_running = True
         while self.running:
             try:
                 client_socket, addr = self.socket.accept()
