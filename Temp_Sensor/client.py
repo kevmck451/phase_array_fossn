@@ -69,14 +69,11 @@ class Sender_Client:
 
             time.sleep(wait_time)
 
-    def send_data(self, data):
+    def send_data(self, message):
         if self.connected:
             try:
-                if isinstance(data, np.ndarray):
-                    data = np.array2string(data)
-                self.socket.sendall(data.encode())
-
-                print("event data sent")
+                self.socket.sendall(message)
+                print("message sent")
             except socket.error as e:
                 print(f"Error sending data: {e}")
                 self.connected = False
