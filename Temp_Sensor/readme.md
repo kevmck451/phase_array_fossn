@@ -55,6 +55,10 @@ https://github.com/rm-hull/bme280/tags
 ```zsh
 journalctl -fu temp-sensor
 ```
+```zsh
+journalctl -fu temp-sensor-server
+```
+
 
 
 #### gitpull 
