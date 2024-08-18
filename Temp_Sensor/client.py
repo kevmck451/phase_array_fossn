@@ -71,7 +71,7 @@ class Sender_Client:
     def send_data(self, message):
         if self.connected:
             try:
-                self.socket.sendall(message)
+                self.socket.sendall(message.encode('utf-8'))
                 print("message sent")
             except socket.error as e:
                 print(f"Error sending data: {e}")
@@ -106,7 +106,7 @@ class Sender_Client:
 if __name__ == '__main__':
 
     # for running mac to mac
-    client = Sender_Client('127.0.0.1', name='MacBook')
+    client = Sender_Client('127.0.0.1', name='Pi-Nix')
 
     while not client.connected:
         # print("Waiting for connection...")
