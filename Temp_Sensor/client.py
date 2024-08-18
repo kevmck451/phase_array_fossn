@@ -4,7 +4,6 @@
 import socket
 import threading
 import time
-import numpy as np
 
 class Sender_Client:
     def __init__(self, host='127.0.0.1', port=12345, name='unknown'):
