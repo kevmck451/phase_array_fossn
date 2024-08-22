@@ -27,10 +27,6 @@ class PCA_Detection:
         self.threshold_multiplier = threshold_multiplier
         self.queue = Queue()
 
-        self.x_limits = (0, 0.5)
-        self.y_limits = (-0.1, 0.1)
-        self.z_limits = (0, 0.025)
-
     def process_chunk(self, chunk):
         data = {}
         for idx, channel in enumerate(chunk):
@@ -56,7 +52,6 @@ if __name__ == '__main__':
     angles = [-70, -60, -50, -40, -30, -20, -10, 0, 10, 20, 30, 40, 50, 60, 70]
     audio = Audio(filepath=filepath, num_channels=len(angles))
     chunk_size_seconds = 0.5
-
 
     pca_detector = PCA_Detection(angle_list=angles)
 
