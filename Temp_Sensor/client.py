@@ -106,7 +106,7 @@ class Sender_Client:
 # Usage example
 if __name__ == '__main__':
 
-    # for running mac to mac
+    # for running pi to pi
     client = Sender_Client('127.0.0.1', name='Pi-Nix')
 
     while not client.connected:
