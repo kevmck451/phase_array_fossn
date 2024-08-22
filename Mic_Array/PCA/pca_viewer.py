@@ -100,8 +100,6 @@ circles = []
 for i in range(num_channels):
     ax_pca = fig.add_subplot(gs[0, i])
     sc = ax_pca.scatter([], [])
-    # ax_pca.set_xlim(-grid_scale, grid_scale)
-    # ax_pca.set_ylim(-grid_scale, grid_scale)
     ax_pca.set_xlabel('PC1')
     ax_pca.set_ylabel('PC2')
     ax_pca.set_title(f'Ch {angles[i]}°')
