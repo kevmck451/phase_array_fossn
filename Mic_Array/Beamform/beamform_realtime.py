@@ -26,6 +26,7 @@ class Beamform:
         self.mic_coordinates = generate_mic_coordinates()
         self.thetas = thetas
         self.phis = phis
+        self.temperature = initial_temp
         self.temperature_current = initial_temp
         self.fir_coeffs = self.compile_all_fir_coeffs()
         self.desired_channels = self.fir_coeffs.shape[0]
@@ -67,6 +68,11 @@ class Beamform:
 
         rows, cols, num_samples = mapped_audio_data.shape
         assert rows * cols == self.fir_coeffs.shape[1] * self.fir_coeffs.shape[2], "Mismatch between audio data and FIR coefficients shape."
+
+        if self.temperature != self.temperature_current:
+            print(f'Temp Changed => old: {self.temperature} | new: {self.temperature_current}')
+            self.fir_coeffs = self.compile_all_fir_coeffs()
+            self.temperature = self.temperature_current
 
         beamformed_data = np.zeros(num_samples + self.num_coeffs - 1)
 
@@ -114,7 +120,7 @@ if __name__ == '__main__':
 
 
     # initial set up
-    # 1. Set up Mic Coordinates / Map Ch's to Positions (WILL ONLY HAPPEN ONCE)
+    # 1. Set up Mic Coordinates (WILL ONLY HAPPEN ONCE)
     # 2. generate a set of coeffs for a particular set of angles based on a temp (WILL HAPPEN PERIODICALLY)
         # save those values because they will be used until temp goes outside some range
     # 3. Beamform (HAPPENING WHEN DATA IS AVAILABLE TO BEAMFORM)
@@ -136,17 +142,21 @@ if __name__ == '__main__':
 
     stream = AudioStreamSimulator(audio, chunk_size_seconds)
     stream.start_stream()
-
+    index = 1
 
     while stream.running:
         if not stream.queue.empty():
-            print('BEAMFORMING----------')
+            print()
+            print('BEAMFORMING------------------')
             print(f'Audio Stream Queue Size: {stream.queue.qsize()}')
             current_audio_data = stream.queue.get()
             print(f'Current Data Size: {current_audio_data.shape}')
             # -------------------------
             beamform.beamform_data(current_audio_data)
 
+            if index % 5 == 0:
+                beamform.temperature_current = beamform.temperature_current + 1
+            index += 1
 
         time.sleep(0.5)
 
