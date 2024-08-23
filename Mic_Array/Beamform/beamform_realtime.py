@@ -108,12 +108,6 @@ class Beamform:
 
 
 
-    # todo: processing pipeline
-
-
-
-
-
 
 
 if __name__ == '__main__':
