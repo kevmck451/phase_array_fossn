@@ -36,7 +36,6 @@ class Beamform:
 
         self.queue = Queue()
         self.data_list = []
-
         self.tag_index = 2
 
     def compile_all_fir_coeffs(self):

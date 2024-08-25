@@ -17,7 +17,7 @@ class AudioReceiver:
         self.start_receiving()
 
     def connect(self):
-        print('attempting to connect')
+        print('Waiting for FPGA Connection...')
         self.sock.connect((self.host, self.port))
 
     def recv_thread_fn(self):
@@ -40,6 +40,7 @@ class AudioReceiver:
                 pass
 
     def start_receiving(self):
+        print('Attempting to Connect with FPGA Server')
         self.connect()
         recv_thread = threading.Thread(target=self.recv_thread_fn, daemon=True)
         recv_thread.start()

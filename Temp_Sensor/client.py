@@ -22,7 +22,7 @@ class Sender_Client:
     def ensure_connection(self):
         print('Attempting to Connect with Temp Server')
         while not self.connected and not self.cancel_attempt:
-            print("Waiting for Connection...")
+            print("Waiting for Temp Connection...")
             try:
                 self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 self.socket.connect((self.host, self.port))

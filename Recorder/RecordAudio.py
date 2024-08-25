@@ -5,11 +5,14 @@ from Filters.low_pass import low_pass_filter
 from Filters.normalize import normalize
 from Filters.audio import Audio
 
+
 from datetime import datetime
+from threading import Thread
 import numpy as np
+import select
 import time
 import sys
-import select
+
 
 
 def Record_Audio():
@@ -70,6 +73,79 @@ def Record_Audio():
 
         filename = f"{file_path}/{chunk_start_time}_chunk_{chunk_index}"
         save_to_wav(all_data, audio_receiver.sample_rate, audio_receiver.chan_count, filename)
+
+
+
+class Audio_Recording:
+    def __init__(self):
+        self.chan_count = 48  # make sure to include -c 8 or -c 16 depending on #
+        self.audio_receiver = AudioReceiver(self.chan_count)
+
+        self.collected_data = []
+        self.chunk_duration = 15 * 60  # 10 minutes in seconds
+        self.chunk_samples = self.chunk_duration * self.audio_receiver.sample_rate
+
+        self.chunk_index = 1
+        self.chunk_start_time = datetime.now().strftime("%m-%d-%Y_%I-%M-%S")
+
+        self.file_path = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/2 FOSSN/Data/_Recordings'
+
+        self.recording_thread = None
+        self.running = False
+
+
+    def start_recording(self):
+        self.recording_thread = Thread(target=self.record, daemon=False).start()
+        self.running = True
+
+
+    def record(self):
+        while True:
+            if sys.stdin in select.select([sys.stdin], [], [], 0)[0]:
+                line = input()
+                if line.strip().lower() == 's':
+                    break
+
+            data = self.audio_receiver.get_audio_data()
+            if data is not None:
+                self.collected_data.append(data)
+                # print(collected_data)
+
+                # Check if the chunk samples limit is exceeded
+                total_samples = sum(len(d) for d in self.collected_data)
+                if total_samples >= self.chunk_samples:
+                    all_data = np.vstack(self.collected_data)
+
+                    # # process audio
+                    # audio_object = Audio(data=all_data, sample_rate=audio_receiver.sample_rate, num_channels=audio_receiver.chan_count)
+                    # all_data = high_pass_filter(audio_object, cutoff_freq=100)
+                    # all_data = low_pass_filter(audio_object, cutoff_freq=10000)
+                    # all_data = normalize(audio_object, 100)
+
+                    filename = f"{self.chunk_start_time}_chunk_{self.chunk_index}"
+                    save_to_wav(all_data, self.audio_receiver.sample_rate, self.audio_receiver.chan_count, filename)
+
+                    # Reset collected data and chunk start time
+                    collected_data = []
+                    self.chunk_index += 1
+
+            time.sleep(0.1)
+
+        # Save any remaining data
+        if self.collected_data:
+            all_data = np.vstack(self.collected_data)
+
+            # # process audio
+            # audio_object = Audio(data=all_data, sample_rate=audio_receiver.sample_rate, num_channels=audio_receiver.chan_count)
+            # all_data = high_pass_filter(audio_object, cutoff_freq=100)
+            # all_data = low_pass_filter(audio_object, cutoff_freq=10000)
+            # all_data = normalize(audio_object, 100)
+
+            filename = f"{self.file_path}/{self.chunk_start_time}_chunk_{self.chunk_index}"
+            save_to_wav(all_data, self.audio_receiver.sample_rate, self.audio_receiver.chan_count, filename)
+
+
+
 
 
 if __name__ == "__main__":
