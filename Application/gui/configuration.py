@@ -6,7 +6,7 @@ def base_path(relative_path):
     return os.path.join(base_dir, relative_path)
 
 # Main App Settings
-window_title = 'University of Memphis: Acoustic Camera'
+window_title = 'University of Memphis: FOSSN Phased Array'
 
 window_width = 990 # 990
 window_height = 490  # 490

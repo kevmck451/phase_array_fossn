@@ -12,9 +12,6 @@ import customtkinter as ctk
 
 
 
-
-
-
 class Main_Window(ctk.CTk):
     def __init__(self, event_handler):
         super().__init__()
@@ -49,7 +46,6 @@ class Main_Window(ctk.CTk):
         # Configure grid rows with equal weight
         self.rowconfigure(0, weight=1)
         self.rowconfigure(1, weight=3)
-
 
         # Place the frames using grid
         self.Console_Frame.grid(row=0, column=0, sticky='nsew')
@@ -101,7 +97,7 @@ class Console_Frame(ctk.CTkFrame):
 
     def console_box(self, frame):
         # Experiment Metadata Info Box (Title)
-        self.title = ctk.CTkLabel(frame, text="Acoustic Camera", font=configuration.console_font_style)
+        self.title = ctk.CTkLabel(frame, text="FOSSN Phased Array", font=configuration.console_font_style)
         # Place the title in the third column, centered
         self.title.grid(row=0, column=0, padx=configuration.console_x_pad, pady=configuration.console_y_pad, sticky='nsew')
 

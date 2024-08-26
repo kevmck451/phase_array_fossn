@@ -14,7 +14,8 @@ class AudioReceiver:
         self.chan_count = chan_count
         self.recv_q = queue.Queue(maxsize=10)
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.start_receiving()
+        start_recv_thread = threading.Thread(target=self.start_receiving, daemon=False)
+        start_recv_thread.start()
 
     def connect(self):
         print('Waiting for FPGA Connection...')
@@ -42,7 +43,7 @@ class AudioReceiver:
     def start_receiving(self):
         print('Attempting to Connect with FPGA Server')
         self.connect()
-        recv_thread = threading.Thread(target=self.recv_thread_fn, daemon=True)
+        recv_thread = threading.Thread(target=self.recv_thread_fn, daemon=False)
         recv_thread.start()
 
     def get_audio_data(self):
