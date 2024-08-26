@@ -8,8 +8,6 @@ class Event(Enum):
     SETTINGS = auto()
     START_RECORDER = auto()
     STOP_RECORDER = auto()
-    SETTINGS_BUTTON_1 = auto()
-    SETTINGS_BUTTON_2 = auto()
     DUMMY_BUTTON = auto()
 
 
@@ -21,4 +19,4 @@ class State(Enum):
     IDLE = auto()
     SHUTTING_DOWN = auto()
     SETTINGS_OPEN = auto()
-    DEMO_IN_PROGRESS = auto()
+    RUNNING = auto()

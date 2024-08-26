@@ -21,8 +21,8 @@ class Sender_Client:
 
     def ensure_connection(self):
         print('Attempting to Connect with Temp Server')
+        print("Waiting for Temp Connection...")
         while not self.connected and not self.cancel_attempt:
-            print("Waiting for Temp Connection...")
             try:
                 self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 self.socket.connect((self.host, self.port))
@@ -101,7 +101,7 @@ class Sender_Client:
             self.connected = False
             if self.socket:
                 self.socket.close()
-                print("Connection closed")
+                print("Temp Sensor Connection closed")
 
 # Usage example
 if __name__ == '__main__':

@@ -23,7 +23,5 @@ if __name__ == "__main__":
 
     controller.add_peripherals(temp_sensor, audio_recorder, gui)
 
-    controller.beamform_setup()
-
 
     gui.mainloop()

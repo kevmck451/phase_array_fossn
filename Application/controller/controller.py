@@ -29,14 +29,22 @@ class Controller:
         self.beamform_running = False
 
         self.processor = None
+        self.processing_chain = None
+        self.processor_thread = None
+        self.processor_running = False
 
         self.pca_detector = None
+        self.pca_detector_thread = None
+        self.pca_detector_running = False
+
+        self.queue_check_time = 0.1
 
 
     def add_peripherals(self, temp_sensor, audio_recorder, gui):
         self.temp_sensor = temp_sensor
         self.audio_recorder = audio_recorder
         self.gui = gui
+
 
     # ---------------------------------
     # BEAMFORMING ---------------------
@@ -47,12 +55,10 @@ class Controller:
             if answer == 'n': pass
             else: self.temperature = input('Enter Temp(F): ')
             self.beamformer = Beamform(self.thetas, self.phis, self.temperature)
+            self.beamforming_thread = Thread(target=self.beamform_start, daemon=True).start()
+            self.beamform_running = True
 
     def beamform_start(self):
-        self.beamforming_thread = Thread(target=self.beamform, daemon=False).start()
-        self.beamform_running = True
-
-    def beamform(self):
         while self.beamform_running:
             if not self.audio_recorder.queue.empty():
                 print()
@@ -63,35 +69,118 @@ class Controller:
                 # -------------------------
                 self.beamformer.beamform_data(current_audio_data)
 
-            time.sleep(0.5)
+            time.sleep(self.queue_check_time)
+
+
 
     # ---------------------------------
     # PROCESSING ----------------------
     # ---------------------------------
     def processor_setup(self):
         self.processor = Processing()
+        self.processing_chain = {'hp': 1000, 'nm': 100, 'ds': 6000}
+        self.processor_thread = Thread(target=self.processor_start, daemon=True).start()
+        self.processor_running = True
+
+    def processor_start(self):
+        while self.processor_running:
+            if not self.beamformer.queue.empty():
+                print()
+                print('PROCESSING------------------')
+                print(f'Beamforming Stream Queue Size: {self.audio_recorder.queue.qsize()}')
+                current_data = self.audio_recorder.queue.get()
+                print(f'Current Data Size: {current_data.shape}')
+                # -------------------------
+                self.processor.process_data(current_data)
+
+            time.sleep(self.queue_check_time)
+
+
 
     # ---------------------------------
     # PCA DETECTOR --------------------
     # ---------------------------------
     def pca_detector_setup(self):
-        self.processor = PCA_Detection()
+        self.pca_detector = PCA_Detection()
+        self.pca_detector_thread = Thread(target=self.pca_detector_start, daemon=True).start()
+        self.pca_detector_running = True
+
+    def pca_detector_start(self):
+        while self.pca_detector_running:
+            if not self.processor.queue.empty():
+                print('PCA DETECTING----------')
+                print(f'Audio Stream Queue Size: {self.processor.queue.qsize()}')
+                current_data = self.processor.queue.get()
+                print(f'Current Data Size: {current_data.shape}')
+                # -------------------------
+                self.pca_detector.process_chunk(current_data)
+                print(f'PCA Queue Size: {self.pca_detector.queue.qsize()}')
+                if not self.pca_detector.queue.empty():
+                    current_pca_data = self.pca_detector.queue.get()
+                    print(f'PCA Data Type: {type(current_pca_data)}')
+                    print(f'PCA Data Length: {len(current_pca_data)}')
+                    print(f'PCA Data Shape at 0: {current_pca_data.get(0).shape}')
+                print()
+                print('=' * 40)
+                print()
+            time.sleep(self.queue_check_time)
 
 
 
+
+    # ---------------------------------
+    # EVENT HANDLER -------------------
+    # ---------------------------------
     def handle_event(self, event):
 
         # Load from Specific Stimulus Number:
-        if event == Event.SETTINGS:
+        if event == Event.ON_CLOSE:
+            self.audio_recorder.record_running = False
+            self.beamform_running = False
+            self.processor_running = False
+            self.pca_detector_running = False
+            self.temp_sensor.cancel_attempt = True
+            self.temp_sensor.close_connection()
+            self.audio_recorder.audio_receiver.cancel_attempt = True
+            self.audio_recorder.audio_receiver.close_connection()
+
+            self.app_state = State.IDLE
+
+        elif event == Event.SETTINGS:
             self.settings_window = Settings_Window(self.handle_event)
             self.settings_window.mainloop()
 
         elif event == Event.START_RECORDER:
-            print('START_RECORDER BUTTON PRESSED')
+            if self.app_state == State.RUNNING:
+                print('Detection Already Running')
+                pass
+            else:
+                print('START_RECORDER BUTTON PRESSED')
+                if self.audio_recorder.audio_receiver.running is False:
+                    print('FPGA not connected')
+                    pass
+                else:
+                    self.audio_recorder.start_recording()
+                    self.beamform_setup()
+                    self.processor_setup()
+                    self.pca_detector_setup()
+                    self.app_state = State.RUNNING
+
+
+        elif event == Event.STOP_RECORDER:
+            print('STOP_RECORDER BUTTON PRESSED')
             if self.audio_recorder.audio_receiver.running is False:
                 print('FPGA not connected')
                 pass
-            else: self.audio_recorder.start_recording()
+            else:
+                self.audio_recorder.record_running = False
+                self.beamform_running = False
+                self.processor_running = False
+                self.pca_detector_running = False
+                self.app_state = State.IDLE
+
+
+
 
 
         elif event == Event.DUMMY_BUTTON:
