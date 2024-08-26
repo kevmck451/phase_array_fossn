@@ -26,8 +26,8 @@ class Beamform:
         self.mic_coordinates = generate_mic_coordinates()
         self.thetas = thetas
         self.phis = phis
-        self.temperature = initial_temp
-        self.temperature_current = initial_temp
+        self.temperature = int(initial_temp)
+        self.temperature_current = int(initial_temp)
         self.fir_coeffs = self.compile_all_fir_coeffs()
         self.desired_channels = self.fir_coeffs.shape[0]
         self.num_coeffs = self.fir_coeffs.shape[3]

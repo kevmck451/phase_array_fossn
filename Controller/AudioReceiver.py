@@ -12,16 +12,24 @@ class AudioReceiver:
         self.sample_rate = 48000
         self.chunk_secs = 1.0
         self.chan_count = chan_count
+        self.running = False
         self.recv_q = queue.Queue(maxsize=10)
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         start_recv_thread = threading.Thread(target=self.start_receiving, daemon=False)
         start_recv_thread.start()
+
+    def start_receiving(self):
+        print('Attempting to Connect with FPGA Server')
+        self.connect()
+        recv_thread = threading.Thread(target=self.recv_thread_fn, daemon=False)
+        recv_thread.start()
 
     def connect(self):
         print('Waiting for FPGA Connection...')
         self.sock.connect((self.host, self.port))
 
     def recv_thread_fn(self):
+        self.running = True
         while True:
             received_bits = []
             received_len = 0
@@ -29,6 +37,7 @@ class AudioReceiver:
             while received_len < receive_total:
                 more = self.sock.recv(min(4096, receive_total - received_len))
                 if not more:
+                    self.running = False
                     raise RuntimeError("Socket connection broken")
                 received_bits.append(more)
                 received_len += len(more)
@@ -40,11 +49,7 @@ class AudioReceiver:
             except queue.Full:
                 pass
 
-    def start_receiving(self):
-        print('Attempting to Connect with FPGA Server')
-        self.connect()
-        recv_thread = threading.Thread(target=self.recv_thread_fn, daemon=False)
-        recv_thread.start()
+
 
     def get_audio_data(self):
         if not self.recv_q.empty():
