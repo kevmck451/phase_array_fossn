@@ -96,6 +96,11 @@ class Sender_Client:
     def close_connection(self):
         try:
             self.socket.sendall('disconnecting'.encode())
+            self.cancel_attempt = True
+            self.connected = False
+            if self.socket:
+                self.socket.close()
+                print("Temp Sensor Connection closed")
         except:
             self.cancel_attempt = True
             self.connected = False

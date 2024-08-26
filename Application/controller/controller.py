@@ -139,9 +139,7 @@ class Controller:
             self.beamform_running = False
             self.processor_running = False
             self.pca_detector_running = False
-            self.temp_sensor.cancel_attempt = True
             self.temp_sensor.close_connection()
-            self.audio_recorder.audio_receiver.cancel_attempt = True
             self.audio_recorder.audio_receiver.close_connection()
 
             self.app_state = State.IDLE
