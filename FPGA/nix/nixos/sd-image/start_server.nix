@@ -10,7 +10,7 @@
       description = "Start Mic Server";
 
       wantedBy = [ "multi-user.target" ];
-      after = ["network-online.target" "bitstream.service" ];
+      after = ["bitstream.service" ];
 
       serviceConfig = {
           Environment = "PYTHONUNBUFFERED=1";

@@ -58,7 +58,9 @@ journalctl -fu temp-sensor
 ```zsh
 journalctl -fu temp-sensor-server
 ```
-
+```zsh
+journalctl -fu start-mic-server
+```
 
 
 #### gitpull 
