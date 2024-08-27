@@ -2,8 +2,9 @@
 
 {
   imports = [
-    (modulesPath + "/profiles/minimal.nixos")
-    (modulesPath + "/installer/sd-card/sd-image.nixos")
+    (modulesPath + "/profiles/minimal.nix")
+    (modulesPath + "/installer/sd-card/sd-image.nix")
+    ./start_server.nix
   ];
 
   boot.loader.generic-extlinux-compatible.enable = true;
@@ -131,6 +132,7 @@
     "of_fpga_region"
     "g_ncm" # USB gadget module for USB ethernet
   ];
+
   systemd.services.bitstream = {
     description = "FPGA bitstream overlay loader";
 
