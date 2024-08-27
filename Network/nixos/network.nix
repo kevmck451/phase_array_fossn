@@ -8,7 +8,9 @@
   networking.firewall.enable = false;
   networking.useDHCP = true;
 
-  networking.interfaces.wlp1s0u1u4.ipv4.addresses = [ {
+  networking.bridges.br0 = { interfaces = [ "wlp1s0u1u4" "enp1s0u1u2" ]; };
+
+  networking.interfaces.br0.ipv4.addresses = [ {
     address = "192.168.1.1";
     prefixLength = 24;
   } ];
@@ -39,9 +41,9 @@
     enable = true;
     settings = {
        bind-interfaces = true;
-       interface = [ "wlp1s0u1u4" ];
+       interface = [ "br0" ];
        dhcp-range = [
-         "wlp1s0u1u4,192.168.1.100,192.168.1.200,255.255.255.0,12h"
+         "br0,192.168.1.100,192.168.1.200,255.255.255.0,12h"
        ];
        # just use google. there should be some way to replicate the local system's resolution but couldn't figure
        # it out before we gave up soooo.
@@ -51,7 +53,7 @@
      };
   };
 
-  networking.dhcpcd.denyInterfaces = [ "wlp1s0u1u4" ];
+  networking.dhcpcd.denyInterfaces = [ "br0" ];
 
   # Firewall Configuration --------------------------------
   services.haveged.enable = config.services.hostapd.enable;
@@ -62,8 +64,8 @@
       after = [ "network.target" ];
       serviceConfig.ExecStart = ''
         ${pkgs.iptables}/bin/iptables -t nat -A POSTROUTING -o end0 -j MASQUERADE
-        ${pkgs.iptables}/bin/iptables -A FORWARD -i wlp1s0u1u4 -o end0 -m state --state RELATED,ESTABLISHED -j ACCEPT
-        ${pkgs.iptables}/bin/iptables -A FORWARD -i end0 -o wlp1s0u1u4 -j ACCEPT
+        ${pkgs.iptables}/bin/iptables -A FORWARD -i br0 o end0 -m state --state RELATED,ESTABLISHED -j ACCEPT
+        ${pkgs.iptables}/bin/iptables -A FORWARD -i end0 -o br0 -j ACCEPT
       '';
       wantedBy = [ "multi-user.target" ];
     };
