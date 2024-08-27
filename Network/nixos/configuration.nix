@@ -7,7 +7,7 @@
   imports =
     [
       ./hardware-configuration.nix
-#      ./network.nix
+      ./network.nix
       ./temp_sensor.nix
     ];
 
