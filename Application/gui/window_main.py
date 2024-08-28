@@ -5,13 +5,9 @@ from Application.controller.event_states import Event
 import Application.gui.configuration as configuration
 
 
-
-
 import customtkinter as ctk
 import tkinter as tk
 import sys
-
-
 
 
 
@@ -50,7 +46,6 @@ class Main_Window(ctk.CTk):
         self.protocol("WM_DELETE_WINDOW", self.on_close)
         self.bind("<Escape>", self.on_close)
         self.bind("<Control-c>", self.on_close)
-
 
     def on_close(self):
         # Perform any cleanup or process termination steps here
@@ -217,6 +212,9 @@ class Top_Right_Frame(ctk.CTkFrame):
 
         sys.stdout = self
 
+        print('Attempting to Connect with Temp Server')
+        print('Attempting to Connect with FPGA Server')
+
 
     # FRAMES ---------------------------------------------
     def console_frame(self, frame):
@@ -286,10 +284,6 @@ class Main_Middle_Frame(ctk.CTkFrame):
 
 
 
-
-
-
-
 # --------------------------------------------------------------------------------------------------
 # BOTTOM FRAMES ------------------------------------------------------------------------------------
 # --------------------------------------------------------------------------------------------------
@@ -348,6 +342,15 @@ class Bottom_Left_Frame(ctk.CTkFrame):
         self.beamform_settings_label = ctk.CTkLabel(frame, text="Beamform Settings", font=configuration.console_font_style)
         self.beamform_settings_label.pack(fill='both')  # , expand=True
 
+        self.thetas_label = ctk.CTkLabel(frame, text="Thetas", font=configuration.console_font_style)
+        self.thetas_label.pack(fill='both')  # , expand=True
+
+        self.phis_label = ctk.CTkLabel(frame, text="Phis", font=configuration.console_font_style)
+        self.phis_label.pack(fill='both')  # , expand=True
+
+        self.manual_temp_entry_label = ctk.CTkLabel(frame, text="Manual Temp Entry", font=configuration.console_font_style)
+        self.manual_temp_entry_label.pack(fill='both')  # , expand=True
+
 
 
 class Bottom_Middle_Frame(ctk.CTkFrame):
@@ -383,6 +386,23 @@ class Bottom_Middle_Frame(ctk.CTkFrame):
     def processing_settings_frame(self, frame):
         self.processing_settings_label = ctk.CTkLabel(frame, text="Processing Settings", font=configuration.console_font_style)
         self.processing_settings_label.pack(fill='both')  # , expand=True
+
+        self.processing_chain_label = ctk.CTkLabel(frame,
+                                                   text="Processing Chain: Noise Reduction, High Pass, Normalization, Down Sampling",
+                                                   font=configuration.console_font_style)
+        self.processing_chain_label.pack(fill='both')  # , expand=True
+
+        self.nr_std_threshold_label = ctk.CTkLabel(frame, text="NR: STD Threshold", font=configuration.console_font_style)
+        self.nr_std_threshold_label.pack(fill='both')  # , expand=True
+
+        self.hp_bottom_cutoff_freq_label = ctk.CTkLabel(frame, text="HP: Bottom Cutoff Frequency", font=configuration.console_font_style)
+        self.hp_bottom_cutoff_freq_label.pack(fill='both')  # , expand=True
+
+        self.nm_percentage_label = ctk.CTkLabel(frame, text="NM: Percentage", font=configuration.console_font_style)
+        self.nm_percentage_label.pack(fill='both')  # , expand=True
+
+        self.ds_new_sr_label = ctk.CTkLabel(frame, text="DS: New Sample Rate", font=configuration.console_font_style)
+        self.ds_new_sr_label.pack(fill='both')  # , expand=True
 
 
 
@@ -420,3 +440,9 @@ class Bottom_Right_Frame(ctk.CTkFrame):
     def pca_detector_settings_frame(self, frame):
         self.pca_detector_settings_label = ctk.CTkLabel(frame, text="PCA Detector Settings", font=configuration.console_font_style)
         self.pca_detector_settings_label.pack(fill='both')  # , expand=True
+
+        self.num_components_label = ctk.CTkLabel(frame, text="Number of Components", font=configuration.console_font_style)
+        self.num_components_label.pack(fill='both')  # , expand=True
+
+        self.threshold_multiplier_label = ctk.CTkLabel(frame, text="Threshold Multiplier", font=configuration.console_font_style)
+        self.threshold_multiplier_label.pack(fill='both')  # , expand=True

@@ -4,7 +4,6 @@ from Mic_Array.Processing.process_realtime import Processing
 from Mic_Array.PCA.pca_realtime import PCA_Detection
 
 
-from Application.gui.settings import Settings_Window
 from Application.controller.event_states import Event
 from Application.controller.event_states import State
 
@@ -167,7 +166,6 @@ class Controller:
             self.beamform_running = False
             self.processor_running = False
             self.pca_detector_running = False
-
 
 
         elif event == Event.PCA_CALIBRATION:

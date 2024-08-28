@@ -29,7 +29,7 @@ class Processing:
         self.processing_chain = None
         self.nr_std_threshold = None
         self.bottom_cutoff_frequency = None
-        self.top_cutoff_frequency = None
+        self.norm_percent = None
         self.new_sample_rate = None
 
         self.queue = Queue()
