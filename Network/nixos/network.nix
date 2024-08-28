@@ -71,21 +71,10 @@
     };
   
   systemd.services.br0-netdev.serviceConfig = #[ "br0-netdev.service" ];
-  { 
-ExecStartPre = "${pkgs.coreutils}/bin/sleep 3"; # until i guess the wifi or usb or whichever comes up??? 1 was sufficient but better safe
-#RestartSec = 1;
-#Restart = "on-failure";
-#StartLimitBurst = 50;
-};
 
-        # ${pkgs.iptables}/bin/iptables -t nat -A POSTROUTING -d 192.168.80.0/24 -j ACCEPT
-  #      ${pkgs.iptables}/bin/iptables -t nat -A POSTROUTING -o end0 -j MASQUERADE
-  #      ${pkgs.iptables}/bin/iptables -A FORWARD -i wlp1s0u1u4 -o end0 -m state --state RELATED,ESTABLISHED -j ACCEPT
-  #      ${pkgs.iptables}/bin/iptables -A FORWARD -i end0 -o wlp1s0u1u4 -j ACCEPT
-        # ${pkgs.iptables}/bin/iptables -A FORWARD -i wlp1s0u1u4 -o enp1s0u1u2 -m state --state RELATED,ESTABLISHED -j ACCEPT
-        # ${pkgs.iptables}/bin/iptables -A FORWARD -i enp1s0u1u2 -o wlp1s0u1u4 -j ACCEPT
-        # ${pkgs.iptables}/bin/iptables -A FORWARD -i enp1s0u1u2 -o wlp1s0u1u4 -m state --state RELATED,ESTABLISHED -j ACCEPT
-        # ${pkgs.iptables}/bin/iptables -A FORWARD -i wlp1s0u1u4 -o enp1s0u1u2 -j ACCEPT
+  { 
+  ExecStartPre = "${pkgs.coreutils}/bin/sleep 3"; # until i guess the wifi or usb or whichever comes up??? 1 was sufficient but better safe
+  };
 
 
 }
