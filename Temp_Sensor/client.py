@@ -6,7 +6,7 @@ import threading
 import time
 
 class Sender_Client:
-    def __init__(self, host='127.0.0.1', port=12345, name='unknown'):
+    def __init__(self, host='192.168.1.1', port=12345, name='unknown'):
         self.host = host #
         self.port = port
         self.name = name
@@ -21,7 +21,6 @@ class Sender_Client:
 
     def ensure_connection(self):
         print('Attempting to Connect with Temp Server')
-        print("Waiting for Temp Connection...")
         while not self.connected and not self.cancel_attempt:
             try:
                 self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -30,7 +29,7 @@ class Sender_Client:
                 self.socket.sendall(handshake_message.encode())
                 response = self.socket.recv(1024)
                 if not response.decode('utf-8') == 'ack': continue
-                print(f"Connected to {self.host}:{self.port}")
+                print(f"Temp: Connected to {self.host}:{self.port}")
                 self.connected = True
                 self.heartbeat_thread = threading.Thread(target=self.heartbeat, daemon=True)
                 self.heartbeat_thread.start()
@@ -112,7 +111,7 @@ class Sender_Client:
 if __name__ == '__main__':
 
     # for running pi to pi
-    client = Sender_Client('127.0.0.1', name='Pi-Nix')
+    client = Sender_Client('192.168.1.1', name='Pi-Nix')
 
     while not client.connected:
         # print("Waiting for connection...")
