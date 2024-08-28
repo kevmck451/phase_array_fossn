@@ -69,6 +69,14 @@
       '';
       wantedBy = [ "multi-user.target" ];
     };
+  
+  systemd.services.br0-netdev.serviceConfig = #[ "br0-netdev.service" ];
+  { 
+ExecStartPre = "${pkgs.coreutils}/bin/sleep 3"; # until i guess the wifi or usb or whichever comes up??? 1 was sufficient but better safe
+#RestartSec = 1;
+#Restart = "on-failure";
+#StartLimitBurst = 50;
+};
 
         # ${pkgs.iptables}/bin/iptables -t nat -A POSTROUTING -d 192.168.80.0/24 -j ACCEPT
   #      ${pkgs.iptables}/bin/iptables -t nat -A POSTROUTING -o end0 -j MASQUERADE

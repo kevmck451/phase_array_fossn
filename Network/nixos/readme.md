@@ -112,12 +112,12 @@ sudo nixos-rebuild dry-run
 
 
 ```zsh
-ssh admin@pi-nixos.local  
+ssh admin@pi-nix.local  
 ```
 - pi IP on school: 141.225.162.166
 - pi IP at home: 192.168.0.137
 
-
+- to connect to pi without ip
 ```zsh
-
+ssh admin@pi-nix.uom.memphis.edu
 ```

@@ -1,4 +1,5 @@
 from Controller.AudioReceiver import AudioReceiver
+from Controller.AudioReceiver import AudioReceiver_MicArray
 from Recorder.save_to_wav import save_to_wav
 from Filters.high_pass import high_pass_filter
 from Filters.low_pass import low_pass_filter
@@ -81,7 +82,7 @@ def Record_Audio():
 class Audio_Recorder:
     def __init__(self):
         self.chan_count = 48  # make sure to include -c 8 or -c 16 depending on #
-        self.audio_receiver = AudioReceiver(self.chan_count)
+        self.audio_receiver = AudioReceiver_MicArray(self.chan_count)
 
         self.collected_data = []
         self.chunk_duration = 15 * 60  # 10 minutes in seconds
