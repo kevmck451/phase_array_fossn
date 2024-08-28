@@ -14,7 +14,9 @@
 
 
 
-
+```zsh
+journalctl -fu start-mic-server
+```
 
 
 
