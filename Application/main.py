@@ -14,7 +14,7 @@ from Recorder.RecordAudio import Audio_Recorder
 if __name__ == "__main__":
 
 
-    temp_sensor = Sender_Client('127.0.0.1', name='macbook')
+    temp_sensor = Sender_Client(name='macbook')
     audio_recorder = Audio_Recorder()
 
     controller = Controller()
