@@ -5,9 +5,10 @@ from enum import Enum, auto
 # Define the events
 class Event(Enum):
     ON_CLOSE = auto()
-    SETTINGS = auto()
     START_RECORDER = auto()
     STOP_RECORDER = auto()
+    PCA_CALIBRATION = auto()
+    STOP_PCA_CALIBRATION = auto()
     DUMMY_BUTTON = auto()
 
 
@@ -20,3 +21,4 @@ class State(Enum):
     SHUTTING_DOWN = auto()
     SETTINGS_OPEN = auto()
     RUNNING = auto()
+    CALIBRATING = auto()

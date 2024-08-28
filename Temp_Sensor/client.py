@@ -18,6 +18,10 @@ class Sender_Client:
         self.heartbeat_thread = None
         self.heartbeat_attempt = 0
         self.wait_for_response_thread = None
+        self.request_temp_thread = None
+        self.temp_record = []
+        self.current_temp = None
+        self.running = False
 
     def ensure_connection(self):
         print('Attempting to Connect with Temp Server')
@@ -33,6 +37,8 @@ class Sender_Client:
                 self.connected = True
                 self.heartbeat_thread = threading.Thread(target=self.heartbeat, daemon=True)
                 self.heartbeat_thread.start()
+                self.request_temp_thread = threading.Thread(target=self.request_temp, daemon=True)
+                self.request_temp_thread.start()
                 self.wait_for_response_thread = threading.Thread(target=self.wait_for_response, daemon=True)
                 self.wait_for_response_thread.start()
 
@@ -81,16 +87,25 @@ class Sender_Client:
         while self.connected:
             try:
                 response = self.socket.recv(1024).decode()
-                print(response)
+                # print(response)
                 if 'server_disconnecting' in response:
                     self.connected = False
                 else:
-                    print(f'Message: {response}')
+                    try:
+                        self.current_temp = int(response)
+                        self.temp_record.append(self.current_temp)
+                    except:
+                        print(f'Message: {response}')
             except OSError as e:
                 if e.errno == 9:  # Bad file descriptor error
                     print("Socket already closed.")
                 else:
                     raise  # Re-raise any unexpected errors
+
+    def request_temp(self):
+        while self.running:
+            self.send_data('temp_requested')
+            time.sleep(30)
 
     def close_connection(self):
         try:

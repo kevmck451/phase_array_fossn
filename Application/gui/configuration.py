@@ -44,6 +44,17 @@ console_font_style = ("default_font", 12)
 
 # Color Options
 
+# Start / Stop
+start_fg_color="#2B881A"
+start_hover_color='#389327'
+stop_fg_color="#BD2E2E"
+stop_hover_color='#C74343'
+
+# Pause Frame
+pause_fg_color = '#8F8F8F'
+pause_hover_color = '#9E9E9E'
+
+
 # Overlay Colors
 green_fg_color="#2B881A"
 green_hover_color='#389327'

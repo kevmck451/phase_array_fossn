@@ -50,13 +50,17 @@ class Controller:
     # BEAMFORMING ---------------------
     # ---------------------------------
     def beamform_setup(self):
-        if not self.temp_sensor.connected:
-            answer = input('Temp Sensor not Connected\nWant to enter temp manually? y or n ')
-            if answer == 'n': pass
-            else: self.temperature = input('Enter Temp(F): ')
-            self.beamformer = Beamform(self.thetas, self.phis, self.temperature)
-            self.beamforming_thread = Thread(target=self.beamform_start, daemon=True).start()
-            self.beamform_running = True
+        if self.temp_sensor.connected:
+            if self.temp_sensor.current_temp is not None:
+                self.temperature = self.temp_sensor.current_temp
+        else:
+            # get manually: pop window with entry
+            print('Manual Temp Entry')
+            self.temperature = 90
+
+        self.beamformer = Beamform(self.thetas, self.phis, self.temperature)
+        self.beamforming_thread = Thread(target=self.beamform_start, daemon=True).start()
+        self.beamform_running = True
 
     def beamform_start(self):
         while self.beamform_running:
@@ -141,44 +145,40 @@ class Controller:
             self.pca_detector_running = False
             self.temp_sensor.close_connection()
             self.audio_recorder.audio_receiver.close_connection()
-
             self.app_state = State.IDLE
 
-        elif event == Event.SETTINGS:
-            self.settings_window = Settings_Window(self.handle_event)
-            self.settings_window.mainloop()
-
         elif event == Event.START_RECORDER:
-            if self.app_state == State.RUNNING:
-                print('Detection Already Running')
-                pass
+            print('START_RECORDER BUTTON PRESSED')
+            if self.audio_recorder.audio_receiver.running is False:
+                print('FPGA not connected')
+            if self.app_state != State.IDLE:
+                print('App State must be Idle')
             else:
-                print('START_RECORDER BUTTON PRESSED')
-                if self.audio_recorder.audio_receiver.running is False:
-                    print('FPGA not connected')
-                    pass
-                else:
-                    self.audio_recorder.start_recording()
-                    self.beamform_setup()
-                    self.processor_setup()
-                    self.pca_detector_setup()
-                    self.app_state = State.RUNNING
-
+                self.app_state = State.RUNNING
+                self.audio_recorder.start_recording()
+                self.beamform_setup()
+                self.processor_setup()
+                self.pca_detector_setup()
 
         elif event == Event.STOP_RECORDER:
             print('STOP_RECORDER BUTTON PRESSED')
-            if self.audio_recorder.audio_receiver.running is False:
-                print('FPGA not connected')
-                pass
-            else:
-                self.audio_recorder.record_running = False
-                self.beamform_running = False
-                self.processor_running = False
-                self.pca_detector_running = False
-                self.app_state = State.IDLE
+            self.app_state = State.IDLE
+            self.audio_recorder.record_running = False
+            self.beamform_running = False
+            self.processor_running = False
+            self.pca_detector_running = False
 
 
 
+        elif event == Event.PCA_CALIBRATION:
+            print('Starting PCA Calibration')
+            self.app_state = State.CALIBRATING
+            self.gui.Top_Frame.Center_Frame.toggle_calibrate()
+
+        elif event == Event.STOP_PCA_CALIBRATION:
+            print('Stopping PCA Calibration')
+            self.app_state = State.IDLE
+            self.gui.Top_Frame.Center_Frame.toggle_calibrate()
 
 
         elif event == Event.DUMMY_BUTTON:

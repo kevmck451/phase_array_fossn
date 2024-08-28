@@ -128,44 +128,78 @@ class Top_Middle_Frame(ctk.CTkFrame):
         self.event_handler = event_handler
         self.parent = parent
 
+        self.playing = False
+        self.calibrating = False
+
         # Top Frame
         top_frame = ctk.CTkFrame(self)
         top_frame.grid(row=0, column=0, padx=configuration.x_pad_main, pady=configuration.y_pad_main, sticky='nsew')
         top_frame.grid_rowconfigure(0, weight=1, uniform='row')
 
-        # Middle Frame
-        middle_frame = ctk.CTkFrame(self)
-        middle_frame.grid(row=1, column=0, padx=configuration.x_pad_main, pady=configuration.y_pad_main, sticky='nsew')
-        middle_frame.grid_rowconfigure(0, weight=1, uniform='row')
-
         # Bottom Frame
         bottom_frame = ctk.CTkFrame(self)
-        bottom_frame.grid(row=2, column=0, padx=configuration.x_pad_main, pady=configuration.y_pad_main, sticky='nsew')
+        bottom_frame.grid(row=1, column=0, padx=configuration.x_pad_main, pady=configuration.y_pad_main, sticky='nsew')
         bottom_frame.grid_rowconfigure(0, weight=1, uniform='row')
 
         # Configure the grid rows and column for self
         self.grid_rowconfigure(0, weight=1)
         self.grid_rowconfigure(1, weight=1)
-        self.grid_rowconfigure(2, weight=1)
+
         self.grid_columnconfigure(0, weight=1, uniform='col')
 
         self.start_frame(top_frame)
-        self.stop_frame(middle_frame)
         self.calibration_frame(bottom_frame)
 
 
     # FRAMES ---------------------------------------------
     def start_frame(self, frame):
-        self.start_label = ctk.CTkLabel(frame, text="Start Recording, Beamforming, Processing, and PCA Detecting", font=configuration.console_font_style)
+        self.start_label = ctk.CTkLabel(frame, text="Start/Stop Recording, Beamforming, Processing, and PCA Detecting", font=configuration.console_font_style)
         self.start_label.pack(fill='both')  # , expand=True
 
-    def stop_frame(self, frame):
-        self.stop_label = ctk.CTkLabel(frame, text="Stop Recording, Beamforming, Processing, and PCA Detecting", font=configuration.console_font_style)
-        self.stop_label.pack(fill='both')  # , expand=True
+        self.start_button = ctk.CTkButton(frame, text="Start",
+                                         fg_color=configuration.start_fg_color,
+                                         hover_color=configuration.start_hover_color,
+                                         command=lambda: self.event_handler(Event.START_RECORDER))
+        self.start_button.pack(pady=5)
 
     def calibration_frame(self, frame):
         self.calibration_label = ctk.CTkLabel(frame, text="Baseline Calibration for PCA Detector", font=configuration.console_font_style)
         self.calibration_label.pack(fill='both')  # , expand=True
+
+        self.calibrate_button = ctk.CTkButton(frame, text="Calibrate PCA",
+                                          fg_color=configuration.start_fg_color,
+                                          hover_color=configuration.start_hover_color,
+                                          command=lambda: self.event_handler(Event.PCA_CALIBRATION))
+        self.calibrate_button.pack(pady=5)
+
+    def toggle_play(self):
+        if self.playing:
+            self.start_button.configure(text="Start",
+                                       fg_color=configuration.start_fg_color,
+                                       hover_color=configuration.start_hover_color,
+                                       command=lambda: self.event_handler(Event.START_RECORDER))
+            self.playing = False
+            # Placeholder for stopping audio
+        else:
+            self.start_button.configure(text="Stop",
+                                       fg_color=configuration.stop_fg_color,
+                                       hover_color=configuration.stop_hover_color,
+                                       command=lambda: self.event_handler(Event.STOP_RECORDER))
+            self.playing = True
+
+    def toggle_calibrate(self):
+        if self.calibrating:
+            self.calibrate_button.configure(text="Calibrate PCA",
+                                        fg_color=configuration.start_fg_color,
+                                        hover_color=configuration.start_hover_color,
+                                        command=lambda: self.event_handler(Event.PCA_CALIBRATION))
+            self.calibrating = False
+        else:
+            self.calibrate_button.configure(text="Stop Calibration",
+                                        fg_color=configuration.stop_fg_color,
+                                        hover_color=configuration.stop_hover_color,
+                                        command=lambda: self.event_handler(Event.STOP_PCA_CALIBRATION))
+            self.calibrating = True
 
 class Top_Right_Frame(ctk.CTkFrame):
     def __init__(self, parent, event_handler):
