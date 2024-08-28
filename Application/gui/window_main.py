@@ -9,7 +9,7 @@ import Application.gui.configuration as configuration
 
 import customtkinter as ctk
 import tkinter as tk
-
+import sys
 
 
 
@@ -88,10 +88,6 @@ class Top_Left_Frame(ctk.CTkFrame):
         super().__init__(parent)
         self.event_handler = event_handler
         self.parent = parent
-
-        self.demo_button_state = True
-        self.audio_feed_figure = None
-        self.update_mic_levels_id = None
 
         # Top Frame
         top_frame = ctk.CTkFrame(self)
@@ -209,8 +205,9 @@ class Top_Right_Frame(ctk.CTkFrame):
 
         # Top Frame
         main_frame = ctk.CTkFrame(self)
-        main_frame.grid(row=0, column=0, padx=configuration.x_pad_main, pady=configuration.y_pad_main, sticky='nsew')
-        main_frame.grid_rowconfigure(0, weight=1, uniform='row')
+        # main_frame.grid(row=0, column=0, padx=configuration.x_pad_main, pady=configuration.y_pad_main, sticky='nsew')
+        # main_frame.grid_rowconfigure(0, weight=1, uniform='row')
+        main_frame.pack(fill='both', expand=True, padx=configuration.x_pad_main, pady=configuration.y_pad_main)
 
         # Configure the grid rows and column for self
         self.grid_rowconfigure(0, weight=1)  # Top row
@@ -218,15 +215,32 @@ class Top_Right_Frame(ctk.CTkFrame):
 
         self.console_frame(main_frame)
 
+        sys.stdout = self
+
 
     # FRAMES ---------------------------------------------
     def console_frame(self, frame):
         self.console_label = ctk.CTkLabel(frame, text="Output Console", font=configuration.console_font_style)
-        self.console_label.pack(fill='both')  # , expand=True
+        self.console_label.pack(side=tk.TOP, fill=tk.X)
 
+        # Create a Text widget for console output
+        self.console_text = tk.Text(frame, wrap=tk.WORD, state='disabled', height=10)
+        self.console_text.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
+        # Scrollbar for the Text widget
+        scrollbar = tk.Scrollbar(frame, command=self.console_text.yview)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        self.console_text.config(yscrollcommand=scrollbar.set)
 
+    def write(self, message):
+        # Insert text into the Text widget and scroll to the end
+        self.console_text.config(state='normal')
+        self.console_text.insert(tk.END, message)
+        self.console_text.config(state='disabled')
+        self.console_text.yview(tk.END)
 
+    def flush(self):
+        pass
 
 
 # --------------------------------------------------------------------------------------------------
