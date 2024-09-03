@@ -273,46 +273,6 @@ class Top_Right_Frame(ctk.CTkFrame):
 # --------------------------------------------------------------------------------------------------
 # MIDDLE FRAMES ------------------------------------------------------------------------------------
 # --------------------------------------------------------------------------------------------------
-
-# class Middle_Frame(ctk.CTkFrame):
-#     def __init__(self, parent, event_handler):
-#         super().__init__(parent)
-#         self.event_handler = event_handler
-#         self.parent = parent
-#
-#         self.Center_Frame = Main_Middle_Frame(self, self.event_handler)
-#
-#         # Grid configuration
-#         self.rowconfigure(0, weight=1)
-#         self.columnconfigure(0, weight=1)  # Left column with x/3 of the space
-#
-#         # Place the frames using grid
-#         self.Center_Frame.grid(row=0, column=0, sticky='nsew')
-#
-# class Main_Middle_Frame(ctk.CTkFrame):
-#     def __init__(self, parent, event_handler):
-#         super().__init__(parent)
-#         self.event_handler = event_handler
-#         self.parent = parent
-#
-#         middle_frame = ctk.CTkFrame(self)
-#         middle_frame.grid(row=0, column=0, padx=configuration.x_pad_main, pady=configuration.y_pad_main, sticky='nsew')
-#         middle_frame.grid_rowconfigure(0, weight=1)
-#         middle_frame.grid_columnconfigure(0, weight=1)
-#
-#         # Configure the grid rows and column for self
-#         self.grid_rowconfigure(0, weight=1)  # Top row
-#         self.grid_columnconfigure(0, weight=1)
-#
-#         self.detector_frame(middle_frame)
-#
-#     # FRAMES ---------------------------------------------
-#     def detector_frame(self, frame):
-#         self.detector_label = ctk.CTkLabel(frame, text="Beamformed PCA Detector Output", font=configuration.console_font_style)
-#         self.detector_label.pack(fill='both')  # , expand=True
-
-
-
 class Middle_Frame(ctk.CTkFrame):
     def __init__(self, parent, event_handler):
         super().__init__(parent)
@@ -469,42 +429,57 @@ class Bottom_Left_Frame(ctk.CTkFrame):
         self.event_handler = event_handler
         self.parent = parent
 
-        # Top Frame
-        top_frame = ctk.CTkFrame(self)
-        top_frame.grid(row=0, column=0, padx=configuration.x_pad_main, pady=configuration.y_pad_main, sticky='nsew')
-        top_frame.grid_rowconfigure(0, weight=1, uniform='row')
+        # Configure the grid layout
+        self.grid_rowconfigure(0, weight=0)  # Row for the top label
+        self.grid_rowconfigure(1, weight=1)  # Row for the settings
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_columnconfigure(1, weight=1)
+        self.grid_columnconfigure(2, weight=1)
 
-        # # Middle Frame
-        # middle_frame = ctk.CTkFrame(self)
-        # middle_frame.grid(row=1, column=0, padx=configuration.x_pad_main, pady=configuration.y_pad_main, sticky='nsew')
-        # middle_frame.grid_rowconfigure(1, weight=1, uniform='row')
-        #
-        # # Bottom Frame
-        # bottom_frame = ctk.CTkFrame(self)
-        # bottom_frame.grid(row=2, column=0, padx=configuration.x_pad_main, pady=configuration.y_pad_main, sticky='nsew')
-        # bottom_frame.grid_rowconfigure(2, weight=1, uniform='row')
+        self.beamform_settings_frame()
 
-        # Configure the grid rows and column for self
-        self.grid_rowconfigure(0, weight=1)
-        # self.grid_rowconfigure(1, weight=1)
-        # self.grid_rowconfigure(2, weight=1)
-        self.grid_columnconfigure(0, weight=1, uniform='col')
+    def beamform_settings_frame(self):
+        # Beamform Settings Label
+        self.beamform_settings_label = ctk.CTkLabel(self, text="Beamform Settings", font=configuration.console_font_style)
+        self.beamform_settings_label.grid(row=0, column=0, columnspan=3, sticky='nsew', padx=10, pady=10)
 
-        self.beamform_settings_frame(top_frame)
+        # Thetas Label
+        self.thetas_label = ctk.CTkLabel(self, text="Thetas: [-90,-80,-70,-60,-50,-40,-30,-20,-10,0,10,20,30,40,50,60,70,80,90]", font=configuration.console_font_style)
+        self.thetas_label.grid(row=1, column=0, columnspan=3, sticky='w', padx=10, pady=5)
 
-    # FRAMES ---------------------------------------------
-    def beamform_settings_frame(self, frame):
-        self.beamform_settings_label = ctk.CTkLabel(frame, text="Beamform Settings", font=configuration.console_font_style)
-        self.beamform_settings_label.pack(fill='both')  # , expand=True
+        # Phis Label
+        self.phis_label = ctk.CTkLabel(self, text="Phis: [ 0 ]", font=configuration.console_font_style)
+        self.phis_label.grid(row=2, column=0, columnspan=3, sticky='w', padx=10, pady=5)
 
-        self.thetas_label = ctk.CTkLabel(frame, text="Thetas", font=configuration.console_font_style)
-        self.thetas_label.pack(fill='both')  # , expand=True
+        # Manual Temp Entry Frame
+        manual_temp_frame = ctk.CTkFrame(self)
+        manual_temp_frame.grid(row=3, column=0, columnspan=3, sticky='ew', padx=10, pady=5)
 
-        self.phis_label = ctk.CTkLabel(frame, text="Phis", font=configuration.console_font_style)
-        self.phis_label.pack(fill='both')  # , expand=True
+        # Center Container Frame
+        center_frame = ctk.CTkFrame(manual_temp_frame)
+        center_frame.pack(expand=True, padx=10, pady=5)
 
-        self.manual_temp_entry_label = ctk.CTkLabel(frame, text="Manual Temp Entry", font=configuration.console_font_style)
-        self.manual_temp_entry_label.pack(fill='both')  # , expand=True
+        # Manual Temp Entry Label, Entry Box, and Set Button
+        self.manual_temp_entry_label = ctk.CTkLabel(center_frame, text="Manual Temp Entry", font=configuration.console_font_style)
+        self.manual_temp_entry_label.pack(side='left', padx=(0, 5))  # Add space between label and entry
+
+        # Entry Box
+        self.manual_temp_entry = ctk.CTkEntry(center_frame, width=50)  # Adjust width to fit 3 digits
+        self.manual_temp_entry.pack(side='left', padx=(0, 5))  # Add space between entry and button
+
+        # Set Button
+        self.set_button = ctk.CTkButton(center_frame, text="Set", command=self.set_temp)
+        self.set_button.pack(side='left')
+
+        # Default value for manual temperature entry
+        self.manual_temp_entry.insert(0, "72")  # Set a default temperature value
+
+    def set_temp(self):
+        # Function to handle the 'Set' button click
+        temp_value = self.manual_temp_entry.get()
+        if temp_value != '':
+            print(f"Temperature set to: {temp_value} F")
+        # Add further actions for setting the temperature here
 
 
 
@@ -514,52 +489,74 @@ class Bottom_Middle_Frame(ctk.CTkFrame):
         self.event_handler = event_handler
         self.parent = parent
 
-        # Top Frame
-        top_frame = ctk.CTkFrame(self)
-        top_frame.grid(row=0, column=0, padx=configuration.x_pad_main, pady=configuration.y_pad_main, sticky='nsew')
-        top_frame.grid_rowconfigure(0, weight=1, uniform='row')
+        # Configure the grid layout
+        self.grid_rowconfigure(0, weight=0)  # Row for the top label
+        self.grid_rowconfigure(1, weight=1)  # Row for the settings
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_columnconfigure(1, weight=1)
+        self.grid_columnconfigure(2, weight=1)
 
-        # # Middle Frame
-        # middle_frame = ctk.CTkFrame(self)
-        # middle_frame.grid(row=1, column=0, padx=configuration.x_pad_main, pady=configuration.y_pad_main, sticky='nsew')
-        # middle_frame.grid_rowconfigure(1, weight=1, uniform='row')
-        #
-        # # Bottom Frame
-        # bottom_frame = ctk.CTkFrame(self)
-        # bottom_frame.grid(row=2, column=0, padx=configuration.x_pad_main, pady=configuration.y_pad_main, sticky='nsew')
-        # bottom_frame.grid_rowconfigure(2, weight=1, uniform='row')
+        self.processing_settings_frame()
 
-        # Configure the grid rows and column for self
-        self.grid_rowconfigure(0, weight=1)
-        # self.grid_rowconfigure(1, weight=1)
-        # self.grid_rowconfigure(2, weight=1)
-        self.grid_columnconfigure(0, weight=1, uniform='col')
+    def processing_settings_frame(self):
+        self.processing_settings_label = ctk.CTkLabel(self, text="Processing Settings", font=configuration.console_font_style)
+        self.processing_settings_label.grid(row=0, column=0, columnspan=3, sticky='nsew', padx=10, pady=10)
 
-        self.processing_settings_frame(top_frame)
+        # NR: STD Threshold
+        self.nr_std_threshold_label = ctk.CTkLabel(self, text="NR: STD Threshold (int): ", font=configuration.console_font_style)
+        self.nr_std_threshold_label.grid(row=1, column=0, sticky='e', padx=10, pady=5)
+        self.nr_std_threshold_entry = ctk.CTkEntry(self, width=100)
+        self.nr_std_threshold_entry.grid(row=1, column=1, sticky='w', padx=10, pady=5)
+        self.nr_std_threshold_set_button = ctk.CTkButton(self, text="Set", command=self.set_nr_std_threshold)
+        self.nr_std_threshold_set_button.grid(row=1, column=2, sticky='w', padx=10, pady=5)
+        self.nr_std_threshold_entry.insert(0, "5")  # Default value
 
-    # FRAMES ---------------------------------------------
-    def processing_settings_frame(self, frame):
-        self.processing_settings_label = ctk.CTkLabel(frame, text="Processing Settings", font=configuration.console_font_style)
-        self.processing_settings_label.pack(fill='both')  # , expand=True
+        # HP: Bottom Cutoff Frequency
+        self.hp_bottom_cutoff_freq_label = ctk.CTkLabel(self, text="HP: Bottom Cutoff Frequency (Hz): ", font=configuration.console_font_style)
+        self.hp_bottom_cutoff_freq_label.grid(row=2, column=0, sticky='e', padx=10, pady=5)
+        self.hp_bottom_cutoff_freq_entry = ctk.CTkEntry(self, width=100)
+        self.hp_bottom_cutoff_freq_entry.grid(row=2, column=1, sticky='w', padx=10, pady=5)
+        self.hp_bottom_cutoff_freq_set_button = ctk.CTkButton(self, text="Set", command=self.set_hp_bottom_cutoff_freq)
+        self.hp_bottom_cutoff_freq_set_button.grid(row=2, column=2, sticky='w', padx=10, pady=5)
+        self.hp_bottom_cutoff_freq_entry.insert(0, "1000")  # Default value
 
-        self.processing_chain_label = ctk.CTkLabel(frame,
-                                                   text="Processing Chain: Noise Reduction, High Pass, Normalization, Down Sampling",
-                                                   font=configuration.console_font_style)
-        self.processing_chain_label.pack(fill='both')  # , expand=True
+        # NM: Percentage
+        self.nm_percentage_label = ctk.CTkLabel(self, text="NM: Percentage (%): ", font=configuration.console_font_style)
+        self.nm_percentage_label.grid(row=3, column=0, sticky='e', padx=10, pady=5)
+        self.nm_percentage_entry = ctk.CTkEntry(self, width=100)
+        self.nm_percentage_entry.grid(row=3, column=1, sticky='w', padx=10, pady=5)
+        self.nm_percentage_set_button = ctk.CTkButton(self, text="Set", command=self.set_nm_percentage)
+        self.nm_percentage_set_button.grid(row=3, column=2, sticky='w', padx=10, pady=5)
+        self.nm_percentage_entry.insert(0, "50")  # Default value
 
-        self.nr_std_threshold_label = ctk.CTkLabel(frame, text="NR: STD Threshold", font=configuration.console_font_style)
-        self.nr_std_threshold_label.pack(fill='both')  # , expand=True
+        # DS: New Sample Rate
+        self.ds_new_sr_label = ctk.CTkLabel(self, text="DS: New Sample Rate (Hz): ", font=configuration.console_font_style)
+        self.ds_new_sr_label.grid(row=4, column=0, sticky='e', padx=10, pady=5)
+        self.ds_new_sr_entry = ctk.CTkEntry(self, width=100)
+        self.ds_new_sr_entry.grid(row=4, column=1, sticky='w', padx=10, pady=5)
+        self.ds_new_sr_set_button = ctk.CTkButton(self, text="Set", command=self.set_ds_new_sr)
+        self.ds_new_sr_set_button.grid(row=4, column=2, sticky='w', padx=10, pady=5)
+        self.ds_new_sr_entry.insert(0, "44100")  # Default value
 
-        self.hp_bottom_cutoff_freq_label = ctk.CTkLabel(frame, text="HP: Bottom Cutoff Frequency", font=configuration.console_font_style)
-        self.hp_bottom_cutoff_freq_label.pack(fill='both')  # , expand=True
+    def set_nr_std_threshold(self):
+        nr_std_threshold = self.nr_std_threshold_entry.get()
+        if nr_std_threshold:
+            print(f"NR STD Threshold set to: {nr_std_threshold}")
 
-        self.nm_percentage_label = ctk.CTkLabel(frame, text="NM: Percentage", font=configuration.console_font_style)
-        self.nm_percentage_label.pack(fill='both')  # , expand=True
+    def set_hp_bottom_cutoff_freq(self):
+        hp_bottom_cutoff_freq = self.hp_bottom_cutoff_freq_entry.get()
+        if hp_bottom_cutoff_freq:
+            print(f"HP Bottom Cutoff Frequency set to: {hp_bottom_cutoff_freq}")
 
-        self.ds_new_sr_label = ctk.CTkLabel(frame, text="DS: New Sample Rate", font=configuration.console_font_style)
-        self.ds_new_sr_label.pack(fill='both')  # , expand=True
+    def set_nm_percentage(self):
+        nm_percentage = self.nm_percentage_entry.get()
+        if nm_percentage:
+            print(f"NM Percentage set to: {nm_percentage}")
 
-
+    def set_ds_new_sr(self):
+        ds_new_sr = self.ds_new_sr_entry.get()
+        if ds_new_sr:
+            print(f"DS New Sample Rate set to: {ds_new_sr}")
 
 
 class Bottom_Right_Frame(ctk.CTkFrame):
@@ -568,36 +565,48 @@ class Bottom_Right_Frame(ctk.CTkFrame):
         self.event_handler = event_handler
         self.parent = parent
 
-        # Top Frame
-        top_frame = ctk.CTkFrame(self)
-        top_frame.grid(row=0, column=0, padx=configuration.x_pad_main, pady=configuration.y_pad_main, sticky='nsew')
-        top_frame.grid_rowconfigure(0, weight=1, uniform='row')
+        # Configure the grid layout
+        self.grid_rowconfigure(0, weight=0)  # Row for the top label
+        self.grid_rowconfigure(1, weight=1)  # Row for the settings
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_columnconfigure(1, weight=1)
+        self.grid_columnconfigure(2, weight=1)
 
-        # # Middle Frame
-        # middle_frame = ctk.CTkFrame(self)
-        # middle_frame.grid(row=1, column=0, padx=configuration.x_pad_main, pady=configuration.y_pad_main, sticky='nsew')
-        # middle_frame.grid_rowconfigure(1, weight=1, uniform='row')
-        #
-        # # Bottom Frame
-        # bottom_frame = ctk.CTkFrame(self)
-        # bottom_frame.grid(row=2, column=0, padx=configuration.x_pad_main, pady=configuration.y_pad_main, sticky='nsew')
-        # bottom_frame.grid_rowconfigure(2, weight=1, uniform='row')
+        self.pca_detector_settings_frame()
 
-        # Configure the grid rows and column for self
-        self.grid_rowconfigure(0, weight=1)
-        # self.grid_rowconfigure(1, weight=1)
-        # self.grid_rowconfigure(2, weight=1)
-        self.grid_columnconfigure(0, weight=1, uniform='col')
+    def pca_detector_settings_frame(self):
+        # PCA Detector Settings Label
+        self.pca_detector_settings_label = ctk.CTkLabel(self, text="PCA Detector Settings", font=configuration.console_font_style)
+        self.pca_detector_settings_label.grid(row=0, column=0, columnspan=3, sticky='nsew', padx=10, pady=10)
 
-        self.pca_detector_settings_frame(top_frame)
+        # Number of Components Label
+        self.num_components_label = ctk.CTkLabel(self, text="Number of Components:", font=configuration.console_font_style)
+        self.num_components_label.grid(row=1, column=0, sticky='e', padx=10, pady=5)
 
-    # FRAMES ---------------------------------------------
-    def pca_detector_settings_frame(self, frame):
-        self.pca_detector_settings_label = ctk.CTkLabel(frame, text="PCA Detector Settings", font=configuration.console_font_style)
-        self.pca_detector_settings_label.pack(fill='both')  # , expand=True
+        self.num_components_entry = ctk.CTkEntry(self, width=50)
+        self.num_components_entry.grid(row=1, column=1, sticky='w', padx=10, pady=5)
+        self.num_components_entry.insert(0, "5")  # Default value
 
-        self.num_components_label = ctk.CTkLabel(frame, text="Number of Components", font=configuration.console_font_style)
-        self.num_components_label.pack(fill='both')  # , expand=True
+        self.num_components_set_button = ctk.CTkButton(self, text="Set", command=self.set_num_components)
+        self.num_components_set_button.grid(row=1, column=2, sticky='w', padx=10, pady=5)
 
-        self.threshold_multiplier_label = ctk.CTkLabel(frame, text="Threshold Multiplier", font=configuration.console_font_style)
-        self.threshold_multiplier_label.pack(fill='both')  # , expand=True
+        # Threshold Multiplier Label
+        self.threshold_multiplier_label = ctk.CTkLabel(self, text="Threshold Multiplier:", font=configuration.console_font_style)
+        self.threshold_multiplier_label.grid(row=2, column=0, sticky='e', padx=10, pady=5)
+
+        self.threshold_multiplier_entry = ctk.CTkEntry(self, width=50)
+        self.threshold_multiplier_entry.grid(row=2, column=1, sticky='w', padx=10, pady=5)
+        self.threshold_multiplier_entry.insert(0, "1.0")  # Default value
+
+        self.threshold_multiplier_set_button = ctk.CTkButton(self, text="Set", command=self.set_threshold_multiplier)
+        self.threshold_multiplier_set_button.grid(row=2, column=2, sticky='w', padx=10, pady=5)
+
+    def set_num_components(self):
+        num_components = self.num_components_entry.get()
+        if num_components:
+            print(f"Number of components set to: {num_components}")
+
+    def set_threshold_multiplier(self):
+        threshold_multiplier = self.threshold_multiplier_entry.get()
+        if threshold_multiplier:
+            print(f"Threshold multiplier set to: {threshold_multiplier}")
