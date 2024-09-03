@@ -240,10 +240,78 @@ class Top_Right_Frame(ctk.CTkFrame):
     def flush(self):
         pass
 
+    def insert_text(self, text, color="white"):
+        # Color Options:
+        # 1. Standard Color Names:
+        #    - "black", "white", "red", "green", "blue", "yellow", "cyan", "magenta",
+        #      "gray", "orange", "purple", "brown", etc.
+        # 2. Hexadecimal Color Codes (format: "#RRGGBB"):
+        #    - Examples: "#000000" (black), "#FFFFFF" (white), "#FF0000" (red),
+        #                "#00FF00" (green), "#0000FF" (blue), "#FFFF00" (yellow),
+        #                "#FFA500" (orange), "#800080" (purple)
+        # 3. RGB Tuples (format: (R, G, B) where R, G, B are integers from 0 to 255):
+        #    - Examples: (0, 0, 0) (black), (255, 255, 255) (white), (255, 0, 0) (red),
+        #                (0, 255, 0) (green), (0, 0, 255) (blue)
+
+
+        # Enable the Text widget temporarily to insert text
+        self.console_text.config(state='normal')
+
+        # Create a tag with the desired color
+        self.console_text.tag_configure(color, foreground=color)
+
+        # Insert the text with the tag
+        self.console_text.insert(tk.END, text + "\n", color)
+
+        # Disable the Text widget to make it read-only again
+        self.console_text.config(state='disabled')
+
+        # Scroll to the end of the Text widget
+        self.console_text.see(tk.END)
+
 
 # --------------------------------------------------------------------------------------------------
 # MIDDLE FRAMES ------------------------------------------------------------------------------------
 # --------------------------------------------------------------------------------------------------
+
+# class Middle_Frame(ctk.CTkFrame):
+#     def __init__(self, parent, event_handler):
+#         super().__init__(parent)
+#         self.event_handler = event_handler
+#         self.parent = parent
+#
+#         self.Center_Frame = Main_Middle_Frame(self, self.event_handler)
+#
+#         # Grid configuration
+#         self.rowconfigure(0, weight=1)
+#         self.columnconfigure(0, weight=1)  # Left column with x/3 of the space
+#
+#         # Place the frames using grid
+#         self.Center_Frame.grid(row=0, column=0, sticky='nsew')
+#
+# class Main_Middle_Frame(ctk.CTkFrame):
+#     def __init__(self, parent, event_handler):
+#         super().__init__(parent)
+#         self.event_handler = event_handler
+#         self.parent = parent
+#
+#         middle_frame = ctk.CTkFrame(self)
+#         middle_frame.grid(row=0, column=0, padx=configuration.x_pad_main, pady=configuration.y_pad_main, sticky='nsew')
+#         middle_frame.grid_rowconfigure(0, weight=1)
+#         middle_frame.grid_columnconfigure(0, weight=1)
+#
+#         # Configure the grid rows and column for self
+#         self.grid_rowconfigure(0, weight=1)  # Top row
+#         self.grid_columnconfigure(0, weight=1)
+#
+#         self.detector_frame(middle_frame)
+#
+#     # FRAMES ---------------------------------------------
+#     def detector_frame(self, frame):
+#         self.detector_label = ctk.CTkLabel(frame, text="Beamformed PCA Detector Output", font=configuration.console_font_style)
+#         self.detector_label.pack(fill='both')  # , expand=True
+
+
 
 class Middle_Frame(ctk.CTkFrame):
     def __init__(self, parent, event_handler):
@@ -255,7 +323,7 @@ class Middle_Frame(ctk.CTkFrame):
 
         # Grid configuration
         self.rowconfigure(0, weight=1)
-        self.columnconfigure(0, weight=1)  # Left column with x/3 of the space
+        self.columnconfigure(0, weight=1)
 
         # Place the frames using grid
         self.Center_Frame.grid(row=0, column=0, sticky='nsew')
@@ -267,21 +335,108 @@ class Main_Middle_Frame(ctk.CTkFrame):
         self.parent = parent
 
         middle_frame = ctk.CTkFrame(self)
-        middle_frame.grid(row=0, column=0, padx=configuration.x_pad_main, pady=configuration.y_pad_main, sticky='nsew')
+        middle_frame.grid(row=0, column=0, padx=10, pady=10, sticky='nsew')
         middle_frame.grid_rowconfigure(0, weight=1)
         middle_frame.grid_columnconfigure(0, weight=1)
 
-        # Configure the grid rows and column for self
-        self.grid_rowconfigure(0, weight=1)  # Top row
+        # Configure the grid rows and columns for self
+        self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
-        self.detector_frame(middle_frame)
+        # Create and place the detector label
+        self.detector_label = ctk.CTkLabel(middle_frame, text="Beamformed PCA Detector Output", font=("Arial", 16))
+        self.detector_label.pack(fill='both')
 
-    # FRAMES ---------------------------------------------
-    def detector_frame(self, frame):
-        self.detector_label = ctk.CTkLabel(frame, text="Beamformed PCA Detector Output", font=configuration.console_font_style)
-        self.detector_label.pack(fill='both')  # , expand=True
+        # Create the canvas for the bar chart
+        self.canvas = tk.Canvas(middle_frame, bg="#333333")  # Changed background to gray
+        self.canvas.pack(fill='both', expand=True, padx=20, pady=20)
 
+        self.draw_threshold_lines()
+
+        # Example data for the bar chart
+        self.anomaly_data = [0, 1, 0.5, 1, 1, 0.5, 2, 4, 5, 9, 6, 3, 2, 1, 1, 0.5, 1.5, 0.5, 1]  # Example data
+        self.max_anomalies = 10  # Maximum possible anomalies
+        self.thresholds = {
+            'green': 30,  # Less than 30% anomalies
+            'yellow': 60, # 30% to 60% anomalies
+            'red': 100,   # More than 60% anomalies
+        }
+        self.directions = list(range(-90, 100, 10))  # Direction labels from -90 to 90 degrees
+
+        # Schedule the draw_bar_chart to run after the canvas is ready
+        self.after(100, self.draw_bar_chart)
+
+    def draw_bar_chart(self):
+        self.canvas.delete("all")  # Clear the canvas
+        self.draw_threshold_lines()  # Draw threshold lines
+
+        num_channels = len(self.anomaly_data)
+        canvas_width = self.canvas.winfo_width()
+        canvas_height = self.canvas.winfo_height()
+
+        # Calculate bar width to evenly fill the canvas
+        bar_width = canvas_width / num_channels
+        chart_height = canvas_height * 0.8  # Use 80% of the height for the chart
+
+        for i, value in enumerate(self.anomaly_data):
+            # Calculate the height of the bar
+            bar_height = (value / self.max_anomalies) * chart_height
+
+            # Determine the color based on the threshold
+            percentage = (value / self.max_anomalies) * 100
+            if percentage < self.thresholds['green']:
+                bar_color = 'green'
+                text_color = 'white'
+            elif percentage < self.thresholds['yellow']:
+                bar_color = 'yellow'
+                text_color = 'black'
+            else:
+                bar_color = 'red'
+                text_color = 'white'
+
+            # Calculate the position of each bar
+            x1 = i * bar_width
+            y1 = chart_height - bar_height
+            x2 = x1 + bar_width - 2
+            y2 = chart_height
+
+            # Draw the bar
+            self.canvas.create_rectangle(x1, y1, x2, y2, fill=bar_color)
+
+            # Draw the percentage value inside the bar
+            text_position_y = y2 - bar_height / 2
+            if bar_height < 20:
+                text_position_y = y1 - 10
+            self.canvas.create_text(x1 + bar_width / 2, text_position_y, text=f"{percentage:.1f}%", fill=text_color, anchor='center')
+
+            # Draw the direction label below the bar
+            self.canvas.create_text(x1 + bar_width / 2, chart_height + 20, text=str(self.directions[i]), anchor='n')
+
+        # Draw the chart's axis
+        self.canvas.create_line(0, chart_height, canvas_width, chart_height)
+
+    def draw_threshold_lines(self):
+        # Clear any existing lines
+        self.canvas.delete("threshold_lines")
+
+        # Calculate canvas dimensions
+        canvas_width = self.canvas.winfo_width()
+        canvas_height = self.canvas.winfo_height()
+
+        # Define thresholds as percentages
+        threshold_percentages = {
+            'yellow': 30,  # Example: 30% of the max value
+            'red': 60  # Example: 60% of the max value
+        }
+
+        # Convert percentages to actual pixel positions based on bar height scaling
+        chart_height = canvas_height * 0.8  # Use 80% of the height for the chart
+        for color, percentage in threshold_percentages.items():
+            # Calculate the position for the threshold line
+            threshold_position = (percentage / 100) * chart_height
+            # Draw the threshold line
+            self.canvas.create_line(0, chart_height - threshold_position, canvas_width, chart_height - threshold_position,
+                                    fill=color, dash=(4, 4), tags="threshold_lines")
 
 
 # --------------------------------------------------------------------------------------------------

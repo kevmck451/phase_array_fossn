@@ -172,12 +172,17 @@ class Controller:
             print('Starting PCA Calibration')
             self.app_state = State.CALIBRATING
             self.gui.Top_Frame.Center_Frame.toggle_calibrate()
+            self.gui.Top_Frame.Right_Frame.insert_text('ALERT!!! SOMETHING HAS BEEN DETECTED at X direction', 'red')
+
 
         elif event == Event.STOP_PCA_CALIBRATION:
             print('Stopping PCA Calibration')
             self.app_state = State.IDLE
             self.gui.Top_Frame.Center_Frame.toggle_calibrate()
 
+        elif event == Event.LOG_DETECTION:
+            print('logging detection')
+            self.gui.Top_Frame.Right_Frame.insert_text('ALERT!!! SOMETHING HAS BEEN DETECTED at X direction', 'red')
 
         elif event == Event.DUMMY_BUTTON:
             print('BUTTON PRESSED')
