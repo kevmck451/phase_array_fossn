@@ -43,3 +43,8 @@ SPL (dB(C)): 83.0
 Distance (meters): 2.0
 Sound Power Level (SWL) in dB: 100.02
 -----------------------------------------------------
+Sound Source: construction diesel vehicle full throttle
+SPL (dB(C)): 98.0
+Distance (meters): 12.0
+Sound Power Level (SWL) in dB: 130.58
+-----------------------------------------------------
