@@ -26,6 +26,7 @@ class AudioStreamSimulator:
         self.running = False
 
     def start_stream(self):
+        print('starting simulated stream')
         self.stream_thread = Thread(target=self.stream, daemon=True).start()
         self.running = True
 

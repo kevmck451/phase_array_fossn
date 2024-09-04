@@ -14,9 +14,9 @@ from queue import Queue
 import time
 
 
-class PCA_Detection:
+class PCA_Calculator:
     def __init__(self,
-                 nperseg=16384,
+                 nperseg=4096,
                  angle_list=(-90,-80,-70,-60,-50,-40,-30,-20,-10,0,10,20,30,40,50,60,70,80,90),
                  num_components=3,
                  threshold_multiplier=10):
@@ -53,7 +53,7 @@ if __name__ == '__main__':
     audio = Audio(filepath=filepath, num_channels=len(angles))
     chunk_size_seconds = 0.5
 
-    pca_detector = PCA_Detection(angle_list=angles)
+    pca_detector = PCA_Calculator(angle_list=angles)
 
     stream = AudioStreamSimulator(audio, chunk_size_seconds)
     stream.start_stream()

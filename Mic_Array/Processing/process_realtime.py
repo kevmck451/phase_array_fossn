@@ -26,7 +26,7 @@ class Processing:
                             'ds' : 6000 }
         '''
 
-        self.processing_chain = None
+        self.processing_chain = {'hp': 1000, 'nm': 100, 'ds': 6000}
         self.nr_std_threshold = None
         self.bottom_cutoff_frequency = None
         self.norm_percent = None
@@ -37,7 +37,6 @@ class Processing:
 
     def process_data(self, data):
 
-
         new_data = data
 
         for process in self.processing_chain:
@@ -47,6 +46,7 @@ class Processing:
 
 
             elif process == 'hp':
+                print(process, self.processing_chain[process])
                 print(f'High Pass ({process})      \t|\tBC: {self.processing_chain[process]} Hz')
                 new_data = high_pass_filter(new_data, self.processing_chain[process])
 

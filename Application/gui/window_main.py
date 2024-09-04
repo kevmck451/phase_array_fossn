@@ -7,6 +7,7 @@ import Application.gui.configuration as configuration
 
 import customtkinter as ctk
 import tkinter as tk
+import numpy as np
 import sys
 
 
@@ -313,15 +314,17 @@ class Main_Middle_Frame(ctk.CTkFrame):
 
         self.draw_threshold_lines()
 
+        self.directions = list(range(-90, 100, 10))  # Direction labels from -90 to 90 degrees
+
         # Example data for the bar chart
-        self.anomaly_data = [0, 1, 0.5, 1, 1, 0.5, 2, 4, 5, 9, 6, 3, 2, 1, 1, 0.5, 1.5, 0.5, 1]  # Example data
+        # self.anomaly_data = [0, 1, 0.5, 1, 1, 0.5, 2, 4, 5, 9, 6, 3, 2, 1, 1, 0.5, 1.5, 0.5, 1]  # Example data
+        self.anomaly_data = list(0 for x in range(len(self.directions)))
         self.max_anomalies = 10  # Maximum possible anomalies
         self.thresholds = {
             'green': 30,  # Less than 30% anomalies
             'yellow': 60, # 30% to 60% anomalies
             'red': 100,   # More than 60% anomalies
         }
-        self.directions = list(range(-90, 100, 10))  # Direction labels from -90 to 90 degrees
 
         # Schedule the draw_bar_chart to run after the canvas is ready
         self.after(100, self.draw_bar_chart)

@@ -8,7 +8,7 @@ from Filters.save_to_wav import save_to_wav
 from Filters.audio import Audio
 
 
-
+from concurrent.futures import ThreadPoolExecutor
 from scipy.signal import convolve
 from queue import Queue
 import numpy as np
@@ -60,30 +60,43 @@ class Beamform:
 
         return mapped_data
 
-
     def beamform_data(self, data):
         mapped_audio_data = self.map_channels_to_positions(data)
-        # print(f'Mapped Data Shape: {mapped_audio_data.shape}')
 
         rows, cols, num_samples = mapped_audio_data.shape
         assert rows * cols == self.fir_coeffs.shape[1] * self.fir_coeffs.shape[2], "Mismatch between audio data and FIR coefficients shape."
+        num_output_channels = self.fir_coeffs.shape[0]
 
         if self.temperature != self.temperature_current:
             print(f'Temp Changed => old: {self.temperature} | new: {self.temperature_current}')
             self.fir_coeffs = self.compile_all_fir_coeffs()
             self.temperature = self.temperature_current
 
-        beamformed_data = np.zeros(num_samples + self.num_coeffs - 1)
+        beamformed_data_all_channels = np.zeros((num_output_channels, num_samples + self.num_coeffs - 1))
 
-        # todo: not doing all output channels yet, just one
-        for row_index in range(rows):
-            for col_index in range(cols):
-                filtered_signal = convolve(mapped_audio_data[row_index, col_index, :], self.fir_coeffs[7, row_index, col_index, :], mode='full')
+        # Use parallel processing
+        with ThreadPoolExecutor() as executor:
+            futures = [executor.submit(self.beamform_channel, channel, mapped_audio_data, self.fir_coeffs) for channel in range(num_output_channels)]
+            for channel, future in enumerate(futures):
+                beamformed_data_all_channels[channel] = future.result()
+
+        # Trim the extra samples to match the original input length
+        trim_amount = (beamformed_data_all_channels.shape[1] - num_samples) // 2
+        trimmed_result = beamformed_data_all_channels[:, trim_amount: -trim_amount]
+
+        self.queue.put(trimmed_result)
+
+    def beamform_channel(self, channel, mapped_audio_data, fir_coeffs):
+        num_samples = mapped_audio_data.shape[2]
+        beamformed_data = np.zeros(num_samples + self.num_coeffs - 1)
+        for row_index in range(mapped_audio_data.shape[0]):
+            for col_index in range(mapped_audio_data.shape[1]):
+                filtered_signal = convolve(mapped_audio_data[row_index, col_index, :], fir_coeffs[channel, row_index, col_index, :], mode='full')
                 beamformed_data += filtered_signal
 
+        return beamformed_data
 
-        self.queue.put(beamformed_data)
-        self.data_list.extend(beamformed_data)
+
 
         # print('packing audio')
         # original_path = Path(filepath)
