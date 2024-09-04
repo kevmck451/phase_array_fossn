@@ -41,23 +41,22 @@ class Processing:
 
         for process in self.processing_chain:
             if process == 'nr':
-                print(f'Noise Reduction ({process})\t|\tSTD: {self.processing_chain[process]}')
+                # print(f'Noise Reduction ({process})\t|\tSTD: {self.processing_chain[process]}')
                 new_data = noise_reduction_filter(new_data, self.processing_chain[process])
 
 
             elif process == 'hp':
-                print(process, self.processing_chain[process])
-                print(f'High Pass ({process})      \t|\tBC: {self.processing_chain[process]} Hz')
+                # print(f'High Pass ({process})      \t|\tBC: {self.processing_chain[process]} Hz')
                 new_data = high_pass_filter(new_data, self.processing_chain[process])
 
 
             elif process == 'nm':
-                print(f'Normalization ({process})  \t|\t%: {self.processing_chain[process]} %')
+                # print(f'Normalization ({process})  \t|\t%: {self.processing_chain[process]} %')
                 new_data = normalize(new_data, self.processing_chain[process])
 
 
             elif process == 'ds':
-                print(f'Down Sampling ({process})  \t|\tSR: {self.processing_chain[process]} Hz')
+                # print(f'Down Sampling ({process})  \t|\tSR: {self.processing_chain[process]} Hz')
                 new_data = downsample(new_data, self.processing_chain[process])
 
 

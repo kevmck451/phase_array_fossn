@@ -5,6 +5,7 @@ from Filters.audio import Audio
 from Mic_Array.Beamform.beamform_realtime import Beamform
 from Mic_Array.Processing.process_realtime import Processing
 from Mic_Array.PCA.pca_realtime import PCA_Calculator
+from Mic_Array.Detector.detector_realtime import Detector
 
 
 from Application.controller.event_states import Event
@@ -34,9 +35,13 @@ class Controller:
         self.processor_thread = None
         self.processor_running = False
 
-        self.pca_detector = None
-        self.pca_detector_thread = None
-        self.pca_detector_running = False
+        self.pca_calculator = None
+        self.pca_calculator_thread = None
+        self.pca_calculator_running = False
+
+        self.detector = None
+        self.detector_thread = None
+        self.detector_running = False
 
         self.queue_check_time = 0.1
 
@@ -60,7 +65,7 @@ class Controller:
     # BEAMFORMING ---------------------
     # ---------------------------------
     def beamform_setup(self):
-        print('beamform setup')
+        # print('beamform setup')
         if self.temp_sensor.connected:
             if self.temp_sensor.current_temp is not None:
                 self.temperature = self.temp_sensor.current_temp
@@ -78,7 +83,6 @@ class Controller:
         while self.beamform_running:
             # if not self.audio_recorder.queue.empty():
             if not self.sim_stream.queue.empty():
-                print()
                 print('BEAMFORMING------------------')
                 # print(f'Audio Stream Queue Size: {self.sim_stream.queue.qsize()}')
                 # current_audio_data = self.audio_recorder.queue.get()
@@ -95,15 +99,13 @@ class Controller:
     # PROCESSING ----------------------
     # ---------------------------------
     def processor_setup(self):
-        print('pro setup')
-
+        # print('pro setup')
         self.processor_thread = Thread(target=self.processor_start, daemon=True).start()
         self.processor_running = True
 
     def processor_start(self):
         print('pro start')
         while self.processor_running:
-            print('pro running')
             if not self.beamformer.queue.empty():
                 print()
                 print('PROCESSING------------------')
@@ -118,37 +120,55 @@ class Controller:
 
 
     # ---------------------------------
-    # PCA DETECTOR --------------------
+    # PCA CALCULATOR --------------------
     # ---------------------------------
-    def pca_detector_setup(self):
-        print('pca setup')
-        self.pca_detector = PCA_Calculator()
-        self.pca_detector_thread = Thread(target=self.pca_detector_start, daemon=True).start()
-        self.pca_detector_running = True
+    def pca_calculation_setup(self):
+        self.pca_calculator = PCA_Calculator()
+        self.pca_calculator_thread = Thread(target=self.pca_calculation_start, daemon=True).start()
+        self.pca_calculator_running = True
 
-    def pca_detector_start(self):
+    def pca_calculation_start(self):
         print('pca start')
-        while self.pca_detector_running:
-            print('pca running')
+        while self.pca_calculator_running:
+            # print('pca running')
             if not self.processor.queue.empty():
-                print('PCA DETECTING----------')
+                print('PCA CALCULATING----------')
                 # print(f'Audio Stream Queue Size: {self.processor.queue.qsize()}')
                 current_data = self.processor.queue.get()
                 print(f'Current Data Size: {current_data.shape}')
                 # -------------------------
-                self.pca_detector.process_chunk(current_data)
-                print(f'PCA Queue Size: {self.pca_detector.queue.qsize()}')
-                if not self.pca_detector.queue.empty():
-                    current_pca_data = self.pca_detector.queue.get()
-                    print(f'PCA Data Type: {type(current_pca_data)}')
-                    print(f'PCA Data Length: {len(current_pca_data)}')
-                    print(f'PCA Data Shape at 0: {current_pca_data.get(0).shape}')
-                print()
-                print('=' * 40)
-                print()
+                self.pca_calculator.process_chunk(current_data)
+                # print(f'PCA Queue Size: {self.pca_calculator.queue.qsize()}')
+                # if not self.pca_calculator.queue.empty():
+                #     current_pca_data = self.pca_calculator.queue.get()
+                #     print(f'PCA Data Type: {type(current_pca_data)}')
+                #     print(f'PCA Data Length: {len(current_pca_data)}')
+                #     print(f'PCA Data Shape at 0: {current_pca_data.get(0).shape}')
             time.sleep(self.queue_check_time)
 
+    # ---------------------------------
+    # PCA CALCULATOR --------------------
+    # ---------------------------------
+    def detector_setup(self):
+        self.detector = Detector()
+        self.detector_thread = Thread(target=self.detector_start, daemon=True).start()
+        self.detector_running = True
 
+    def detector_start(self):
+        print('detector start')
+        while self.detector_running:
+            if not self.pca_calculator.queue.empty():
+                print('DETECTING----------')
+                # print(f'Audio Stream Queue Size: {self.processor.queue.qsize()}')
+                current_data = self.pca_calculator.queue.get()
+                # -------------------------
+                self.detector.detect_anomalies(current_data)
+                print(f'Detector Queue Size: {self.detector.queue.qsize()}')
+                if not self.detector.queue.empty():
+                    current_detect_data = self.detector.queue.get()
+                    print(f'Detector Data Type: {type(current_detect_data)}')
+                    print(f'Detector Data Length: {len(current_detect_data)}')
+            time.sleep(self.queue_check_time)
 
 
     # ---------------------------------
@@ -161,7 +181,8 @@ class Controller:
             self.audio_recorder.record_running = False
             self.beamform_running = False
             self.processor_running = False
-            self.pca_detector_running = False
+            self.pca_calculator_running = False
+            self.detector_running = False
             self.temp_sensor.close_connection()
             self.audio_recorder.audio_receiver.close_connection()
             self.app_state = State.IDLE
@@ -178,13 +199,14 @@ class Controller:
             #     self.audio_recorder.start_recording()
             #     self.beamform_setup()
             #     self.processor_setup()
-            #     self.pca_detector_setup()
+            #     self.pca_calculation_setup()
 
 
             self.sim_stream.start_stream()
             self.beamform_setup()
             self.processor_setup()
-            self.pca_detector_setup()
+            self.pca_calculation_setup()
+            self.detector_setup()
 
         elif event == Event.STOP_RECORDER:
             print('STOP_RECORDER BUTTON PRESSED')
@@ -193,7 +215,8 @@ class Controller:
             self.audio_recorder.record_running = False
             self.beamform_running = False
             self.processor_running = False
-            self.pca_detector_running = False
+            self.pca_calculator_running = False
+            self.detector_running = False
 
 
         elif event == Event.PCA_CALIBRATION:

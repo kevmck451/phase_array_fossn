@@ -39,7 +39,7 @@ class PCA_Calculator:
             pca = PCA(n_components=self.num_components)
             principal_components = pca.fit_transform(feature_matrix)
 
-            data[self.angle_list[idx]] = principal_components
+            data[self.angle_list[idx]] = principal_components.T
 
         self.queue.put(data)
 
