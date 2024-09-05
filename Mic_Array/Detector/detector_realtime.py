@@ -24,7 +24,7 @@ class Detector:
         self.queue = Queue()
 
         self.baseline_calculated = False
-        self.baseline_iterations = 10
+        self.baseline_calibration_time = 10
 
         self.max_value = 150
         self.counter = 0
@@ -36,8 +36,8 @@ class Detector:
 
         '''
 
-        self.baseline_means = []
-        self.baseline_stds = []
+        self.baseline_means = self.generate_random_data(19)
+        self.baseline_stds = self.generate_random_data(19)
 
         print(f'PCA_DATA: {type(pca_data)}\t|\t{pca_data.shape}')
 
@@ -46,32 +46,14 @@ class Detector:
         #     self.baseline_means[angle] = np.mean(baseline_data, axis=0)
         #     self.baseline_stds[angle] = np.std(baseline_data, axis=0)
 
-        self.baseline_calculated = True
-
     def detect_anomalies(self, pca_data):
-        anomalies_list = []
-
-        # Example usage
-        anomalies_list = self.generate_random_data(19)
 
         if not self.baseline_calculated:
             self.calculate_baseline(pca_data)
 
         else:
-            pass
-            # for angle, pcs in pca_data.items():
-            #     mean = self.baseline_means.get(angle)
-            #     std = self.baseline_stds.get(angle)
-            #
-            #     # print(f'DETECTOR MEAN & STD: {mean}, {std}')
-            #     if mean is not None and std is not None:
-            #         threshold_radius = np.linalg.norm(self.threshold_multiplier * std, axis=0)
-            #         distances = np.linalg.norm(pcs - mean, axis=1)
-            #         anomalies = distances > threshold_radius
-            #
-            #         anomaly_count = np.sum(anomalies)
-            #         anomalies_list[angle] = anomaly_count
-
+            print(self.baseline_means)
+            anomalies_list = self.generate_random_data(19)
             anomalies_list = np.array(anomalies_list)
             self.queue.put(anomalies_list)
 

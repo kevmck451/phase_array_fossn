@@ -13,7 +13,9 @@ from Application.controller.event_states import State
 
 
 from threading import Thread
+import queue
 import time
+
 
 
 class Controller:
@@ -35,11 +37,11 @@ class Controller:
         self.processor_thread = None
         self.processor_running = False
 
-        self.pca_calculator = None
+        self.pca_calculator = PCA_Calculator()
         self.pca_calculator_thread = None
         self.pca_calculator_running = False
 
-        self.detector = None
+        self.detector = Detector()
         self.detector_thread = None
         self.detector_running = False
 
@@ -90,6 +92,7 @@ class Controller:
     # PROCESSING ----------------------
     # ---------------------------------
     def processor_setup(self):
+        self.processor.queue = queue.Queue()
         self.processor_running = True
         self.processor_thread = Thread(target=self.processor_start, daemon=True).start()
 
@@ -104,10 +107,10 @@ class Controller:
             time.sleep(self.queue_check_time)
 
     # ---------------------------------
-    # PCA CALCULATOR --------------------
+    # PCA CALCULATOR ------------------
     # ---------------------------------
     def pca_calculation_setup(self):
-        self.pca_calculator = PCA_Calculator()
+        self.pca_calculator.queue = queue.Queue()
         self.pca_calculator_running = True
         self.pca_calculator_thread = Thread(target=self.pca_calculation_start, daemon=True).start()
 
@@ -127,7 +130,7 @@ class Controller:
     # DETECTOR  -----------------------
     # ---------------------------------
     def detector_setup(self):
-        self.detector = Detector()
+        self.detector.queue = queue.Queue()
         self.detector_running = True
         self.detector_thread = Thread(target=self.detector_start, daemon=True).start()
 
@@ -158,68 +161,82 @@ class Controller:
             time.sleep(self.queue_check_time)
 
     # ---------------------------------
+    # START / STOP QUEUES ------------
+    # ---------------------------------
+    def start_all_queues(self):
+        self.sim_stream.start_stream()
+        self.beamform_setup()
+        self.processor_setup()
+        self.pca_calculation_setup()
+        self.detector_setup()
+        self.bar_chart_updater_setup()
+
+    def stop_all_queues(self):
+        self.audio_recorder.record_running = False
+        self.beamform_running = False
+        self.processor_running = False
+        self.pca_calculator_running = False
+        self.detector_running = False
+        self.bar_chart_updater_running = False
+        self.gui.Middle_Frame.Center_Frame.stop_updates()
+
+    def calibrate_timer(self):
+        time.sleep(self.detector.baseline_calibration_time)
+        if self.app_state == State.CALIBRATING:
+            self.handle_event(Event.STOP_PCA_CALIBRATION)
+
+    def wait_for_start(self):
+        while self.app_state != State.IDLE:
+            time.sleep(0.5)
+        self.handle_event(Event.START_RECORDER)
+    # ---------------------------------
     # EVENT HANDLER -------------------
     # ---------------------------------
     def handle_event(self, event):
 
         # Load from Specific Stimulus Number:
         if event == Event.ON_CLOSE:
-            self.audio_recorder.record_running = False
-            self.beamform_running = False
-            self.processor_running = False
-            self.pca_calculator_running = False
-            self.detector_running = False
-            self.bar_chart_updater_running = False
-            self.gui.Middle_Frame.Center_Frame.stop_updates()
+            self.stop_all_queues()
             self.temp_sensor.close_connection()
             self.audio_recorder.audio_receiver.close_connection()
             self.app_state = State.IDLE
 
         elif event == Event.START_RECORDER:
-            # print('START_RECORDER BUTTON PRESSED')
-            self.gui.Top_Frame.Center_Frame.toggle_play()
             # if self.audio_recorder.audio_receiver.running is False:
             #     print('FPGA not connected')
-            # if self.app_state != State.IDLE:
-            #     print('App State must be Idle')
-            # else:
-            #     self.app_state = State.RUNNING
-            #     self.audio_recorder.start_recording()
-            #     self.beamform_setup()
-            #     self.processor_setup()
-            #     self.pca_calculation_setup()
-
-            self.sim_stream.start_stream()
-            self.beamform_setup()
-            self.processor_setup()
-            self.pca_calculation_setup()
-            self.detector_setup()
-            self.bar_chart_updater_setup()
+            if self.app_state != State.IDLE:
+                self.gui.Top_Frame.Right_Frame.insert_text('App State must be Idle', (255, 0, 150))
+            else:
+                if not self.detector.baseline_calculated:
+                    self.handle_event(Event.PCA_CALIBRATION)
+                    Thread(target=self.wait_for_start, daemon=True).start()
+                else:
+                    self.start_all_queues()
+                    self.app_state = State.RUNNING
+                    self.gui.Top_Frame.Center_Frame.toggle_play()
 
         elif event == Event.STOP_RECORDER:
-            # print('STOP_RECORDER BUTTON PRESSED')
             self.gui.Top_Frame.Center_Frame.toggle_play()
             self.app_state = State.IDLE
-            self.audio_recorder.record_running = False
-            self.beamform_running = False
-            self.processor_running = False
-            self.pca_calculator_running = False
-            self.detector_running = False
-            self.bar_chart_updater_running = False
+            self.stop_all_queues()
             self.gui.Middle_Frame.Center_Frame.stop_updates()
 
 
         elif event == Event.PCA_CALIBRATION:
-            print('Starting PCA Calibration')
             self.app_state = State.CALIBRATING
             self.gui.Top_Frame.Center_Frame.toggle_calibrate()
-            self.gui.Top_Frame.Right_Frame.insert_text('ALERT!!! SOMETHING HAS BEEN DETECTED at X direction', 'red')
-
+            self.detector.baseline_calculated = False
+            self.gui.Top_Frame.Right_Frame.insert_text('Detector Calibration Started', (0, 150, 255))
+            self.start_all_queues()
+            Thread(target=self.calibrate_timer, daemon=True).start()
 
         elif event == Event.STOP_PCA_CALIBRATION:
-            print('Stopping PCA Calibration')
+            self.stop_all_queues()
+            self.detector.baseline_calculated = True
             self.app_state = State.IDLE
             self.gui.Top_Frame.Center_Frame.toggle_calibrate()
+            self.gui.Top_Frame.Right_Frame.insert_text('Detector Calibration Successful', 'green')
+            self.app_state = State.IDLE
 
         elif event == Event.LOG_DETECTION:
             print('logging detection')

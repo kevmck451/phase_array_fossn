@@ -145,7 +145,7 @@ class Top_Middle_Frame(ctk.CTkFrame):
 
     # FRAMES ---------------------------------------------
     def start_frame(self, frame):
-        self.start_label = ctk.CTkLabel(frame, text="Start/Stop Recording, Beamforming, Processing, and PCA Detecting", font=configuration.console_font_style)
+        self.start_label = ctk.CTkLabel(frame, text="Start/Stop Recording, Beamforming, Processing, and PCA Calculator", font=configuration.console_font_style)
         self.start_label.pack(fill='both')  # , expand=True
 
         self.start_button = ctk.CTkButton(frame, text="Start",
@@ -155,7 +155,7 @@ class Top_Middle_Frame(ctk.CTkFrame):
         self.start_button.pack(pady=5)
 
     def calibration_frame(self, frame):
-        self.calibration_label = ctk.CTkLabel(frame, text="Baseline Calibration for PCA Detector", font=configuration.console_font_style)
+        self.calibration_label = ctk.CTkLabel(frame, text="Baseline Calibration for Detector", font=configuration.console_font_style)
         self.calibration_label.pack(fill='both')  # , expand=True
 
         self.calibrate_button = ctk.CTkButton(frame, text="Calibrate PCA",
@@ -254,6 +254,9 @@ class Top_Right_Frame(ctk.CTkFrame):
         #    - Examples: (0, 0, 0) (black), (255, 255, 255) (white), (255, 0, 0) (red),
         #                (0, 255, 0) (green), (0, 0, 255) (blue)
 
+        if isinstance(color, tuple):
+            # Convert RGB tuple to hex string
+            color = self.rgb_to_hex(color)
 
         # Enable the Text widget temporarily to insert text
         self.console_text.config(state='normal')
@@ -270,6 +273,9 @@ class Top_Right_Frame(ctk.CTkFrame):
         # Scroll to the end of the Text widget
         self.console_text.see(tk.END)
 
+    def rgb_to_hex(self, rgb):
+        """Convert an (R, G, B) tuple to a hexadecimal color string."""
+        return "#%02x%02x%02x" % rgb
 
 # --------------------------------------------------------------------------------------------------
 # MIDDLE FRAMES ------------------------------------------------------------------------------------
