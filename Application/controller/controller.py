@@ -25,11 +25,10 @@ class Controller:
         self.gui = None
         self.temp_sensor = None
         self.audio_recorder = None
-
-        self.beamformer = None
         self.thetas = [-90,-80,-70,-60,-50,-40,-30,-20,-10,0,10,20,30,40,50,60,70,80,90]
         self.phis = [0]  # azimuth angle: neg is below and pos is above
-        self.temperature = None
+        self.temperature = 90
+        self.beamformer = Beamform(self.thetas, self.phis, self.temperature)
         self.beamforming_thread = None
         self.beamform_running = False
 
@@ -50,6 +49,10 @@ class Controller:
 
         self.queue_check_time = 0.1
 
+        self.color_pink = (255, 0, 150)
+        self.color_light_blue = (0, 150, 255)
+
+
         base_path = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/2 FOSSN/Data'
         filename = 'cars_drive_by_150m'
         filepath = f'{base_path}/Tests/17_outdoor_testing/{filename}.wav'
@@ -69,12 +72,12 @@ class Controller:
         if self.temp_sensor.connected:
             if self.temp_sensor.current_temp is not None:
                 self.temperature = self.temp_sensor.current_temp
+                self.beamformer.temperature_current = self.temperature
         else:
-            # get manually: pop window with entry
             print('Manual Temp Entry')
-            self.temperature = 90
+            self.gui.Top_Frame.Right_Frame.insert_text(f'Using Temp: {self.temperature}', self.color_pink)
 
-        self.beamformer = Beamform(self.thetas, self.phis, self.temperature)
+        self.beamformer.queue = queue.Queue()
         self.beamform_running = True
         self.beamforming_thread = Thread(target=self.beamform_start, daemon=True).start()
 
@@ -189,12 +192,12 @@ class Controller:
         while self.app_state != State.IDLE:
             time.sleep(0.5)
         self.handle_event(Event.START_RECORDER)
+
     # ---------------------------------
     # EVENT HANDLER -------------------
     # ---------------------------------
     def handle_event(self, event):
 
-        # Load from Specific Stimulus Number:
         if event == Event.ON_CLOSE:
             self.stop_all_queues()
             self.temp_sensor.close_connection()
@@ -205,7 +208,7 @@ class Controller:
             # if self.audio_recorder.audio_receiver.running is False:
             #     print('FPGA not connected')
             if self.app_state != State.IDLE:
-                self.gui.Top_Frame.Right_Frame.insert_text('App State must be Idle', (255, 0, 150))
+                self.gui.Top_Frame.Right_Frame.insert_text('App State must be Idle', self.color_pink)
             else:
                 if not self.detector.baseline_calculated:
                     self.handle_event(Event.PCA_CALIBRATION)
@@ -221,12 +224,11 @@ class Controller:
             self.stop_all_queues()
             self.gui.Middle_Frame.Center_Frame.stop_updates()
 
-
         elif event == Event.PCA_CALIBRATION:
             self.app_state = State.CALIBRATING
             self.gui.Top_Frame.Center_Frame.toggle_calibrate()
             self.detector.baseline_calculated = False
-            self.gui.Top_Frame.Right_Frame.insert_text('Detector Calibration Started', (0, 150, 255))
+            self.gui.Top_Frame.Right_Frame.insert_text('Detector Calibration Started', self.color_light_blue)
             self.start_all_queues()
             Thread(target=self.calibrate_timer, daemon=True).start()
 
@@ -237,6 +239,12 @@ class Controller:
             self.gui.Top_Frame.Center_Frame.toggle_calibrate()
             self.gui.Top_Frame.Right_Frame.insert_text('Detector Calibration Successful', 'green')
             self.app_state = State.IDLE
+
+        elif event == Event.SET_TEMP:
+            self.temperature = int(self.gui.Bottom_Frame.Left_Frame.temp_value)
+            if self.app_state == State.RUNNING:
+                self.beamformer.temperature_current = self.temperature
+            self.gui.Top_Frame.Right_Frame.insert_text(f'Temp Set Successful: {self.temperature}', 'green')
 
         elif event == Event.LOG_DETECTION:
             print('logging detection')

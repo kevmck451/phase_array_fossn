@@ -9,6 +9,7 @@ class Event(Enum):
     STOP_RECORDER = auto()
     PCA_CALIBRATION = auto()
     STOP_PCA_CALIBRATION = auto()
+    SET_TEMP = auto()
     LOG_DETECTION = auto()
     DUMMY_BUTTON = auto()
 

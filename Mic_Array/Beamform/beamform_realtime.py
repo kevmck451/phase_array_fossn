@@ -10,13 +10,10 @@ from Filters.audio import Audio
 
 from concurrent.futures import ThreadPoolExecutor
 from scipy.signal import convolve
+from pathlib import Path
 from queue import Queue
 import numpy as np
 import time
-
-
-from pathlib import Path
-
 
 
 class Beamform:
@@ -32,13 +29,14 @@ class Beamform:
         self.desired_channels = self.fir_coeffs.shape[0]
         self.num_coeffs = self.fir_coeffs.shape[3]
 
-        print(f'FIR Coeffs Shape: {self.fir_coeffs.shape}')
+        # print(f'FIR Coeffs Shape: {self.fir_coeffs.shape}')
 
         self.queue = Queue()
         self.data_list = []
         self.tag_index = 2
 
     def compile_all_fir_coeffs(self):
+        print('Generating FIR Coeffs')
         fir_coeffs_list = []
         for phi in self.phis:
             for theta in self.thetas:
@@ -47,7 +45,6 @@ class Beamform:
                 fir_coeffs_list.append(fir_coeffs)
 
         return np.stack(fir_coeffs_list, axis=0)
-
 
     def map_channels_to_positions(self, audio_data):
         num_samples = audio_data.shape[1]

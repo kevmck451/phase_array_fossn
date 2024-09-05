@@ -24,7 +24,7 @@ class Detector:
         self.queue = Queue()
 
         self.baseline_calculated = False
-        self.baseline_calibration_time = 10
+        self.baseline_calibration_time = 5
 
         self.max_value = 150
         self.counter = 0
@@ -52,7 +52,7 @@ class Detector:
             self.calculate_baseline(pca_data)
 
         else:
-            print(self.baseline_means)
+            # print(self.baseline_means)
             anomalies_list = self.generate_random_data(19)
             anomalies_list = np.array(anomalies_list)
             self.queue.put(anomalies_list)

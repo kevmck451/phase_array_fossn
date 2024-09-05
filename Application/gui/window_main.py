@@ -460,6 +460,8 @@ class Bottom_Left_Frame(ctk.CTkFrame):
 
         self.beamform_settings_frame()
 
+        self.temp_value = None
+
     def beamform_settings_frame(self):
         # Beamform Settings Label
         self.beamform_settings_label = ctk.CTkLabel(self, text="Beamform Settings", font=configuration.console_font_style)
@@ -494,15 +496,14 @@ class Bottom_Left_Frame(ctk.CTkFrame):
         self.set_button.pack(side='left')
 
         # Default value for manual temperature entry
-        self.manual_temp_entry.insert(0, "72")  # Set a default temperature value
+        self.manual_temp_entry.insert(0, "90")  # Set a default temperature value
 
     def set_temp(self):
         # Function to handle the 'Set' button click
-        temp_value = self.manual_temp_entry.get()
-        if temp_value != '':
-            print(f"Temperature set to: {temp_value} F")
-        # Add further actions for setting the temperature here
-
+        self.temp_value = self.manual_temp_entry.get()
+        if self.temp_value != '':
+            print(f"Temperature set to: {self.temp_value} F")
+            self.event_handler(Event.SET_TEMP)
 
 
 class Bottom_Middle_Frame(ctk.CTkFrame):
@@ -607,7 +608,7 @@ class Bottom_Right_Frame(ctk.CTkFrame):
 
         self.num_components_entry = ctk.CTkEntry(self, width=50)
         self.num_components_entry.grid(row=1, column=1, sticky='w', padx=10, pady=5)
-        self.num_components_entry.insert(0, "5")  # Default value
+        self.num_components_entry.insert(0, "3")  # Default value
 
         self.num_components_set_button = ctk.CTkButton(self, text="Set", command=self.set_num_components)
         self.num_components_set_button.grid(row=1, column=2, sticky='w', padx=10, pady=5)
