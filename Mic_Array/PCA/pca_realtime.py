@@ -17,21 +17,18 @@ import time
 class PCA_Calculator:
     def __init__(self,
                  nperseg=4096,
-                 angle_list=(-90,-80,-70,-60,-50,-40,-30,-20,-10,0,10,20,30,40,50,60,70,80,90),
                  num_components=3,
                  threshold_multiplier=10):
-
         self.nperseg = nperseg
-        self.angle_list = angle_list
         self.num_components = num_components
         self.threshold_multiplier = threshold_multiplier
         self.queue = Queue()
 
     def process_chunk(self, chunk):
-        data = {}
-        for idx, channel in enumerate(chunk):
+        data = []
+
+        for channel in chunk:
             frequencies, times, stft_matrix = stft(channel.T, nperseg=self.nperseg, axis=0)
-            # print(stft_matrix.shape)
             num_time_bins = stft_matrix.shape[0]
             num_freq_bins = stft_matrix.shape[1]
             feature_matrix = np.abs(stft_matrix).reshape(num_time_bins, num_freq_bins)
@@ -39,9 +36,10 @@ class PCA_Calculator:
             pca = PCA(n_components=self.num_components)
             principal_components = pca.fit_transform(feature_matrix)
 
-            data[self.angle_list[idx]] = principal_components.T
+            data.append(principal_components.T)
 
-        self.queue.put(data)
+        data_array = np.array(data)
+        self.queue.put(data_array)
 
 
 
@@ -51,9 +49,9 @@ if __name__ == '__main__':
     filepath = f'{base_path}/Tests/18_beamformed/{filename}.wav'
     angles = [-70, -60, -50, -40, -30, -20, -10, 0, 10, 20, 30, 40, 50, 60, 70]
     audio = Audio(filepath=filepath, num_channels=len(angles))
-    chunk_size_seconds = 0.5
+    chunk_size_seconds = 1
 
-    pca_detector = PCA_Calculator(angle_list=angles)
+    pca_detector = PCA_Calculator()
 
     stream = AudioStreamSimulator(audio, chunk_size_seconds)
     stream.start_stream()

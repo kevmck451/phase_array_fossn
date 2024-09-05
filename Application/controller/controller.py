@@ -43,6 +43,9 @@ class Controller:
         self.detector_thread = None
         self.detector_running = False
 
+        self.bar_chart_updater_thread = None
+        self.bar_chart_updater_running = False
+
         self.queue_check_time = 0.1
 
         base_path = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/2 FOSSN/Data'
@@ -54,12 +57,10 @@ class Controller:
         chunk_size_seconds = 1
         self.sim_stream = AudioStreamSimulator(audio, chunk_size_seconds)
 
-
     def add_peripherals(self, temp_sensor, audio_recorder, gui):
         self.temp_sensor = temp_sensor
         self.audio_recorder = audio_recorder
         self.gui = gui
-
 
     # ---------------------------------
     # BEAMFORMING ---------------------
@@ -87,13 +88,11 @@ class Controller:
                 # print(f'Audio Stream Queue Size: {self.sim_stream.queue.qsize()}')
                 # current_audio_data = self.audio_recorder.queue.get()
                 current_audio_data = self.sim_stream.queue.get()
-                print(f'Current Data Size: {current_audio_data.shape}')
+                # print(f'Current Data Size: {current_audio_data.shape}')
                 # -------------------------
                 self.beamformer.beamform_data(current_audio_data)
 
             time.sleep(self.queue_check_time)
-
-
 
     # ---------------------------------
     # PROCESSING ----------------------
@@ -104,20 +103,18 @@ class Controller:
         self.processor_running = True
 
     def processor_start(self):
-        print('pro start')
+        print('process start')
         while self.processor_running:
             if not self.beamformer.queue.empty():
                 print()
                 print('PROCESSING------------------')
                 # print(f'Beamforming Stream Queue Size: {self.beamformer.queue.qsize()}')
                 current_data = self.beamformer.queue.get()
-                print(f'Current Data Size: {current_data.shape}')
+                # print(f'Current Data Size: {current_data.shape}')
                 # -------------------------
                 self.processor.process_data(current_data)
 
             time.sleep(self.queue_check_time)
-
-
 
     # ---------------------------------
     # PCA CALCULATOR --------------------
@@ -130,12 +127,12 @@ class Controller:
     def pca_calculation_start(self):
         print('pca start')
         while self.pca_calculator_running:
-            # print('pca running')
             if not self.processor.queue.empty():
-                print('PCA CALCULATING----------')
+                print('PCA CALCULATING ----------')
+                # print('PCA CALCULATING----------')
                 # print(f'Audio Stream Queue Size: {self.processor.queue.qsize()}')
                 current_data = self.processor.queue.get()
-                print(f'Current Data Size: {current_data.shape}')
+                # print(f'Current Data Size: {current_data.shape}')
                 # -------------------------
                 self.pca_calculator.process_chunk(current_data)
                 # print(f'PCA Queue Size: {self.pca_calculator.queue.qsize()}')
@@ -147,7 +144,7 @@ class Controller:
             time.sleep(self.queue_check_time)
 
     # ---------------------------------
-    # PCA CALCULATOR --------------------
+    # DETECTOR  -----------------------
     # ---------------------------------
     def detector_setup(self):
         self.detector = Detector()
@@ -161,13 +158,26 @@ class Controller:
                 print('DETECTING----------')
                 # print(f'Audio Stream Queue Size: {self.processor.queue.qsize()}')
                 current_data = self.pca_calculator.queue.get()
-                # -------------------------
+                # print(f'Current Data Size: {current_data.shape}')
                 self.detector.detect_anomalies(current_data)
-                print(f'Detector Queue Size: {self.detector.queue.qsize()}')
-                if not self.detector.queue.empty():
-                    current_detect_data = self.detector.queue.get()
-                    print(f'Detector Data Type: {type(current_detect_data)}')
-                    print(f'Detector Data Length: {len(current_detect_data)}')
+                # print(f'Detector Queue Size: {self.detector.queue.qsize()}')
+            time.sleep(self.queue_check_time)
+
+    # ---------------------------------
+    # GUI BAR CHART UPDATER -----------
+    # ---------------------------------
+    def bar_chart_updater_setup(self):
+        self.bar_chart_updater_thread = Thread(target=self.bar_chart_updater_start, daemon=True).start()
+        self.bar_chart_updater_running = True
+        self.gui.Middle_Frame.Center_Frame.start_updates()
+
+    def bar_chart_updater_start(self):
+        print('GBCU start')
+        while self.bar_chart_updater_running:
+            if not self.detector.queue.empty():
+                print('GUI BAR CHART UPDATING----------')
+                self.gui.Middle_Frame.Center_Frame.anomaly_data = self.detector.queue.get()
+
             time.sleep(self.queue_check_time)
 
 
@@ -183,6 +193,8 @@ class Controller:
             self.processor_running = False
             self.pca_calculator_running = False
             self.detector_running = False
+            self.bar_chart_updater_running = False
+            self.gui.Middle_Frame.Center_Frame.stop_updates()
             self.temp_sensor.close_connection()
             self.audio_recorder.audio_receiver.close_connection()
             self.app_state = State.IDLE
@@ -207,6 +219,7 @@ class Controller:
             self.processor_setup()
             self.pca_calculation_setup()
             self.detector_setup()
+            self.bar_chart_updater_setup()
 
         elif event == Event.STOP_RECORDER:
             print('STOP_RECORDER BUTTON PRESSED')
@@ -217,6 +230,8 @@ class Controller:
             self.processor_running = False
             self.pca_calculator_running = False
             self.detector_running = False
+            self.bar_chart_updater_running = False
+            self.gui.Middle_Frame.Center_Frame.stop_updates()
 
 
         elif event == Event.PCA_CALIBRATION:

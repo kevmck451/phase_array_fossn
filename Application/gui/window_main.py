@@ -314,12 +314,14 @@ class Main_Middle_Frame(ctk.CTkFrame):
 
         self.draw_threshold_lines()
 
+        self.updating = True  # Flag to control updates
+
         self.directions = list(range(-90, 100, 10))  # Direction labels from -90 to 90 degrees
 
         # Example data for the bar chart
         # self.anomaly_data = [0, 1, 0.5, 1, 1, 0.5, 2, 4, 5, 9, 6, 3, 2, 1, 1, 0.5, 1.5, 0.5, 1]  # Example data
         self.anomaly_data = list(0 for x in range(len(self.directions)))
-        self.max_anomalies = 10  # Maximum possible anomalies
+        self.max_anomalies = 150  # Maximum possible anomalies
         self.thresholds = {
             'green': 30,  # Less than 30% anomalies
             'yellow': 60, # 30% to 60% anomalies
@@ -378,6 +380,8 @@ class Main_Middle_Frame(ctk.CTkFrame):
         # Draw the chart's axis
         self.canvas.create_line(0, chart_height, canvas_width, chart_height)
 
+        self.after(800, self.draw_bar_chart)
+
     def draw_threshold_lines(self):
         # Clear any existing lines
         self.canvas.delete("threshold_lines")
@@ -400,6 +404,15 @@ class Main_Middle_Frame(ctk.CTkFrame):
             # Draw the threshold line
             self.canvas.create_line(0, chart_height - threshold_position, canvas_width, chart_height - threshold_position,
                                     fill=color, dash=(4, 4), tags="threshold_lines")
+
+    def start_updates(self):
+        self.updating = True
+        self.draw_bar_chart()
+
+    def stop_updates(self):
+        self.anomaly_data = list(0 for x in range(len(self.directions)))
+        self.updating = False
+
 
 
 # --------------------------------------------------------------------------------------------------
