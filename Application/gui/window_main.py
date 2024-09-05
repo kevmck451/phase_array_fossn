@@ -211,10 +211,10 @@ class Top_Right_Frame(ctk.CTkFrame):
 
         self.console_frame(main_frame)
 
-        sys.stdout = self
+        # sys.stdout = self
 
-        print('Attempting to Connect with Temp Server')
-        print('Attempting to Connect with FPGA Server')
+        self.insert_text('Attempting to Connect with Temp Server')
+        self.insert_text('Attempting to Connect with FPGA Server')
 
 
     # FRAMES ---------------------------------------------

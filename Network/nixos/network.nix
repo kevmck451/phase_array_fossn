@@ -28,13 +28,18 @@
   # Wireless Access Point --------------------------------
   services.hostapd.enable = true;
   services.hostapd.radios.wlp1s0u1u4 = {
-     channel = 6;
+     channel = 40; # 6
      networks.wlp1s0u1u4 = {
        ssid = "Phased_Array";
        authentication.mode = "none";
      };
-     settings.hw_mode = "g";
+#     settings.hw_mode = "g";
   };
+
+  # increase bandwidth for better transfer
+  services.hostapd.radios.wlp1s0u1u4.wifi5.enable = true;
+  services.hostapd.radios.wlp1s0u1u4.wifi5.require = true;
+  services.hostapd.radios.wlp1s0u1u4.wifi5.operatingChannelWidth = 80;
 
   # DNS Configuration -------------------------------------
   services.dnsmasq = lib.optionalAttrs config.services.hostapd.enable {

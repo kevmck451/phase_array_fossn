@@ -51,9 +51,7 @@ class Controller:
         base_path = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/2 FOSSN/Data'
         filename = 'cars_drive_by_150m'
         filepath = f'{base_path}/Tests/17_outdoor_testing/{filename}.wav'
-        print('loading simulated audio')
         audio = Audio(filepath=filepath, num_channels=48)
-        print('done loading audio')
         chunk_size_seconds = 1
         self.sim_stream = AudioStreamSimulator(audio, chunk_size_seconds)
 
@@ -66,7 +64,6 @@ class Controller:
     # BEAMFORMING ---------------------
     # ---------------------------------
     def beamform_setup(self):
-        # print('beamform setup')
         if self.temp_sensor.connected:
             if self.temp_sensor.current_temp is not None:
                 self.temperature = self.temp_sensor.current_temp
@@ -76,20 +73,15 @@ class Controller:
             self.temperature = 90
 
         self.beamformer = Beamform(self.thetas, self.phis, self.temperature)
-        self.beamforming_thread = Thread(target=self.beamform_start, daemon=True).start()
         self.beamform_running = True
+        self.beamforming_thread = Thread(target=self.beamform_start, daemon=True).start()
 
     def beamform_start(self):
-        print('bf start')
         while self.beamform_running:
-            # if not self.audio_recorder.queue.empty():
             if not self.sim_stream.queue.empty():
-                print('BEAMFORMING------------------')
-                # print(f'Audio Stream Queue Size: {self.sim_stream.queue.qsize()}')
-                # current_audio_data = self.audio_recorder.queue.get()
+                # print('BEAMFORMING------------------')
                 current_audio_data = self.sim_stream.queue.get()
                 # print(f'Current Data Size: {current_audio_data.shape}')
-                # -------------------------
                 self.beamformer.beamform_data(current_audio_data)
 
             time.sleep(self.queue_check_time)
@@ -98,20 +90,15 @@ class Controller:
     # PROCESSING ----------------------
     # ---------------------------------
     def processor_setup(self):
-        # print('pro setup')
-        self.processor_thread = Thread(target=self.processor_start, daemon=True).start()
         self.processor_running = True
+        self.processor_thread = Thread(target=self.processor_start, daemon=True).start()
 
     def processor_start(self):
-        print('process start')
         while self.processor_running:
             if not self.beamformer.queue.empty():
-                print()
-                print('PROCESSING------------------')
-                # print(f'Beamforming Stream Queue Size: {self.beamformer.queue.qsize()}')
+                # print('PROCESSING------------------')
                 current_data = self.beamformer.queue.get()
                 # print(f'Current Data Size: {current_data.shape}')
-                # -------------------------
                 self.processor.process_data(current_data)
 
             time.sleep(self.queue_check_time)
@@ -121,26 +108,19 @@ class Controller:
     # ---------------------------------
     def pca_calculation_setup(self):
         self.pca_calculator = PCA_Calculator()
-        self.pca_calculator_thread = Thread(target=self.pca_calculation_start, daemon=True).start()
         self.pca_calculator_running = True
+        self.pca_calculator_thread = Thread(target=self.pca_calculation_start, daemon=True).start()
 
     def pca_calculation_start(self):
-        print('pca start')
+        # while (data := self.processor.queue.get()):
+        #     self.pca_calculator.process_chunk(data)
+        # self.pca_calculator.queue.put(None)
         while self.pca_calculator_running:
             if not self.processor.queue.empty():
-                print('PCA CALCULATING ----------')
-                # print('PCA CALCULATING----------')
-                # print(f'Audio Stream Queue Size: {self.processor.queue.qsize()}')
+                # print('PCA CALCULATING ----------')
                 current_data = self.processor.queue.get()
                 # print(f'Current Data Size: {current_data.shape}')
-                # -------------------------
                 self.pca_calculator.process_chunk(current_data)
-                # print(f'PCA Queue Size: {self.pca_calculator.queue.qsize()}')
-                # if not self.pca_calculator.queue.empty():
-                #     current_pca_data = self.pca_calculator.queue.get()
-                #     print(f'PCA Data Type: {type(current_pca_data)}')
-                #     print(f'PCA Data Length: {len(current_pca_data)}')
-                #     print(f'PCA Data Shape at 0: {current_pca_data.get(0).shape}')
             time.sleep(self.queue_check_time)
 
     # ---------------------------------
@@ -148,38 +128,34 @@ class Controller:
     # ---------------------------------
     def detector_setup(self):
         self.detector = Detector()
-        self.detector_thread = Thread(target=self.detector_start, daemon=True).start()
         self.detector_running = True
+        self.detector_thread = Thread(target=self.detector_start, daemon=True).start()
 
     def detector_start(self):
-        print('detector start')
         while self.detector_running:
             if not self.pca_calculator.queue.empty():
-                print('DETECTING----------')
-                # print(f'Audio Stream Queue Size: {self.processor.queue.qsize()}')
+                # print('DETECTING----------')
                 current_data = self.pca_calculator.queue.get()
                 # print(f'Current Data Size: {current_data.shape}')
                 self.detector.detect_anomalies(current_data)
-                # print(f'Detector Queue Size: {self.detector.queue.qsize()}')
+
             time.sleep(self.queue_check_time)
 
     # ---------------------------------
     # GUI BAR CHART UPDATER -----------
     # ---------------------------------
     def bar_chart_updater_setup(self):
-        self.bar_chart_updater_thread = Thread(target=self.bar_chart_updater_start, daemon=True).start()
         self.bar_chart_updater_running = True
+        self.bar_chart_updater_thread = Thread(target=self.bar_chart_updater_start, daemon=True).start()
         self.gui.Middle_Frame.Center_Frame.start_updates()
 
     def bar_chart_updater_start(self):
-        print('GBCU start')
         while self.bar_chart_updater_running:
             if not self.detector.queue.empty():
-                print('GUI BAR CHART UPDATING----------')
+                # print('GUI BAR CHART UPDATING----------')
                 self.gui.Middle_Frame.Center_Frame.anomaly_data = self.detector.queue.get()
 
             time.sleep(self.queue_check_time)
-
 
     # ---------------------------------
     # EVENT HANDLER -------------------
@@ -200,7 +176,7 @@ class Controller:
             self.app_state = State.IDLE
 
         elif event == Event.START_RECORDER:
-            print('START_RECORDER BUTTON PRESSED')
+            # print('START_RECORDER BUTTON PRESSED')
             self.gui.Top_Frame.Center_Frame.toggle_play()
             # if self.audio_recorder.audio_receiver.running is False:
             #     print('FPGA not connected')
@@ -213,7 +189,6 @@ class Controller:
             #     self.processor_setup()
             #     self.pca_calculation_setup()
 
-
             self.sim_stream.start_stream()
             self.beamform_setup()
             self.processor_setup()
@@ -222,7 +197,7 @@ class Controller:
             self.bar_chart_updater_setup()
 
         elif event == Event.STOP_RECORDER:
-            print('STOP_RECORDER BUTTON PRESSED')
+            # print('STOP_RECORDER BUTTON PRESSED')
             self.gui.Top_Frame.Center_Frame.toggle_play()
             self.app_state = State.IDLE
             self.audio_recorder.record_running = False
