@@ -1,12 +1,7 @@
 
 
-from Mic_Array.AudioStreamSimulator import AudioStreamSimulator
-from Filters.audio import Audio
 
-
-
-from sklearn.decomposition import PCA
-from scipy.signal import stft
+from scipy.spatial.distance import mahalanobis
 import numpy as np
 
 
@@ -16,37 +11,44 @@ import time
 
 
 class Detector:
-    def __init__(self, threshold_multiplier=10, baseline_calculations=10):
-        self.threshold_multiplier = threshold_multiplier
-        self.baseline_calculations = baseline_calculations
-        self.baseline_means = {}
-        self.baseline_stds = {}
-        self.queue = Queue()
-
+    def __init__(self):
         self.baseline_calculated = False
         self.baseline_calibration_time = 5
+        self.queue = Queue()
+        self.counter = 0 # for simulation
 
-        self.max_value = 150
-        self.counter = 0
+        self.max_value = 150 # this is what sets the bar graphs. This number is 100%
+
+        self.num_channels = None
+        self.num_pca_components = None
+        self.num_samples = None
 
     def calculate_baseline(self, pca_data):
-        '''
-        pca_data is a numpy array where the first axis is direction from most negative to positive
-        and the other is a numpy array of pca components from beamformed data
+            '''
+            pca_data is a numpy array where the first axis is direction from most negative to positive
+            and the other is a numpy array of pca components from beamformed data
+            pca_data.shape = (num_channels, num_pca_components, num_samples)
+            '''
+            # print(f'PCA_DATA: {type(pca_data)}\t|\t{pca_data.shape}')
+            # PCA_DATA: <class 'numpy.ndarray'>	|	(19, 3, 2049)
 
-        '''
+            self.num_channels, self.num_pca_components, self.num_samples = pca_data.shape
 
-        self.baseline_means = self.generate_random_data(19)
-        self.baseline_stds = self.generate_random_data(19)
-
-        print(f'PCA_DATA: {type(pca_data)}\t|\t{pca_data.shape}')
-
-        # for angle, pcs in pca_data.items():
-        #     baseline_data = pcs[:self.baseline_calculations]
-        #     self.baseline_means[angle] = np.mean(baseline_data, axis=0)
-        #     self.baseline_stds[angle] = np.std(baseline_data, axis=0)
 
     def detect_anomalies(self, pca_data):
+
+        if not self.baseline_calculated:
+            self.calculate_baseline(pca_data)
+
+        else:
+            anomalies_list = []
+
+            anomalies_list = np.array(anomalies_list)
+            self.queue.put(anomalies_list)
+
+
+
+    def detect_anomalies_simulation(self, pca_data):
 
         if not self.baseline_calculated:
             self.calculate_baseline(pca_data)
