@@ -54,7 +54,7 @@ class Controller:
 
 
         base_path = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/2 FOSSN/Data'
-        filename = 'cars_drive_by_150m'
+        filename = 'sweep_angel_100m'
         filepath = f'{base_path}/Tests/17_outdoor_testing/{filename}.wav'
         audio = Audio(filepath=filepath, num_channels=48)
         chunk_size_seconds = 1
@@ -143,8 +143,8 @@ class Controller:
                 # print('DETECTING----------')
                 current_data = self.pca_calculator.queue.get()
                 # print(f'Current Data Size: {current_data.shape}')
-                # self.detector.detect_anomalies(current_data)
-                self.detector.detect_anomalies_simulation(current_data)
+                self.detector.detect_anomalies(current_data)
+                # self.detector.detect_anomalies_simulation(current_data)
 
             time.sleep(self.queue_check_time)
 
@@ -243,12 +243,12 @@ class Controller:
 
         elif event == Event.SET_TEMP:
             self.temperature = int(self.gui.Bottom_Frame.Left_Frame.temp_value)
-            if self.app_state == State.RUNNING:
-                self.beamformer.temperature_current = self.temperature
+            self.beamformer.temperature_current = self.temperature
             self.gui.Top_Frame.Right_Frame.insert_text(f'Temp Set Successful: {self.temperature}', 'green')
 
         elif event == Event.SET_MAX_ANOMALY_VALUE:
             self.detector.max_value = int(self.gui.Bottom_Frame.Right_Frame.max_anomaly_value)
+            self.gui.Middle_Frame.Center_Frame.max_anomalies = self.detector.max_value
             self.gui.Top_Frame.Right_Frame.insert_text(f'Max Anomaly Value Set Successful: {self.detector.max_value}', 'green')
 
         elif event == Event.LOG_DETECTION:

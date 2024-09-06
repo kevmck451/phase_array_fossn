@@ -599,8 +599,6 @@ class Bottom_Right_Frame(ctk.CTkFrame):
         self.max_anomaly_value = 150
         self.pca_detector_settings_frame()
 
-
-
     def pca_detector_settings_frame(self):
         # Number of Components Label
         self.pca_detector_settings_label = ctk.CTkLabel(self, text="PCA Detector Settings", font=configuration.console_font_style)
