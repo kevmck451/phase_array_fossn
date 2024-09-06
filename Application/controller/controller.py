@@ -54,8 +54,8 @@ class Controller:
 
 
         base_path = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/2 FOSSN/Data'
-        filename = 'sweep_angel_100m'
-        filepath = f'{base_path}/Tests/17_outdoor_testing/{filename}.wav'
+        filename = 'angel_sensitivity'
+        filepath = f'{base_path}/Tests/15_outdoor_testing/{filename}.wav'
         audio = Audio(filepath=filepath, num_channels=48)
         chunk_size_seconds = 1
         self.sim_stream = AudioStreamSimulator(audio, chunk_size_seconds)
@@ -162,7 +162,7 @@ class Controller:
                 # print('GUI BAR CHART UPDATING----------')
                 self.gui.Middle_Frame.Center_Frame.anomaly_data = self.detector.queue.get()
 
-            time.sleep(self.queue_check_time)
+            time.sleep(1)
 
     # ---------------------------------
     # START / STOP QUEUES ------------
@@ -250,6 +250,14 @@ class Controller:
             self.detector.max_value = int(self.gui.Bottom_Frame.Right_Frame.max_anomaly_value)
             self.gui.Middle_Frame.Center_Frame.max_anomalies = self.detector.max_value
             self.gui.Top_Frame.Right_Frame.insert_text(f'Max Anomaly Value Set Successful: {self.detector.max_value}', 'green')
+
+        elif event == Event.SET_ANOMALY_THRESHOLD_VALUE:
+            self.detector.anomaly_threshold = int(self.gui.Bottom_Frame.Right_Frame.anomaly_threshold_value)
+            self.gui.Top_Frame.Right_Frame.insert_text(f'Max Anomaly Value Set Successful: {self.detector.anomaly_threshold}', 'green')
+
+        elif event == Event.ANOMALY_DETECTED:
+            self.gui.Top_Frame.Right_Frame.insert_text(f'ANOMALY DETECTED AT: {self.gui.Middle_Frame.Center_Frame.anomaly_list}', 'red')
+
 
         elif event == Event.LOG_DETECTION:
             print('logging detection')

@@ -8,8 +8,8 @@ def base_path(relative_path):
 # Main App Settings
 window_title = 'University of Memphis: FOSSN Phased Array'
 
-window_width = 1400 # 3200
-window_height = 800  # 1200
+window_width = 1400 # 3200 1400
+window_height = 800  # 1200 800
 min_window_width = window_width
 min_window_height = window_height
 x_pad_main = 2

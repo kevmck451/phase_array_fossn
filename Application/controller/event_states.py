@@ -11,6 +11,8 @@ class Event(Enum):
     STOP_PCA_CALIBRATION = auto()
     SET_TEMP = auto()
     SET_MAX_ANOMALY_VALUE = auto()
+    ANOMALY_DETECTED = auto()
+    SET_ANOMALY_THRESHOLD_VALUE = auto()
     LOG_DETECTION = auto()
     DUMMY_BUTTON = auto()
 

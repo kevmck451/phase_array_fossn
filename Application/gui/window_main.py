@@ -323,6 +323,7 @@ class Main_Middle_Frame(ctk.CTkFrame):
         self.updating = True  # Flag to control updates
 
         self.directions = list(range(-90, 100, 10))  # Direction labels from -90 to 90 degrees
+        self.anomaly_list = []
 
         # Example data for the bar chart
         # self.anomaly_data = [0, 1, 0.5, 1, 1, 0.5, 2, 4, 5, 9, 6, 3, 2, 1, 1, 0.5, 1.5, 0.5, 1]  # Example data
@@ -364,6 +365,10 @@ class Main_Middle_Frame(ctk.CTkFrame):
             else:
                 bar_color = 'red'
                 text_color = 'white'
+                self.anomaly_list.append(self.directions[i])
+                self.event_handler(Event.ANOMALY_DETECTED)
+
+
 
             # Calculate the position of each bar
             x1 = i * bar_width
@@ -383,6 +388,7 @@ class Main_Middle_Frame(ctk.CTkFrame):
             # Draw the direction label below the bar
             self.canvas.create_text(x1 + bar_width / 2, chart_height + 20, text=str(self.directions[i]), anchor='n')
 
+        self.anomaly_list.clear()
         # Draw the chart's axis
         self.canvas.create_line(0, chart_height, canvas_width, chart_height)
 
@@ -595,8 +601,10 @@ class Bottom_Right_Frame(ctk.CTkFrame):
         self.grid_columnconfigure(1, weight=1)
         self.grid_columnconfigure(2, weight=1)
         self.grid_columnconfigure(3, weight=1)
+        self.grid_columnconfigure(4, weight=1)
 
-        self.max_anomaly_value = 150
+        self.max_anomaly_value = 30
+        self.anomaly_threshold_value = 8
         self.pca_detector_settings_frame()
 
     def pca_detector_settings_frame(self):
@@ -625,16 +633,28 @@ class Bottom_Right_Frame(ctk.CTkFrame):
         self.threshold_multiplier_set_button = ctk.CTkButton(self, text="Set", command=self.set_threshold_multiplier)
         self.threshold_multiplier_set_button.grid(row=2, column=2, sticky='w', padx=10, pady=5)
 
+        # anomaly threshold value Label
+        self.anomaly_threshold_value_label = ctk.CTkLabel(self, text="Anomaly Threshold Value:", font=configuration.console_font_style)
+        self.anomaly_threshold_value_label.grid(row=3, column=0, sticky='e', padx=10, pady=5)
+
+        self.anomaly_threshold_value_entry = ctk.CTkEntry(self, width=50)
+        self.anomaly_threshold_value_entry.grid(row=3, column=1, sticky='w', padx=10, pady=5)
+        self.anomaly_threshold_value_entry.insert(0, f'{self.anomaly_threshold_value}')  # Default value
+
+        self.anomaly_threshold_value_set_button = ctk.CTkButton(self, text="Set", command=self.set_anomaly_threshold_value)
+        self.anomaly_threshold_value_set_button.grid(row=3, column=2, sticky='w', padx=10, pady=5)
+
         # max_anomaly_value Label
         self.max_anomaly_value_label = ctk.CTkLabel(self, text="Max Anomaly Value:", font=configuration.console_font_style)
-        self.max_anomaly_value_label.grid(row=3, column=0, sticky='e', padx=10, pady=5)
+        self.max_anomaly_value_label.grid(row=4, column=0, sticky='e', padx=10, pady=5)
 
         self.max_anomaly_value_entry = ctk.CTkEntry(self, width=50)
-        self.max_anomaly_value_entry.grid(row=3, column=1, sticky='w', padx=10, pady=5)
+        self.max_anomaly_value_entry.grid(row=4, column=1, sticky='w', padx=10, pady=5)
         self.max_anomaly_value_entry.insert(0, f'{self.max_anomaly_value}')  # Default value
 
         self.max_anomaly_value_set_button = ctk.CTkButton(self, text="Set", command=self.set_max_anomaly_value)
-        self.max_anomaly_value_set_button.grid(row=3, column=2, sticky='w', padx=10, pady=5)
+        self.max_anomaly_value_set_button.grid(row=4, column=2, sticky='w', padx=10, pady=5)
+
 
     def set_num_components(self):
         num_components = self.num_components_entry.get()
@@ -645,6 +665,12 @@ class Bottom_Right_Frame(ctk.CTkFrame):
         threshold_multiplier = self.threshold_multiplier_entry.get()
         if threshold_multiplier:
             print(f"Threshold multiplier set to: {threshold_multiplier}")
+
+    def set_anomaly_threshold_value(self):
+        self.anomaly_threshold_value = self.anomaly_threshold_value_entry.get()
+        if self.anomaly_threshold_value:
+            print(f"Max Anomaly Value set to: {self.anomaly_threshold_value}")
+            self.event_handler(Event.SET_ANOMALY_THRESHOLD_VALUE)
 
     def set_max_anomaly_value(self):
         self.max_anomaly_value = self.max_anomaly_value_entry.get()
