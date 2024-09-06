@@ -1,6 +1,8 @@
 
 
 
+
+
 import numpy as np
 
 
@@ -11,6 +13,7 @@ import time
 
 class Detector:
     def __init__(self):
+
         self.baseline_calculated = False # set outside this class
         self.baseline_calibration_time = 5 # used outside this class
         self.queue = Queue()
@@ -41,16 +44,12 @@ class Detector:
 
         else:
             anomalies_list = []
-
-
             anomalies_list = np.array(anomalies_list)
             assert len(anomalies_list) == self.num_channels
             self.queue.put(anomalies_list)
 
 
     def detect_anomalies_simulation(self, pca_data):
-
-        print(f'Current Max Value: {self.max_value}')
 
         if not self.baseline_calculated:
             self.calculate_baseline(pca_data)
