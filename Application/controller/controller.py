@@ -143,7 +143,8 @@ class Controller:
                 # print('DETECTING----------')
                 current_data = self.pca_calculator.queue.get()
                 # print(f'Current Data Size: {current_data.shape}')
-                self.detector.detect_anomalies(current_data)
+                # self.detector.detect_anomalies(current_data)
+                self.detector.detect_anomalies_simulation(current_data)
 
             time.sleep(self.queue_check_time)
 
@@ -245,6 +246,10 @@ class Controller:
             if self.app_state == State.RUNNING:
                 self.beamformer.temperature_current = self.temperature
             self.gui.Top_Frame.Right_Frame.insert_text(f'Temp Set Successful: {self.temperature}', 'green')
+
+        elif event == Event.SET_MAX_ANOMALY_VALUE:
+            self.detector.max_value = int(self.gui.Bottom_Frame.Right_Frame.max_anomaly_value)
+            self.gui.Top_Frame.Right_Frame.insert_text(f'Max Anomaly Value Set Successful: {self.detector.max_value}', 'green')
 
         elif event == Event.LOG_DETECTION:
             print('logging detection')

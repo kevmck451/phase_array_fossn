@@ -550,7 +550,7 @@ class Bottom_Middle_Frame(ctk.CTkFrame):
         self.nm_percentage_entry.grid(row=3, column=1, sticky='w', padx=10, pady=5)
         self.nm_percentage_set_button = ctk.CTkButton(self, text="Set", command=self.set_nm_percentage)
         self.nm_percentage_set_button.grid(row=3, column=2, sticky='w', padx=10, pady=5)
-        self.nm_percentage_entry.insert(0, "50")  # Default value
+        self.nm_percentage_entry.insert(0, "100")  # Default value
 
         # DS: New Sample Rate
         self.ds_new_sr_label = ctk.CTkLabel(self, text="DS: New Sample Rate (Hz): ", font=configuration.console_font_style)
@@ -594,15 +594,18 @@ class Bottom_Right_Frame(ctk.CTkFrame):
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
         self.grid_columnconfigure(2, weight=1)
+        self.grid_columnconfigure(3, weight=1)
 
+        self.max_anomaly_value = 150
         self.pca_detector_settings_frame()
 
+
+
     def pca_detector_settings_frame(self):
-        # PCA Detector Settings Label
+        # Number of Components Label
         self.pca_detector_settings_label = ctk.CTkLabel(self, text="PCA Detector Settings", font=configuration.console_font_style)
         self.pca_detector_settings_label.grid(row=0, column=0, columnspan=3, sticky='nsew', padx=10, pady=10)
 
-        # Number of Components Label
         self.num_components_label = ctk.CTkLabel(self, text="Number of Components:", font=configuration.console_font_style)
         self.num_components_label.grid(row=1, column=0, sticky='e', padx=10, pady=5)
 
@@ -624,6 +627,17 @@ class Bottom_Right_Frame(ctk.CTkFrame):
         self.threshold_multiplier_set_button = ctk.CTkButton(self, text="Set", command=self.set_threshold_multiplier)
         self.threshold_multiplier_set_button.grid(row=2, column=2, sticky='w', padx=10, pady=5)
 
+        # max_anomaly_value Label
+        self.max_anomaly_value_label = ctk.CTkLabel(self, text="Max Anomaly Value:", font=configuration.console_font_style)
+        self.max_anomaly_value_label.grid(row=3, column=0, sticky='e', padx=10, pady=5)
+
+        self.max_anomaly_value_entry = ctk.CTkEntry(self, width=50)
+        self.max_anomaly_value_entry.grid(row=3, column=1, sticky='w', padx=10, pady=5)
+        self.max_anomaly_value_entry.insert(0, f'{self.max_anomaly_value}')  # Default value
+
+        self.max_anomaly_value_set_button = ctk.CTkButton(self, text="Set", command=self.set_max_anomaly_value)
+        self.max_anomaly_value_set_button.grid(row=3, column=2, sticky='w', padx=10, pady=5)
+
     def set_num_components(self):
         num_components = self.num_components_entry.get()
         if num_components:
@@ -633,3 +647,9 @@ class Bottom_Right_Frame(ctk.CTkFrame):
         threshold_multiplier = self.threshold_multiplier_entry.get()
         if threshold_multiplier:
             print(f"Threshold multiplier set to: {threshold_multiplier}")
+
+    def set_max_anomaly_value(self):
+        self.max_anomaly_value = self.max_anomaly_value_entry.get()
+        if self.max_anomaly_value:
+            print(f"Max Anomaly Value set to: {self.max_anomaly_value}")
+            self.event_handler(Event.SET_MAX_ANOMALY_VALUE)

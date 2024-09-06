@@ -50,6 +50,8 @@ class Detector:
 
     def detect_anomalies_simulation(self, pca_data):
 
+        print(f'Current Max Value: {self.max_value}')
+
         if not self.baseline_calculated:
             self.calculate_baseline(pca_data)
 
