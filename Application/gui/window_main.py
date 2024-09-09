@@ -351,11 +351,17 @@ class Main_Middle_Frame(ctk.CTkFrame):
         chart_height = canvas_height * 0.8  # Use 80% of the height for the chart
 
         for i, value in enumerate(self.anomaly_data):
-            # Calculate the height of the bar
-            bar_height = (value / self.max_anomalies) * chart_height
 
             # Determine the color based on the threshold
             percentage = (value / self.max_anomalies) * 100
+
+            # Calculate the height of the bar
+            # bar_height = (value / self.max_anomalies) * chart_height
+
+            # Cap the bar height to 100% of chart height
+            capped_percentage = min(percentage, 100)
+            bar_height = (capped_percentage / 100) * chart_height
+
             if percentage < self.thresholds['green']:
                 bar_color = 'green'
                 text_color = 'white'
@@ -367,8 +373,6 @@ class Main_Middle_Frame(ctk.CTkFrame):
                 text_color = 'white'
                 self.anomaly_list.append(self.directions[i])
                 self.event_handler(Event.ANOMALY_DETECTED)
-
-
 
             # Calculate the position of each bar
             x1 = i * bar_width
@@ -610,8 +614,8 @@ class Bottom_Right_Frame(ctk.CTkFrame):
         self.grid_columnconfigure(3, weight=1)
         self.grid_columnconfigure(4, weight=1)
 
-        self.max_anomaly_value = 100
-        self.anomaly_threshold_value = 10
+        self.max_anomaly_value = 50
+        self.anomaly_threshold_value = 8
         self.pca_detector_settings_frame()
 
     def pca_detector_settings_frame(self):
