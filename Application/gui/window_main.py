@@ -336,7 +336,7 @@ class Main_Middle_Frame(ctk.CTkFrame):
         }
 
         # Schedule the draw_bar_chart to run after the canvas is ready
-        self.after(100, self.draw_bar_chart)
+        self.after(1000, self.draw_bar_chart)
 
     def draw_bar_chart(self):
         self.canvas.delete("all")  # Clear the canvas
@@ -392,7 +392,7 @@ class Main_Middle_Frame(ctk.CTkFrame):
         # Draw the chart's axis
         self.canvas.create_line(0, chart_height, canvas_width, chart_height)
 
-        self.after(800, self.draw_bar_chart)
+        self.after(1000, self.draw_bar_chart)
 
     def draw_threshold_lines(self):
         # Clear any existing lines

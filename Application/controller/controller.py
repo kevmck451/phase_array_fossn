@@ -11,7 +11,7 @@ from Mic_Array.Detector.detector_realtime import Detector
 from Application.controller.event_states import Event
 from Application.controller.event_states import State
 
-
+from datetime import datetime
 from threading import Thread
 import queue
 import time
@@ -51,6 +51,9 @@ class Controller:
 
         self.color_pink = (255, 0, 150)
         self.color_light_blue = (0, 150, 255)
+
+        self.last_time_stamp = None
+        self.last_anomaly_locations = []
 
 
         base_path = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/2 FOSSN/Data'
@@ -256,7 +259,15 @@ class Controller:
             self.gui.Top_Frame.Right_Frame.insert_text(f'Max Anomaly Value Set Successful: {self.detector.anomaly_threshold}', 'green')
 
         elif event == Event.ANOMALY_DETECTED:
-            self.gui.Top_Frame.Right_Frame.insert_text(f'ANOMALY DETECTED AT: {self.gui.Middle_Frame.Center_Frame.anomaly_list}', 'red')
+            current_time_stamp = datetime.now().strftime("%I:%M:%S %p")
+            current_anomaly_locations = self.gui.Middle_Frame.Center_Frame.anomaly_list
+            if current_time_stamp != self.last_time_stamp or current_anomaly_locations != self.last_anomaly_locations:
+                self.gui.Top_Frame.Right_Frame.insert_text(
+                    f'{current_time_stamp}: ANOMALY DETECTED AT {current_anomaly_locations}',
+                    'red'
+                )
+                self.last_time_stamp = current_time_stamp
+                self.last_anomaly_locations = current_anomaly_locations.copy()
 
 
         elif event == Event.LOG_DETECTION:
