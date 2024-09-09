@@ -525,6 +525,13 @@ class Bottom_Middle_Frame(ctk.CTkFrame):
         self.grid_columnconfigure(1, weight=1)
         self.grid_columnconfigure(2, weight=1)
 
+        self.nr_std_threshold = 1.5
+        self.hp_bottom_cutoff_freq = 1144
+        self.nm_percentage = 100
+        self.ds_new_sr = 6288
+
+
+
         self.processing_settings_frame()
 
     def processing_settings_frame(self):
@@ -538,7 +545,7 @@ class Bottom_Middle_Frame(ctk.CTkFrame):
         self.nr_std_threshold_entry.grid(row=1, column=1, sticky='w', padx=10, pady=5)
         self.nr_std_threshold_set_button = ctk.CTkButton(self, text="Set", command=self.set_nr_std_threshold)
         self.nr_std_threshold_set_button.grid(row=1, column=2, sticky='w', padx=10, pady=5)
-        self.nr_std_threshold_entry.insert(0, "5")  # Default value
+        self.nr_std_threshold_entry.insert(0, f'{self.nr_std_threshold}')  # Default value
 
         # HP: Bottom Cutoff Frequency
         self.hp_bottom_cutoff_freq_label = ctk.CTkLabel(self, text="HP: Bottom Cutoff Frequency (Hz): ", font=configuration.console_font_style)
@@ -547,7 +554,7 @@ class Bottom_Middle_Frame(ctk.CTkFrame):
         self.hp_bottom_cutoff_freq_entry.grid(row=2, column=1, sticky='w', padx=10, pady=5)
         self.hp_bottom_cutoff_freq_set_button = ctk.CTkButton(self, text="Set", command=self.set_hp_bottom_cutoff_freq)
         self.hp_bottom_cutoff_freq_set_button.grid(row=2, column=2, sticky='w', padx=10, pady=5)
-        self.hp_bottom_cutoff_freq_entry.insert(0, "1000")  # Default value
+        self.hp_bottom_cutoff_freq_entry.insert(0, f'{self.hp_bottom_cutoff_freq}')  # Default value
 
         # NM: Percentage
         self.nm_percentage_label = ctk.CTkLabel(self, text="NM: Percentage (%): ", font=configuration.console_font_style)
@@ -556,7 +563,7 @@ class Bottom_Middle_Frame(ctk.CTkFrame):
         self.nm_percentage_entry.grid(row=3, column=1, sticky='w', padx=10, pady=5)
         self.nm_percentage_set_button = ctk.CTkButton(self, text="Set", command=self.set_nm_percentage)
         self.nm_percentage_set_button.grid(row=3, column=2, sticky='w', padx=10, pady=5)
-        self.nm_percentage_entry.insert(0, "100")  # Default value
+        self.nm_percentage_entry.insert(0, f'{self.nm_percentage}')  # Default value
 
         # DS: New Sample Rate
         self.ds_new_sr_label = ctk.CTkLabel(self, text="DS: New Sample Rate (Hz): ", font=configuration.console_font_style)
@@ -565,7 +572,7 @@ class Bottom_Middle_Frame(ctk.CTkFrame):
         self.ds_new_sr_entry.grid(row=4, column=1, sticky='w', padx=10, pady=5)
         self.ds_new_sr_set_button = ctk.CTkButton(self, text="Set", command=self.set_ds_new_sr)
         self.ds_new_sr_set_button.grid(row=4, column=2, sticky='w', padx=10, pady=5)
-        self.ds_new_sr_entry.insert(0, "44100")  # Default value
+        self.ds_new_sr_entry.insert(0, f'{self.ds_new_sr}')  # Default value
 
     def set_nr_std_threshold(self):
         nr_std_threshold = self.nr_std_threshold_entry.get()

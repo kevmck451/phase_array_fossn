@@ -26,7 +26,7 @@ class Processing:
                             'ds' : 6000 }
         '''
 
-        self.processing_chain = {'hp': 1000, 'nm': 100, 'ds': 6000}
+        self.processing_chain = {'hp': 1144, 'nm': 100, 'ds': 6288}
         self.nr_std_threshold = None
         self.bottom_cutoff_frequency = None
         self.norm_percent = None
