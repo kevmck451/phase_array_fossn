@@ -603,8 +603,8 @@ class Bottom_Right_Frame(ctk.CTkFrame):
         self.grid_columnconfigure(3, weight=1)
         self.grid_columnconfigure(4, weight=1)
 
-        self.max_anomaly_value = 30
-        self.anomaly_threshold_value = 8
+        self.max_anomaly_value = 100
+        self.anomaly_threshold_value = 10
         self.pca_detector_settings_frame()
 
     def pca_detector_settings_frame(self):
@@ -654,7 +654,6 @@ class Bottom_Right_Frame(ctk.CTkFrame):
 
         self.max_anomaly_value_set_button = ctk.CTkButton(self, text="Set", command=self.set_max_anomaly_value)
         self.max_anomaly_value_set_button.grid(row=4, column=2, sticky='w', padx=10, pady=5)
-
 
     def set_num_components(self):
         num_components = self.num_components_entry.get()
