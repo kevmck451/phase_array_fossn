@@ -39,7 +39,7 @@
   # increase bandwidth for better transfer
   services.hostapd.radios.wlp1s0u1u4.wifi5.enable = true;
   services.hostapd.radios.wlp1s0u1u4.wifi5.require = true;
-  services.hostapd.radios.wlp1s0u1u4.wifi5.operatingChannelWidth = 80;
+  services.hostapd.radios.wlp1s0u1u4.wifi5.operatingChannelWidth = "80";
 
   # DNS Configuration -------------------------------------
   services.dnsmasq = lib.optionalAttrs config.services.hostapd.enable {
