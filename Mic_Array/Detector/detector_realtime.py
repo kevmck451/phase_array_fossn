@@ -2,13 +2,12 @@
 
 
 
-
-import numpy as np
-
-
+from datetime import datetime
 from queue import Queue
+import numpy as np
 import random
 import time
+import os
 
 
 class Detector:
@@ -60,6 +59,7 @@ class Detector:
             self.calculate_baseline(pca_data)
 
         else:
+            self.num_channels, self.num_pca_components, self.num_samples = pca_data.shape
             anomalies_list = []
 
             # Loop through each channel and detect anomalies based on PCA data

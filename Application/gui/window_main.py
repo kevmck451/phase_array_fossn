@@ -4,7 +4,7 @@
 from Application.controller.event_states import Event
 import Application.gui.configuration as configuration
 
-
+from tkinter import filedialog
 import customtkinter as ctk
 import tkinter as tk
 import numpy as np
@@ -148,21 +148,86 @@ class Top_Middle_Frame(ctk.CTkFrame):
         self.start_label = ctk.CTkLabel(frame, text="Start/Stop Recording, Beamforming, Processing, and PCA Calculator", font=configuration.console_font_style)
         self.start_label.pack(fill='both')  # , expand=True
 
-        self.start_button = ctk.CTkButton(frame, text="Start",
+        button_frame = ctk.CTkFrame(frame)
+        button_frame.pack(pady=5)
+
+
+        self.load_button_audio = ctk.CTkButton(button_frame, text="Load",
+                                         fg_color=configuration.gray_fg_color,
+                                         hover_color=configuration.gray_hover_color,
+                                         command=self.load_audio_file)
+        self.load_button_audio.grid(row=0, column=0, padx=5)
+
+        self.start_button = ctk.CTkButton(button_frame, text="Start",
                                          fg_color=configuration.start_fg_color,
                                          hover_color=configuration.start_hover_color,
                                          command=lambda: self.event_handler(Event.START_RECORDER))
-        self.start_button.pack(pady=5)
+        self.start_button.grid(row=0, column=1, padx=5)
+
+        self.audio_save_checkbox_variable = ctk.BooleanVar()
+
+        self.save_checkbox_audio = ctk.CTkCheckBox(button_frame, text="Save",
+                                             variable=self.audio_save_checkbox_variable,
+                                             fg_color=configuration.bluelight_fg_color,
+                                             hover_color=configuration.bluelight_hover_color)
+        self.save_checkbox_audio.grid(row=0, column=2, padx=5)
+
+    def load_audio_file(self):
+        # Open file dialog to select the audio file
+        audio_file_path = filedialog.askopenfilename(title="Select Audio File", filetypes=(("Audio Files", "*.wav"), ("All Files", "*.*")))
+
+        # Store the selected file path in an instance variable
+        if audio_file_path:
+            self.selected_audio_file = audio_file_path
+            print(f"Selected audio file: {self.selected_audio_file}")
+
+            # Trigger the event for loading audio (without passing the file path directly)
+            self.event_handler(Event.LOAD_AUDIO)
 
     def calibration_frame(self, frame):
         self.calibration_label = ctk.CTkLabel(frame, text="Baseline Calibration for Detector", font=configuration.console_font_style)
         self.calibration_label.pack(fill='both')  # , expand=True
 
-        self.calibrate_button = ctk.CTkButton(frame, text="Calibrate PCA",
-                                          fg_color=configuration.start_fg_color,
-                                          hover_color=configuration.start_hover_color,
-                                          command=lambda: self.event_handler(Event.PCA_CALIBRATION))
-        self.calibrate_button.pack(pady=5)
+        button_frame = ctk.CTkFrame(frame)
+        button_frame.pack(pady=5)
+
+
+        self.load_button_pca = ctk.CTkButton(button_frame, text="Load",
+                                         fg_color=configuration.gray_fg_color,
+                                         hover_color=configuration.gray_hover_color,
+                                         command=self.load_pca_file)
+        self.load_button_pca.grid(row=0, column=0, padx=5)
+
+
+        self.calibrate_button = ctk.CTkButton(button_frame, text="Calibrate PCA",
+                                              fg_color=configuration.start_fg_color,
+                                              hover_color=configuration.start_hover_color,
+                                              command=lambda: self.event_handler(Event.PCA_CALIBRATION))
+        self.calibrate_button.grid(row=0, column=1, padx=5)
+
+        self.pca_save_checkbox_variable = ctk.BooleanVar()
+
+        self.save_checkbox_pca = ctk.CTkCheckBox(button_frame, text="Save",
+                                             variable=self.pca_save_checkbox_variable,
+                                             fg_color=configuration.bluelight_fg_color,
+                                             hover_color=configuration.bluelight_hover_color)
+        self.save_checkbox_pca.grid(row=0, column=2, padx=5)
+
+    def load_pca_file(self):
+        # Open a directory dialog to select the folder
+        folder_path = filedialog.askdirectory(title="Select Folder Containing PCA Calibration Files")
+
+        # Store the selected folder path in an instance variable
+        if folder_path:
+            self.selected_pca_folder = folder_path
+            print(f"Selected PCA folder: {self.selected_pca_folder}")
+
+            # Construct file paths for the baseline files
+            self.baseline_means_path = f"{self.selected_pca_folder}/baseline_means.npy"
+            self.baseline_stds_path = f"{self.selected_pca_folder}/baseline_stds.npy"
+
+            # Trigger the event for loading PCA calibration
+            self.event_handler(Event.LOAD_CALIBRATION)
 
     def toggle_play(self):
         if self.playing:

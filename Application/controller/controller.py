@@ -1,4 +1,5 @@
 
+
 from Mic_Array.AudioStreamSimulator import AudioStreamSimulator
 from Filters.audio import Audio
 
@@ -11,11 +12,15 @@ from Mic_Array.Detector.detector_realtime import Detector
 from Application.controller.event_states import Event
 from Application.controller.event_states import State
 
+
 from datetime import datetime
 from threading import Thread
+from pathlib import Path
+import pandas as pd
+import numpy as np
 import queue
 import time
-
+import os
 
 
 class Controller:
@@ -55,18 +60,41 @@ class Controller:
         self.last_time_stamp = None
         self.last_anomaly_locations = []
 
+        # self.audio_simulation()
 
-        base_path = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/2 FOSSN/Data'
-        filename = 'angel_sensitivity'
-        filepath = f'{base_path}/Tests/15_outdoor_testing/{filename}.wav'
-        audio = Audio(filepath=filepath, num_channels=48)
-        chunk_size_seconds = 1
-        self.sim_stream = AudioStreamSimulator(audio, chunk_size_seconds)
+        self.setup_project_directory()
 
     def add_peripherals(self, temp_sensor, audio_recorder, gui):
         self.temp_sensor = temp_sensor
         self.audio_recorder = audio_recorder
         self.gui = gui
+
+    def setup_project_directory(self):
+        self.project_directory_base_path = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/2 FOSSN/Data/Field_Tests'
+        current_datetime = datetime.now().strftime('%-m-%d-%y %-I.%M%p').lower()
+        self.project_directory_path = os.path.join(self.project_directory_base_path, current_datetime)
+        os.makedirs(self.project_directory_path, exist_ok=True)
+
+        current_time = datetime.now().strftime('%-I.%M%p').lower()
+        folder_path = f'{self.project_directory_path}/Anomaly_Log_{current_time}'
+        os.makedirs(folder_path, exist_ok=True)
+
+    def audio_simulation(self, filepath):
+        # base_path = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/2 FOSSN/Data'
+        # filename = 'angel_sensitivity'
+        # filepath = f'{base_path}/Tests/15_outdoor_testing/{filename}.wav'
+
+        # filename = 'sweep_angel_100m'
+        # filename = 'sweep_semi_100m'
+        # filename = 'distance_160-50m'
+        # filepath = f'{base_path}/Tests/17_outdoor_testing/{filename}.wav'
+
+        # filename = '08-14-2024_03-57-51_chunk_1'
+        # filepath = f'{base_path}/Tests/19_outdoor_testing/{filename}.wav'
+
+        audio = Audio(filepath=filepath, num_channels=48)
+        chunk_size_seconds = 1
+        self.sim_stream = AudioStreamSimulator(audio, chunk_size_seconds)
 
     # ---------------------------------
     # BEAMFORMING ---------------------
@@ -164,8 +192,15 @@ class Controller:
             if not self.detector.queue.empty():
                 # print('GUI BAR CHART UPDATING----------')
                 self.gui.Middle_Frame.Center_Frame.anomaly_data = self.detector.queue.get()
+                self.log_data(self.gui.Middle_Frame.Center_Frame.anomaly_data)
 
             time.sleep(1)
+
+    def log_data(self, anomalies_list):
+        # todo: log anomalies
+        # todo: log current values
+        pass
+
 
     # ---------------------------------
     # START / STOP QUEUES ------------
@@ -208,6 +243,34 @@ class Controller:
             self.audio_recorder.audio_receiver.close_connection()
             self.app_state = State.IDLE
 
+            if os.path.exists(self.project_directory_path):
+                for subdir in os.listdir(self.project_directory_path):
+                    full_subdir_path = os.path.join(self.project_directory_path, subdir)
+                    if os.path.isdir(full_subdir_path):
+                        if not os.listdir(full_subdir_path):
+                            os.rmdir(full_subdir_path)
+
+                if not os.listdir(self.project_directory_path):
+                    os.rmdir(self.project_directory_path)
+
+
+        elif event == Event.LOAD_AUDIO:
+            filepath = self.gui.Top_Frame.Center_Frame.selected_audio_file
+            self.audio_simulation(filepath)
+            self.gui.Top_Frame.Right_Frame.insert_text(f'Audio File Loaded: {Path(filepath).stem}.wav', 'green')
+
+        elif event == Event.LOAD_CALIBRATION:
+            self.detector.baseline_calculated = True
+            filepath_mean = self.gui.Top_Frame.Center_Frame.baseline_means_path
+            filepath_stds = self.gui.Top_Frame.Center_Frame.baseline_stds_path
+
+            try:
+                self.detector.baseline_means = np.load(filepath_mean)
+                self.detector.baseline_stds = np.load(filepath_stds)
+                self.gui.Top_Frame.Right_Frame.insert_text(f'Baseline calibration loaded successfully', 'green')
+            except FileNotFoundError:
+                self.gui.Top_Frame.Right_Frame.insert_text(f'Files Not Found. Try Again', 'red')
+
         elif event == Event.START_RECORDER:
             # if self.audio_recorder.audio_receiver.running is False:
             #     print('FPGA not connected')
@@ -239,6 +302,14 @@ class Controller:
         elif event == Event.STOP_PCA_CALIBRATION:
             self.stop_all_queues()
             self.detector.baseline_calculated = True
+            if self.gui.Top_Frame.Center_Frame.pca_save_checkbox_variable.get():
+                current_time = datetime.now().strftime('%-I.%M%p').lower()
+                folder_path = f'{self.project_directory_path}/PCA_Cal_{current_time}'
+                os.makedirs(folder_path, exist_ok=True)
+                np.save(f'{folder_path}/baseline_means.npy', self.detector.baseline_means)
+                np.save(f'{folder_path}/baseline_stds.npy', self.detector.baseline_stds)
+                print(f'Baseline stats saved in folder: {folder_path}')
+
             self.app_state = State.IDLE
             self.gui.Top_Frame.Center_Frame.toggle_calibrate()
             self.gui.Top_Frame.Right_Frame.insert_text('Detector Calibration Successful', 'green')
@@ -268,7 +339,6 @@ class Controller:
                 )
                 self.last_time_stamp = current_time_stamp
                 self.last_anomaly_locations = current_anomaly_locations.copy()
-
 
         elif event == Event.LOG_DETECTION:
             print('logging detection')

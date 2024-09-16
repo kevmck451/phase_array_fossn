@@ -101,7 +101,6 @@ class Audio_Recorder:
         self.chunk_size = int(self.chunk_size_sec * array_config.sample_rate)
 
 
-
     def start_recording(self):
         self.recording_thread = Thread(target=self.record, daemon=False).start()
         self.record_running = True
@@ -130,7 +129,6 @@ class Audio_Recorder:
 
         # Save any remaining data
         if self.collected_data: self.save_data()
-
 
 
     def save_data(self):
