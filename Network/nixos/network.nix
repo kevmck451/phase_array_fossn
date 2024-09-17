@@ -8,7 +8,7 @@
   networking.firewall.enable = false;
   networking.useDHCP = true;
 
-  networking.bridges.br0 = { interfaces = [ "wlp1s0u1u4" "enp1s0u1u2" ]; };
+  networking.bridges.br0 = { interfaces = [ "enp1s0u1u4u4" "enp1s0u1u2" ]; };
 
   networking.interfaces.br0.ipv4.addresses = [ {
     address = "192.168.1.1";
