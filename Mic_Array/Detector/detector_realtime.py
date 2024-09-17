@@ -14,7 +14,6 @@ class Detector:
     def __init__(self):
 
         self.baseline_calculated = False # set outside this class
-        self.baseline_calibration_time = 5 # used outside this class
         self.queue = Queue()
         self.counter = 0 # for simulation
 
@@ -37,8 +36,6 @@ class Detector:
         # print(f'PCA_DATA: {type(pca_data)}\t|\t{pca_data.shape}')
         # PCA_DATA: <class 'numpy.ndarray'>	|	(19, 3, 2049)
 
-        self.num_channels, self.num_pca_components, self.num_samples = pca_data.shape
-
         # If this is the first time, initialize the baseline means and stds
         if self.baseline_means is None or self.baseline_stds is None:
             self.baseline_means = np.mean(pca_data, axis=2)
@@ -54,19 +51,18 @@ class Detector:
 
 
     def detect_anomalies(self, pca_data):
+        self.num_channels, self.num_pca_components, self.num_samples = pca_data.shape
 
         if not self.baseline_calculated:
             self.calculate_baseline(pca_data)
 
         else:
-            self.num_channels, self.num_pca_components, self.num_samples = pca_data.shape
             anomalies_list = []
 
             # Loop through each channel and detect anomalies based on PCA data
             for ch in range(self.num_channels):
                 # Get current PCA data for the channel
                 channel_data = pca_data[ch]
-
                 # Ensure the baseline mean and std are correctly shaped
                 baseline_mean = self.baseline_means[ch].reshape(self.num_pca_components, 1)
                 baseline_std = self.baseline_stds[ch].reshape(self.num_pca_components, 1)

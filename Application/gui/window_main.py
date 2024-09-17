@@ -109,10 +109,30 @@ class Top_Left_Frame(ctk.CTkFrame):
     def fpga_connection_frame(self, frame):
         self.fpga_connection_label = ctk.CTkLabel(frame, text="Microphone Connection Status", font=configuration.console_font_style)
         self.fpga_connection_label.pack(fill='both') # , expand=True
+        self.fpga_status_label = ctk.CTkLabel(frame, text="Not Connected", text_color='red', font=configuration.console_font_style)
+        self.fpga_status_label.pack(fill='both')  # , expand=True
 
     def rpi_connection_frame(self, frame):
         self.rpi_connection_label = ctk.CTkLabel(frame, text="Temp Sensor Connection Status", font=configuration.console_font_style)
         self.rpi_connection_label.pack(fill='both') # , expand=True
+        self.rpi_status_label = ctk.CTkLabel(frame, text="Not Connected", text_color='red', font=configuration.console_font_style)
+        self.rpi_status_label.pack(fill='both')  # , expand=True
+        self.current_temp_label = ctk.CTkLabel(frame, text="-", font=configuration.console_font_style)
+        self.current_temp_label.pack(fill='both')  # , expand=True
+
+    def fpga_connected(self):
+        self.fpga_status_label.configure(text="Connected", text_color='green')
+
+    def fpga_disconnected(self):
+        self.fpga_status_label.configure(text="Not Connected", text_color='red')
+
+    def rpi_connected(self):
+        self.rpi_status_label.configure(text="Connected", text_color='green')
+
+    def rpi_disconnected(self):
+        self.rpi_status_label.configure(text="Not Connected", text_color='red')
+
+
 
 class Top_Middle_Frame(ctk.CTkFrame):
     def __init__(self, parent, event_handler):
@@ -164,7 +184,7 @@ class Top_Middle_Frame(ctk.CTkFrame):
                                          command=lambda: self.event_handler(Event.START_RECORDER))
         self.start_button.grid(row=0, column=1, padx=5)
 
-        self.audio_save_checkbox_variable = ctk.BooleanVar()
+        self.audio_save_checkbox_variable = ctk.BooleanVar(value=True)
 
         self.save_checkbox_audio = ctk.CTkCheckBox(button_frame, text="Save",
                                              variable=self.audio_save_checkbox_variable,
@@ -205,7 +225,7 @@ class Top_Middle_Frame(ctk.CTkFrame):
                                               command=lambda: self.event_handler(Event.PCA_CALIBRATION))
         self.calibrate_button.grid(row=0, column=1, padx=5)
 
-        self.pca_save_checkbox_variable = ctk.BooleanVar()
+        self.pca_save_checkbox_variable = ctk.BooleanVar(value=True)
 
         self.save_checkbox_pca = ctk.CTkCheckBox(button_frame, text="Save",
                                              variable=self.pca_save_checkbox_variable,
@@ -277,10 +297,6 @@ class Top_Right_Frame(ctk.CTkFrame):
         self.console_frame(main_frame)
 
         # sys.stdout = self
-
-        self.insert_text('Attempting to Connect with Temp Server')
-        self.insert_text('Attempting to Connect with FPGA Server')
-
 
     # FRAMES ---------------------------------------------
     def console_frame(self, frame):

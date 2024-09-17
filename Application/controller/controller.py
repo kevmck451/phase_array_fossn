@@ -1,6 +1,6 @@
 
 
-from Mic_Array.AudioStreamSimulator import AudioStreamSimulator
+from Mic_Array.Audio_Stream.AudioStreamSimulator import AudioStreamSimulator
 from Filters.audio import Audio
 
 from Mic_Array.Beamform.beamform_realtime import Beamform
@@ -8,6 +8,7 @@ from Mic_Array.Processing.process_realtime import Processing
 from Mic_Array.PCA.pca_realtime import PCA_Calculator
 from Mic_Array.Detector.detector_realtime import Detector
 
+from Application.controller.detector_log import Detector_Log
 
 from Application.controller.event_states import Event
 from Application.controller.event_states import State
@@ -16,7 +17,6 @@ from Application.controller.event_states import State
 from datetime import datetime
 from threading import Thread
 from pathlib import Path
-import pandas as pd
 import numpy as np
 import queue
 import time
@@ -29,7 +29,16 @@ class Controller:
 
         self.gui = None
         self.temp_sensor = None
-        self.audio_recorder = None
+        self.mic_array = None
+        self.mic_array_simulator = None
+        self.audio_streamer = None
+        self.audio_loaded = False
+
+        self.audio_stream_running = False
+        self.monitor_connection_status = True
+
+        self.calibration_time = 5
+        self.calibrate_start_time = 0
         self.thetas = [-90,-80,-70,-60,-50,-40,-30,-20,-10,0,10,20,30,40,50,60,70,80,90]
         self.phis = [0]  # azimuth angle: neg is below and pos is above
         self.temperature = 90
@@ -52,6 +61,8 @@ class Controller:
         self.bar_chart_updater_thread = None
         self.bar_chart_updater_running = False
 
+        self.data_logger = Detector_Log()
+
         self.queue_check_time = 0.1
 
         self.color_pink = (255, 0, 150)
@@ -60,14 +71,36 @@ class Controller:
         self.last_time_stamp = None
         self.last_anomaly_locations = []
 
-        # self.audio_simulation()
-
         self.setup_project_directory()
 
-    def add_peripherals(self, temp_sensor, audio_recorder, gui):
+    def add_peripherals(self, temp_sensor, mic_array, gui):
         self.temp_sensor = temp_sensor
-        self.audio_recorder = audio_recorder
+        self.mic_array = mic_array
         self.gui = gui
+
+
+        if self.mic_array.audio_receiver.connected:
+            self.gui.Top_Frame.Left_Frame.fpga_connected()
+
+        if self.temp_sensor.connected:
+            self.gui.Top_Frame.Left_Frame.rpi_connected()
+
+        # check_connection_thread = Thread(target=self.check_connection_status, daemon=True).start()
+
+    def check_connection_status(self):
+        while self.monitor_connection_status:
+            # print(f'FPGA: {self.audio_recorder.audio_receiver.connected}')
+            # print(f'RPI: {self.temp_sensor.connected}')
+
+            if not self.mic_array.audio_receiver.connected:
+                self.gui.Top_Frame.Left_Frame.fpga_disconnected()
+
+            if not self.temp_sensor.connected:
+                self.gui.Top_Frame.Left_Frame.rpi_disconnected()
+
+            time.sleep(0.5)
+
+        self.monitor_connection_status = True
 
     def setup_project_directory(self):
         self.project_directory_base_path = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/2 FOSSN/Data/Field_Tests'
@@ -75,9 +108,24 @@ class Controller:
         self.project_directory_path = os.path.join(self.project_directory_base_path, current_datetime)
         os.makedirs(self.project_directory_path, exist_ok=True)
 
+    def project_directory_audio_anomalies(self):
         current_time = datetime.now().strftime('%-I.%M%p').lower()
-        folder_path = f'{self.project_directory_path}/Anomaly_Log_{current_time}'
-        os.makedirs(folder_path, exist_ok=True)
+        self.anom_filepath = f'{self.project_directory_path}/Anomaly_Log_{current_time}'
+        self.record_filepath = f'{self.project_directory_path}/Audio_{current_time}'
+        os.makedirs(self.anom_filepath, exist_ok=True)
+        os.makedirs(self.record_filepath, exist_ok=True)
+
+    # ---------------------------------
+    # AUDIO COLLECTION ----------------
+    # ---------------------------------
+    def audio_setup(self):
+        if self.audio_loaded:
+            self.audio_streamer = self.mic_array_simulator
+            self.mic_array_simulator.start_stream()
+        else:
+            self.audio_streamer = self.mic_array
+            self.project_directory_audio_anomalies()
+            self.mic_array.start_recording(self.record_filepath)
 
     def audio_simulation(self, filepath):
         # base_path = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/2 FOSSN/Data'
@@ -94,16 +142,20 @@ class Controller:
 
         audio = Audio(filepath=filepath, num_channels=48)
         chunk_size_seconds = 1
-        self.sim_stream = AudioStreamSimulator(audio, chunk_size_seconds)
+        self.mic_array_simulator = AudioStreamSimulator(audio, chunk_size_seconds)
+
+
 
     # ---------------------------------
     # BEAMFORMING ---------------------
     # ---------------------------------
     def beamform_setup(self):
         if self.temp_sensor.connected:
+            # print(f'Current Temp: {self.temp_sensor.current_temp}')
             if self.temp_sensor.current_temp is not None:
                 self.temperature = self.temp_sensor.current_temp
                 self.beamformer.temperature_current = self.temperature
+
         else:
             print('Manual Temp Entry')
             self.gui.Top_Frame.Right_Frame.insert_text(f'Using Temp: {self.temperature}', self.color_pink)
@@ -114,10 +166,10 @@ class Controller:
 
     def beamform_start(self):
         while self.beamform_running:
-            if not self.sim_stream.queue.empty():
+            if not self.audio_streamer.queue.empty():
                 # print('BEAMFORMING------------------')
-                current_audio_data = self.sim_stream.queue.get()
-                # print(f'Current Data Size: {current_audio_data.shape}')
+                current_audio_data = self.audio_streamer.queue.get()
+                # print(f'Audio Data Size: {current_audio_data.shape}')
                 self.beamformer.beamform_data(current_audio_data)
 
             time.sleep(self.queue_check_time)
@@ -135,7 +187,7 @@ class Controller:
             if not self.beamformer.queue.empty():
                 # print('PROCESSING------------------')
                 current_data = self.beamformer.queue.get()
-                # print(f'Current Data Size: {current_data.shape}')
+                # print(f'Beamform Data Size: {current_data.shape}')
                 self.processor.process_data(current_data)
 
             time.sleep(self.queue_check_time)
@@ -156,7 +208,7 @@ class Controller:
             if not self.processor.queue.empty():
                 # print('PCA CALCULATING ----------')
                 current_data = self.processor.queue.get()
-                # print(f'Current Data Size: {current_data.shape}')
+                # print(f'Processor Data Size: {current_data.shape}')
                 self.pca_calculator.process_chunk(current_data)
             time.sleep(self.queue_check_time)
 
@@ -173,7 +225,7 @@ class Controller:
             if not self.pca_calculator.queue.empty():
                 # print('DETECTING----------')
                 current_data = self.pca_calculator.queue.get()
-                # print(f'Current Data Size: {current_data.shape}')
+                # print(f'PCA Data Size: {current_data.shape}')
                 self.detector.detect_anomalies(current_data)
                 # self.detector.detect_anomalies_simulation(current_data)
 
@@ -192,21 +244,18 @@ class Controller:
             if not self.detector.queue.empty():
                 # print('GUI BAR CHART UPDATING----------')
                 self.gui.Middle_Frame.Center_Frame.anomaly_data = self.detector.queue.get()
-                self.log_data(self.gui.Middle_Frame.Center_Frame.anomaly_data)
+                self.data_logger.log_data(self.gui.Middle_Frame.Center_Frame.anomaly_data)
 
             time.sleep(1)
 
-    def log_data(self, anomalies_list):
-        # todo: log anomalies
-        # todo: log current values
-        pass
+
 
 
     # ---------------------------------
     # START / STOP QUEUES ------------
     # ---------------------------------
     def start_all_queues(self):
-        self.sim_stream.start_stream()
+        self.audio_setup()
         self.beamform_setup()
         self.processor_setup()
         self.pca_calculation_setup()
@@ -214,7 +263,8 @@ class Controller:
         self.bar_chart_updater_setup()
 
     def stop_all_queues(self):
-        self.audio_recorder.record_running = False
+        if self.audio_loaded:
+            self.mic_array_simulator.running = False
         self.beamform_running = False
         self.processor_running = False
         self.pca_calculator_running = False
@@ -223,9 +273,15 @@ class Controller:
         self.gui.Middle_Frame.Center_Frame.stop_updates()
 
     def calibrate_timer(self):
-        time.sleep(self.detector.baseline_calibration_time)
+        current_time = time.time()
+        while (current_time - self.calibrate_start_time) < self.calibration_time:
+            # print(self.detector.baseline_means)
+            # print(self.detector.baseline_calculated)
+            time.sleep(0.1)
+            current_time = time.time()
         if self.app_state == State.CALIBRATING:
             self.handle_event(Event.STOP_PCA_CALIBRATION)
+
 
     def wait_for_start(self):
         while self.app_state != State.IDLE:
@@ -240,7 +296,7 @@ class Controller:
         if event == Event.ON_CLOSE:
             self.stop_all_queues()
             self.temp_sensor.close_connection()
-            self.audio_recorder.audio_receiver.close_connection()
+            self.mic_array.audio_receiver.close_connection()
             self.app_state = State.IDLE
 
             if os.path.exists(self.project_directory_path):
@@ -253,8 +309,8 @@ class Controller:
                 if not os.listdir(self.project_directory_path):
                     os.rmdir(self.project_directory_path)
 
-
         elif event == Event.LOAD_AUDIO:
+            self.audio_loaded = True
             filepath = self.gui.Top_Frame.Center_Frame.selected_audio_file
             self.audio_simulation(filepath)
             self.gui.Top_Frame.Right_Frame.insert_text(f'Audio File Loaded: {Path(filepath).stem}.wav', 'green')
@@ -272,9 +328,9 @@ class Controller:
                 self.gui.Top_Frame.Right_Frame.insert_text(f'Files Not Found. Try Again', 'red')
 
         elif event == Event.START_RECORDER:
-            # if self.audio_recorder.audio_receiver.running is False:
-            #     print('FPGA not connected')
-            if self.app_state != State.IDLE:
+            if not self.mic_array.audio_receiver.running:
+                print('FPGA not connected')
+            elif self.app_state != State.IDLE:
                 self.gui.Top_Frame.Right_Frame.insert_text('App State must be Idle', self.color_pink)
             else:
                 if not self.detector.baseline_calculated:
@@ -297,6 +353,7 @@ class Controller:
             self.detector.baseline_calculated = False
             self.gui.Top_Frame.Right_Frame.insert_text('Detector Calibration Started', self.color_light_blue)
             self.start_all_queues()
+            self.calibrate_start_time = time.time()
             Thread(target=self.calibrate_timer, daemon=True).start()
 
         elif event == Event.STOP_PCA_CALIBRATION:
@@ -314,6 +371,7 @@ class Controller:
             self.gui.Top_Frame.Center_Frame.toggle_calibrate()
             self.gui.Top_Frame.Right_Frame.insert_text('Detector Calibration Successful', 'green')
             self.app_state = State.IDLE
+            self.calibrate_start_time = 0
 
         elif event == Event.SET_TEMP:
             self.temperature = int(self.gui.Bottom_Frame.Left_Frame.temp_value)
@@ -345,6 +403,7 @@ class Controller:
             self.gui.Top_Frame.Right_Frame.insert_text('ALERT!!! SOMETHING HAS BEEN DETECTED at X direction', 'red')
 
         elif event == Event.DUMMY_BUTTON:
+            # dummy button
             print('BUTTON PRESSED')
 
 

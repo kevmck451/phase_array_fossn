@@ -1,6 +1,6 @@
 
 
-from Mic_Array.AudioStreamSimulator import AudioStreamSimulator
+from Mic_Array.Audio_Stream.AudioStreamSimulator import AudioStreamSimulator
 from Filters.audio import Audio
 
 

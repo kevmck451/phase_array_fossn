@@ -4,7 +4,7 @@ from Application.controller.controller import Controller
 from Application.controller.detector_log import Detector_Log
 
 from Temp_Sensor.client import Sender_Client
-from Recorder.RecordAudio import Audio_Recorder
+from Mic_Array.Audio_Stream.audio_stream_realtime import Mic_Array
 
 
 
@@ -16,13 +16,12 @@ if __name__ == "__main__":
 
 
     temp_sensor = Sender_Client(name='macbook')
-    audio_recorder = Audio_Recorder()
+    audio_realtime = Mic_Array()
 
     controller = Controller()
 
     gui = Main_Window(controller.handle_event)
-    detector_log = Detector_Log(controller.handle_event)
 
-    controller.add_peripherals(temp_sensor, audio_recorder, gui)
+    controller.add_peripherals(temp_sensor, audio_realtime, gui)
 
     gui.mainloop()

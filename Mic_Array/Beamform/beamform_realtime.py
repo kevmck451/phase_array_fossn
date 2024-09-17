@@ -2,7 +2,7 @@
 
 from Mic_Array.FIR_Filter.mic_coordinates import generate_mic_coordinates
 from Mic_Array.FIR_Filter.generate_fir_coeffs import generate_fir_coeffs
-from Mic_Array.AudioStreamSimulator import AudioStreamSimulator
+from Mic_Array.Audio_Stream.AudioStreamSimulator import AudioStreamSimulator
 import Mic_Array.array_config as array_config
 from Filters.save_to_wav import save_to_wav
 from Filters.audio import Audio

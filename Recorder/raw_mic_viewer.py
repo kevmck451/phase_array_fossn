@@ -1,5 +1,5 @@
 
-from Controller.AudioReceiver import AudioReceiver
+from Recorder.AudioReceiver import AudioReceiver
 
 
 

@@ -1,4 +1,4 @@
-from Controller.AudioReceiver import AudioReceiver
+from Recorder.AudioReceiver import AudioReceiver
 
 from datetime import datetime
 import numpy as np
