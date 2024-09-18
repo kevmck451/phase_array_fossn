@@ -49,11 +49,18 @@ class AudioReceiver_MicArray:
             received_len = 0
             receive_total = int(self.sample_rate * self.chunk_secs) * self.chan_count * 2
             while received_len < receive_total:
-                more = self.sock.recv(min(4096, receive_total - received_len))
-                if not more:
+                try:
+                    more = self.sock.recv(min(4096, receive_total - received_len))
+                except OSError as e:
+                    print(f"Socket error: {e}")
                     self.running = False
                     self.connected = False
-                    raise RuntimeError("Socket connection broken")
+                    return
+                if not more:
+                    print("Socket connection broken")
+                    self.running = False
+                    self.connected = False
+                    return
                 received_bits.append(more)
                 received_len += len(more)
             receive_chunk = np.frombuffer(b"".join(received_bits), dtype=np.uint8)
