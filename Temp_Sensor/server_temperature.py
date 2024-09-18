@@ -50,9 +50,8 @@ class Server:
                     break
 
                 message = data.decode()
-                if 'heartbeat' in message:
-                    self.send_all('heartbeat')
-                elif 'disconnecting' in message:
+
+                if 'disconnecting' in message:
                     print('client disconnecting')
 
                 elif 'temp_requested' in message:
