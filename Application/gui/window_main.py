@@ -104,6 +104,13 @@ class Top_Left_Frame(ctk.CTkFrame):
         self.fpga_connection_frame(top_frame)
         self.rpi_connection_frame(bottom_frame)
 
+        self.current_temp = '-'
+        self.fpga_connection = False
+        self.temp_connection = False
+        self.update_sample_time = 1000
+
+        self.check_for_state_changes()
+
 
     # FRAMES ---------------------------------------------
     def fpga_connection_frame(self, frame):
@@ -131,6 +138,24 @@ class Top_Left_Frame(ctk.CTkFrame):
 
     def rpi_disconnected(self):
         self.rpi_status_label.configure(text="Not Connected", text_color='red')
+
+    def update_current_temp(self):
+        self.current_temp_label.configure(text=f'{self.current_temp}\u00B0 F')
+
+    def check_for_state_changes(self):
+        if self.fpga_connection:
+            self.fpga_connected()
+        else:
+            self.fpga_disconnected()
+
+        if self.temp_connection:
+            self.rpi_connected()
+        else:
+            self.rpi_disconnected()
+
+        self.update_current_temp()
+
+        self.after(self.update_sample_time, self.check_for_state_changes)
 
 
 
