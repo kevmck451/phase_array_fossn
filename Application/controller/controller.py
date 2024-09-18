@@ -92,6 +92,10 @@ class Controller:
             self.gui.Top_Frame.Left_Frame.current_temp = self.temp_sensor.current_temp
             self.gui.Top_Frame.Left_Frame.fpga_connection = self.mic_array.audio_receiver.connected
             self.gui.Top_Frame.Left_Frame.temp_connection = self.temp_sensor.connected
+
+            if not self.temp_sensor.connected:
+                self.gui.Top_Frame.Left_Frame.fpga_connection = self.temp_sensor.connected
+
             time.sleep(0.5)
 
     def setup_project_directory(self):

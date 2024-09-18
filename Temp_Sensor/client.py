@@ -63,8 +63,6 @@ class Sender_Client:
                 # print(response)
                 if 'server_disconnecting' in response:
                     self.connected = False
-                elif 'heartbeat' in response:
-                    pass
                 else:
                     try:
                         self.current_temp = int(response)
@@ -74,13 +72,16 @@ class Sender_Client:
             except socket.timeout:
                 print("Socket recv timed out. No response received.")
                 self.connected = False
+                self.connect_thread = threading.Thread(target=self.ensure_connection, daemon=True)
+                self.connect_thread.start()
             except OSError as e:
                 if e.errno == 9:  # Bad file descriptor error
-
                     print("Socket already closed.")
                 else:
                     raise  # Re-raise any unexpected errors
                 self.connected = False
+                self.connect_thread = threading.Thread(target=self.ensure_connection, daemon=True)
+                self.connect_thread.start()
 
     def request_temp(self):
         while self.connected:
