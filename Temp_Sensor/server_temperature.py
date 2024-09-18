@@ -57,6 +57,7 @@ class Server:
 
                 elif 'temp_requested' in message:
                     air_temp = str(get_temp())
+                    print(f'Air Temp: {air_temp}')
                     self.send_all(air_temp)
 
                 else:
