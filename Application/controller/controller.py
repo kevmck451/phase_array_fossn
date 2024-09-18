@@ -30,12 +30,11 @@ class Controller:
         self.gui = None
         self.temp_sensor = None
         self.mic_array = None
+        self.update_peripheral_thread = Thread(target=self.update_peripheral_states, daemon=True)
         self.mic_array_simulator = None
         self.audio_streamer = None
         self.audio_loaded = False
-
         self.audio_stream_running = False
-        self.monitor_connection_status = True
 
         self.calibration_time = 5
         self.calibrate_start_time = 0
@@ -43,22 +42,22 @@ class Controller:
         self.phis = [0]  # azimuth angle: neg is below and pos is above
         self.temperature = 90
         self.beamformer = Beamform(self.thetas, self.phis, self.temperature)
-        self.beamforming_thread = None
+        self.beamforming_thread = Thread(target=self.beamform_start, daemon=True)
         self.beamform_running = False
 
         self.processor = Processing()
-        self.processor_thread = None
+        self.processor_thread = Thread(target=self.processor_start, daemon=True)
         self.processor_running = False
 
         self.pca_calculator = PCA_Calculator()
-        self.pca_calculator_thread = None
+        self.pca_calculator_thread = Thread(target=self.pca_calculation_start, daemon=True)
         self.pca_calculator_running = False
 
         self.detector = Detector()
-        self.detector_thread = None
+        self.detector_thread = Thread(target=self.detector_start, daemon=True)
         self.detector_running = False
 
-        self.bar_chart_updater_thread = None
+        self.bar_chart_updater_thread = Thread(target=self.bar_chart_updater_start, daemon=True)
         self.bar_chart_updater_running = False
 
         self.data_logger = Detector_Log()
@@ -78,29 +77,22 @@ class Controller:
         self.mic_array = mic_array
         self.gui = gui
 
-
         if self.mic_array.audio_receiver.connected:
             self.gui.Top_Frame.Left_Frame.fpga_connected()
 
         if self.temp_sensor.connected:
             self.gui.Top_Frame.Left_Frame.rpi_connected()
+            self.gui.Top_Frame.Left_Frame.current_temp = self.temp_sensor.current_temp
+            self.gui.Top_Frame.Left_Frame.update_current_temp()
 
-        # check_connection_thread = Thread(target=self.check_connection_status, daemon=True).start()
+        self.update_peripheral_thread.start()
 
-    def check_connection_status(self):
-        while self.monitor_connection_status:
-            # print(f'FPGA: {self.audio_recorder.audio_receiver.connected}')
-            # print(f'RPI: {self.temp_sensor.connected}')
-
-            if not self.mic_array.audio_receiver.connected:
-                self.gui.Top_Frame.Left_Frame.fpga_disconnected()
-
-            if not self.temp_sensor.connected:
-                self.gui.Top_Frame.Left_Frame.rpi_disconnected()
-
+    def update_peripheral_states(self):
+        while True:
+            self.gui.Top_Frame.Left_Frame.current_temp = self.temp_sensor.current_temp
+            self.gui.Top_Frame.Left_Frame.fpga_connection = self.mic_array.audio_receiver.connected
+            self.gui.Top_Frame.Left_Frame.temp_connection = self.temp_sensor.connected
             time.sleep(0.5)
-
-        self.monitor_connection_status = True
 
     def setup_project_directory(self):
         self.project_directory_base_path = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/2 FOSSN/Data/Field_Tests'
@@ -144,8 +136,6 @@ class Controller:
         chunk_size_seconds = 1
         self.mic_array_simulator = AudioStreamSimulator(audio, chunk_size_seconds)
 
-
-
     # ---------------------------------
     # BEAMFORMING ---------------------
     # ---------------------------------
@@ -162,7 +152,7 @@ class Controller:
 
         self.beamformer.queue = queue.Queue()
         self.beamform_running = True
-        self.beamforming_thread = Thread(target=self.beamform_start, daemon=True).start()
+        self.beamforming_thread.start()
 
     def beamform_start(self):
         while self.beamform_running:
@@ -180,7 +170,7 @@ class Controller:
     def processor_setup(self):
         self.processor.queue = queue.Queue()
         self.processor_running = True
-        self.processor_thread = Thread(target=self.processor_start, daemon=True).start()
+        self.processor_thread.start()
 
     def processor_start(self):
         while self.processor_running:
@@ -198,7 +188,7 @@ class Controller:
     def pca_calculation_setup(self):
         self.pca_calculator.queue = queue.Queue()
         self.pca_calculator_running = True
-        self.pca_calculator_thread = Thread(target=self.pca_calculation_start, daemon=True).start()
+        self.pca_calculator_thread.start()
 
     def pca_calculation_start(self):
         # while (data := self.processor.queue.get()):
@@ -218,7 +208,7 @@ class Controller:
     def detector_setup(self):
         self.detector.queue = queue.Queue()
         self.detector_running = True
-        self.detector_thread = Thread(target=self.detector_start, daemon=True).start()
+        self.detector_thread.start()
 
     def detector_start(self):
         while self.detector_running:
@@ -236,7 +226,7 @@ class Controller:
     # ---------------------------------
     def bar_chart_updater_setup(self):
         self.bar_chart_updater_running = True
-        self.bar_chart_updater_thread = Thread(target=self.bar_chart_updater_start, daemon=True).start()
+        self.bar_chart_updater_thread.start()
         self.gui.Middle_Frame.Center_Frame.start_updates()
 
     def bar_chart_updater_start(self):
@@ -247,8 +237,6 @@ class Controller:
                 self.data_logger.log_data(self.gui.Middle_Frame.Center_Frame.anomaly_data)
 
             time.sleep(1)
-
-
 
 
     # ---------------------------------
