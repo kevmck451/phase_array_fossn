@@ -51,7 +51,7 @@ class Server:
 
                 message = data.decode()
                 if 'heartbeat' in message:
-                    pass
+                    self.send_all('heartbeat')
                 elif 'disconnecting' in message:
                     print('client disconnecting')
 
