@@ -15,13 +15,12 @@ class Sender_Client:
         self.cancel_attempt = False
         self.connect_thread = threading.Thread(target=self.ensure_connection, daemon=True)
         self.connect_thread.start()
-        self.heartbeat_thread = None
+        self.heartbeat_thread = threading.Thread(target=self.heartbeat, daemon=True)
         self.heartbeat_attempt = 0
-        self.wait_for_response_thread = None
-        self.request_temp_thread = None
+        self.wait_for_response_thread = threading.Thread(target=self.wait_for_response, daemon=True)
+        self.request_temp_thread = threading.Thread(target=self.request_temp, daemon=True)
         self.temp_record = []
         self.current_temp = None
-        self.running = False
 
     def ensure_connection(self):
         print('Attempting to Connect with Temp Server')
@@ -35,11 +34,9 @@ class Sender_Client:
                 if not response.decode('utf-8') == 'ack': continue
                 print(f"Temp: Connected to {self.host}:{self.port}")
                 self.connected = True
-                self.heartbeat_thread = threading.Thread(target=self.heartbeat, daemon=True)
+
                 self.heartbeat_thread.start()
-                self.request_temp_thread = threading.Thread(target=self.request_temp, daemon=True)
                 self.request_temp_thread.start()
-                self.wait_for_response_thread = threading.Thread(target=self.wait_for_response, daemon=True)
                 self.wait_for_response_thread.start()
 
             except Exception as e:
@@ -75,7 +72,7 @@ class Sender_Client:
         if self.connected:
             try:
                 self.socket.sendall(message.encode('utf-8'))
-                print("message sent")
+                # print("message sent")
             except socket.error as e:
                 print(f"Error sending data: {e}")
                 self.connected = False
@@ -103,9 +100,9 @@ class Sender_Client:
                     raise  # Re-raise any unexpected errors
 
     def request_temp(self):
-        while self.running:
+        while self.connected:
             self.send_data('temp_requested')
-            time.sleep(30)
+            time.sleep(1)
 
     def close_connection(self):
         try:
