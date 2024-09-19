@@ -21,6 +21,7 @@ def get_temp():
     # time = bme280_data.timestamp.split(' ')[0].split('+')[0].split('.')[0] # need to correct time zone
     # humidity = int(bme280_data.humidity)
     ambient_temperature = int((bme280_data.temperature * 9 / 5) + 32)
+    bus.close()
 
     return ambient_temperature
 
