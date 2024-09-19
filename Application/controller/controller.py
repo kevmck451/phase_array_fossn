@@ -95,6 +95,7 @@ class Controller:
 
             if not self.temp_sensor.connected:
                 self.gui.Top_Frame.Left_Frame.fpga_connection = self.temp_sensor.connected
+                self.gui.Top_Frame.Left_Frame.current_temp = '-'
 
             time.sleep(0.5)
 
