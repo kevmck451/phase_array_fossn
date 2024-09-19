@@ -496,7 +496,7 @@ class Main_Middle_Frame(ctk.CTkFrame):
             self.canvas.create_text(x1 + bar_width / 2, text_position_y, text=f"{percentage:.1f}%", fill=text_color, anchor='center')
 
             # Draw the direction label below the bar
-            self.canvas.create_text(x1 + bar_width / 2, chart_height + 20, text=str(self.directions[i]), anchor='n')
+            self.canvas.create_text(x1 + bar_width / 2, chart_height + 20, text=f'{self.directions[i]}\u00B0', anchor='n')
 
         self.anomaly_list.clear()
         # Draw the chart's axis
