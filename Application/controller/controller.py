@@ -322,6 +322,7 @@ class Controller:
 
         elif event == Event.START_RECORDER:
             if not self.mic_array.audio_receiver.running:
+                self.gui.Top_Frame.Right_Frame.insert_text(f'Phased Array not connected & no audio is loaded', 'red')
                 print('FPGA not connected')
             elif self.app_state != State.IDLE:
                 self.gui.Top_Frame.Right_Frame.insert_text('App State must be Idle', self.color_pink)
@@ -341,13 +342,17 @@ class Controller:
             self.gui.Middle_Frame.Center_Frame.stop_updates()
 
         elif event == Event.PCA_CALIBRATION:
-            self.app_state = State.CALIBRATING
-            self.gui.Top_Frame.Center_Frame.toggle_calibrate()
-            self.detector.baseline_calculated = False
-            self.gui.Top_Frame.Right_Frame.insert_text('Detector Calibration Started', self.color_light_blue)
-            self.start_all_queues()
-            self.calibrate_start_time = time.time()
-            Thread(target=self.calibrate_timer, daemon=True).start()
+            if not self.mic_array.audio_receiver.running or not self.audio_loaded:
+                self.gui.Top_Frame.Right_Frame.insert_text(f'Phased Array not connected & no audio is loaded', 'red')
+            else:
+                self.app_state = State.CALIBRATING
+                self.gui.Top_Frame.Center_Frame.toggle_calibrate()
+                self.detector.baseline_calculated = False
+                self.gui.Top_Frame.Right_Frame.insert_text('Detector Calibration Started', self.color_light_blue)
+                self.gui.Top_Frame.Right_Frame.insert_text(f'Press Stop to End Early: {self.calibration_time}s calibration started', self.color_light_blue)
+                self.start_all_queues()
+                self.calibrate_start_time = time.time()
+                Thread(target=self.calibrate_timer, daemon=True).start()
 
         elif event == Event.STOP_PCA_CALIBRATION:
             self.stop_all_queues()
