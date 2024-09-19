@@ -71,12 +71,10 @@ class AudioReceiver_MicArray:
             except queue.Full:
                 pass
 
-
     def get_audio_data(self):
         if not self.recv_q.empty():
             return self.recv_q.get()
         return None
-
 
     def close_connection(self):
         self.cancel_attempt = True

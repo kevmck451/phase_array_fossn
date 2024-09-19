@@ -1,7 +1,8 @@
 # App Info
 
 ## Powering On
-- when the phased array is powered on, it takes about a minute to fully start up
+- when the phased array is powered on, computer cannot be connected to it
+- once booted, connect computer via ethernet and run Application.main
 
 
  

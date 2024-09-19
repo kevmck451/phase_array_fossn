@@ -36,7 +36,7 @@ class Controller:
         self.audio_loaded = False
         self.audio_stream_running = False
 
-        self.calibration_time = 5
+        self.calibration_time = 20
         self.calibrate_start_time = 0
         self.thetas = [-90,-80,-70,-60,-50,-40,-30,-20,-10,0,10,20,30,40,50,60,70,80,90]
         self.phis = [0]  # azimuth angle: neg is below and pos is above
@@ -70,7 +70,11 @@ class Controller:
         self.last_time_stamp = None
         self.last_anomaly_locations = []
 
+        self.project_directory_base_path = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/2 FOSSN/Data/Field_Tests'
         self.setup_project_directory()
+        self.calibration_filepath = f'{self.project_directory_path}/Calibration_'
+        self.audio_filepath = f'{self.project_directory_path}/Audio_'
+        self.anom_filepath = f'{self.project_directory_path}/Anomaly_'
 
     def add_peripherals(self, temp_sensor, mic_array, gui):
         self.temp_sensor = temp_sensor
@@ -100,17 +104,25 @@ class Controller:
             time.sleep(0.5)
 
     def setup_project_directory(self):
-        self.project_directory_base_path = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/2 FOSSN/Data/Field_Tests'
         current_datetime = datetime.now().strftime('%-m-%d-%y %-I.%M%p').lower()
         self.project_directory_path = os.path.join(self.project_directory_base_path, current_datetime)
         os.makedirs(self.project_directory_path, exist_ok=True)
 
-    def project_directory_audio_anomalies(self):
+    def create_directory(self, option):
         current_time = datetime.now().strftime('%-I.%M%p').lower()
-        self.anom_filepath = f'{self.project_directory_path}/Anomaly_Log_{current_time}'
-        self.record_filepath = f'{self.project_directory_path}/Audio_{current_time}'
-        os.makedirs(self.anom_filepath, exist_ok=True)
-        os.makedirs(self.record_filepath, exist_ok=True)
+
+        if option == 'cal':
+            filepath = self.calibration_filepath + current_time
+            self.calibration_filepath = filepath
+        elif option == 'audio':
+            filepath = self.audio_filepath + current_time
+            self.audio_filepath = filepath
+        elif option == 'anomaly':
+            filepath = self.anom_filepath + current_time
+            self.anom_filepath = filepath
+
+        os.makedirs(filepath, exist_ok=True)
+
 
     # ---------------------------------
     # AUDIO COLLECTION ----------------
@@ -121,8 +133,19 @@ class Controller:
             self.mic_array_simulator.start_stream()
         else:
             self.audio_streamer = self.mic_array
-            self.project_directory_audio_anomalies()
-            self.mic_array.start_recording(self.record_filepath)
+            print('audio setup')
+            if self.gui.Top_Frame.Center_Frame.audio_save_checkbox_variable.get():
+                self.mic_array.record_audio = True
+                if self.app_state == State.CALIBRATING:
+                    self.create_directory('cal')
+                    self.mic_array.start_recording(self.calibration_filepath)
+                elif self.app_state == State.RUNNING:
+                    self.create_directory('anomaly')
+                    self.create_directory('audio')
+                    self.mic_array.start_recording(self.audio_filepath)
+            else:
+                self.mic_array.record_audio = False
+                self.mic_array.start_recording(None)
 
     def audio_simulation(self, filepath):
         # base_path = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/2 FOSSN/Data'
@@ -199,9 +222,6 @@ class Controller:
         self.pca_calculator_thread.start()
 
     def pca_calculation_start(self):
-        # while (data := self.processor.queue.get()):
-        #     self.pca_calculator.process_chunk(data)
-        # self.pca_calculator.queue.put(None)
         while self.pca_calculator_running:
             if not self.processor.queue.empty():
                 # print('PCA CALCULATING ----------')
@@ -290,6 +310,9 @@ class Controller:
     def handle_event(self, event):
 
         if event == Event.ON_CLOSE:
+            if self.gui.Top_Frame.Center_Frame.pca_save_checkbox_variable.get():
+                self.mic_array.record_running = False
+                self.gui.Top_Frame.Right_Frame.insert_text('Audio File Saved', 'green')
             self.stop_all_queues()
             self.temp_sensor.close_connection()
             self.mic_array.audio_receiver.close_connection()
@@ -334,15 +357,19 @@ class Controller:
                     self.handle_event(Event.PCA_CALIBRATION)
                     Thread(target=self.wait_for_start, daemon=True).start()
                 else:
-                    self.start_all_queues()
                     self.app_state = State.RUNNING
                     self.gui.Top_Frame.Center_Frame.toggle_play()
+                    self.start_all_queues()
 
         elif event == Event.STOP_RECORDER:
             self.gui.Top_Frame.Center_Frame.toggle_play()
             self.app_state = State.IDLE
+            if self.gui.Top_Frame.Center_Frame.pca_save_checkbox_variable.get():
+                self.mic_array.record_running = False
+                self.gui.Top_Frame.Right_Frame.insert_text('Audio File Saved', 'green')
             self.stop_all_queues()
             self.gui.Middle_Frame.Center_Frame.stop_updates()
+
 
         elif event == Event.PCA_CALIBRATION:
             if not self.mic_array.audio_receiver.running:
@@ -363,17 +390,15 @@ class Controller:
             self.stop_all_queues()
             self.detector.baseline_calculated = True
             if self.gui.Top_Frame.Center_Frame.pca_save_checkbox_variable.get():
-                current_time = datetime.now().strftime('%-I.%M%p').lower()
-                folder_path = f'{self.project_directory_path}/PCA_Cal_{current_time}'
-                os.makedirs(folder_path, exist_ok=True)
-                np.save(f'{folder_path}/baseline_means.npy', self.detector.baseline_means)
-                np.save(f'{folder_path}/baseline_stds.npy', self.detector.baseline_stds)
-                print(f'Baseline stats saved in folder: {folder_path}')
+                self.mic_array.record_running = False
+                np.save(f'{self.calibration_filepath}/baseline_means.npy', self.detector.baseline_means)
+                np.save(f'{self.calibration_filepath}/baseline_stds.npy', self.detector.baseline_stds)
+                print(f'Baseline stats saved in folder: {self.calibration_filepath}')
+                self.gui.Top_Frame.Right_Frame.insert_text('Calibration Saved', 'green')
 
             self.app_state = State.IDLE
             self.gui.Top_Frame.Center_Frame.toggle_calibrate()
             self.gui.Top_Frame.Right_Frame.insert_text('Detector Calibration Successful', 'green')
-            self.app_state = State.IDLE
             self.calibrate_start_time = 0
 
         elif event == Event.SET_TEMP:

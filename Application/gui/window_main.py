@@ -7,8 +7,6 @@ import Application.gui.configuration as configuration
 from tkinter import filedialog
 import customtkinter as ctk
 import tkinter as tk
-import numpy as np
-import sys
 
 
 
@@ -156,7 +154,6 @@ class Top_Left_Frame(ctk.CTkFrame):
         self.update_current_temp()
 
         self.after(self.update_sample_time, self.check_for_state_changes)
-
 
 
 class Top_Middle_Frame(ctk.CTkFrame):

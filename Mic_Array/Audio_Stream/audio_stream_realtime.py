@@ -28,6 +28,7 @@ class Mic_Array:
 
         self.recording_thread = None
         self.record_running = False
+        self.record_audio = False
 
         self.chunk_size_sec = 1
         self.queue = Queue()
@@ -36,10 +37,22 @@ class Mic_Array:
 
     def start_recording(self, filepath):
         self.record_running = True
-        self.recording_thread = Thread(target=self.record, args=(filepath, ), daemon=True).start()
+        if self.record_audio:
+            self.recording_thread = Thread(target=self.record_save, args=(filepath, ), daemon=True).start()
+        else:
+            self.recording_thread = Thread(target=self.record, daemon=True).start()
 
+    def record(self):
+        while self.record_running:
+            data = self.audio_receiver.get_audio_data()
+            if data is not None:
 
-    def record(self, filepath):
+                self.queue.put(data.T)
+                # print(data.shape)
+
+            time.sleep(0.1)
+
+    def record_save(self, filepath):
         while self.record_running:
             data = self.audio_receiver.get_audio_data()
             if data is not None:
@@ -52,7 +65,7 @@ class Mic_Array:
                 # Check if the chunk samples limit is exceeded
                 total_samples = sum(len(d) for d in self.collected_data)
                 if total_samples >= self.chunk_samples:
-                    # self.save_data(filepath)
+                    self.save_data(filepath)
 
                     # Reset collected data and chunk start time
                     self.collected_data = []
@@ -61,7 +74,7 @@ class Mic_Array:
             time.sleep(0.1)
 
         # Save any remaining data
-        # if self.collected_data: self.save_data(filepath)
+        if self.collected_data: self.save_data(filepath)
 
 
     def save_data(self, filepath):
