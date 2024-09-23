@@ -60,7 +60,7 @@ class Controller:
         self.bar_chart_updater_thread = None
         self.bar_chart_updater_running = False
 
-        self.data_logger = Detector_Log()
+        self.data_logger = None
 
         self.queue_check_time = 0.1
 
@@ -70,11 +70,12 @@ class Controller:
         self.last_time_stamp = None
         self.last_anomaly_locations = []
 
-        self.project_directory_base_path = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/2 FOSSN/Data/Field_Tests'
+        self.project_directory_base_path = None
+        self.calibration_filepath = None
+        self.audio_filepath = None
+        self.anom_filepath = None
         self.setup_project_directory()
-        self.calibration_filepath = f'{self.project_directory_path}/Calibration_'
-        self.audio_filepath = f'{self.project_directory_path}/Audio_'
-        self.anom_filepath = f'{self.project_directory_path}/Anomaly_'
+
 
     def add_peripherals(self, temp_sensor, mic_array, gui):
         self.temp_sensor = temp_sensor
@@ -104,6 +105,7 @@ class Controller:
             time.sleep(0.5)
 
     def setup_project_directory(self):
+        self.project_directory_base_path = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/2 FOSSN/Data/Field_Tests'
         current_datetime = datetime.now().strftime('%-m-%d-%y %-I.%M%p').lower()
         self.project_directory_path = os.path.join(self.project_directory_base_path, current_datetime)
         os.makedirs(self.project_directory_path, exist_ok=True)
@@ -112,16 +114,22 @@ class Controller:
         current_time = datetime.now().strftime('%-I.%M%p').lower()
 
         if option == 'cal':
+            self.calibration_filepath = f'{self.project_directory_path}/Calibration_'
             filepath = self.calibration_filepath + current_time
             self.calibration_filepath = filepath
+            os.makedirs(filepath, exist_ok=True)
         elif option == 'audio':
+            self.audio_filepath = f'{self.project_directory_path}/Audio_'
             filepath = self.audio_filepath + current_time
             self.audio_filepath = filepath
+            os.makedirs(filepath, exist_ok=True)
         elif option == 'anomaly':
+            self.anom_filepath = f'{self.project_directory_path}/Anomaly_'
             filepath = self.anom_filepath + current_time
             self.anom_filepath = filepath
+            os.makedirs(filepath, exist_ok=True)
+            self.data_logger = Detector_Log(self.anom_filepath, self.thetas)
 
-        os.makedirs(filepath, exist_ok=True)
 
 
     # ---------------------------------
@@ -131,9 +139,11 @@ class Controller:
         if self.audio_loaded:
             self.audio_streamer = self.mic_array_simulator
             self.mic_array_simulator.start_stream()
+            if self.gui.Top_Frame.Center_Frame.audio_save_checkbox_variable.get():
+                if self.app_state == State.RUNNING:
+                    self.create_directory('anomaly')
         else:
             self.audio_streamer = self.mic_array
-            print('audio setup')
             if self.gui.Top_Frame.Center_Frame.audio_save_checkbox_variable.get():
                 self.mic_array.record_audio = True
                 if self.app_state == State.CALIBRATING:
@@ -264,7 +274,9 @@ class Controller:
             if not self.detector.queue.empty():
                 # print('GUI BAR CHART UPDATING----------')
                 self.gui.Middle_Frame.Center_Frame.anomaly_data = self.detector.queue.get()
-                self.data_logger.log_data(self.gui.Middle_Frame.Center_Frame.anomaly_data)
+
+                if self.gui.Top_Frame.Center_Frame.audio_save_checkbox_variable.get():
+                    self.data_logger.log_data(self.gui.Middle_Frame.Center_Frame.anomaly_data)
 
             time.sleep(1)
 
@@ -347,8 +359,8 @@ class Controller:
                 self.gui.Top_Frame.Right_Frame.insert_text(f'Files Not Found. Try Again', 'red')
 
         elif event == Event.START_RECORDER:
-            if not self.mic_array.audio_receiver.running:
-                self.gui.Top_Frame.Right_Frame.insert_text(f'Phased Array not connected & no audio is loaded', 'red')
+            if not self.mic_array.audio_receiver.running and not self.audio_loaded:
+                self.gui.Top_Frame.Right_Frame.insert_text(f'Phased Array not connected and No Audio is Loaded', 'red')
                 print('FPGA not connected')
             elif self.app_state != State.IDLE:
                 self.gui.Top_Frame.Right_Frame.insert_text('App State must be Idle', self.color_pink)
@@ -365,17 +377,17 @@ class Controller:
             self.gui.Top_Frame.Center_Frame.toggle_play()
             self.app_state = State.IDLE
             if self.gui.Top_Frame.Center_Frame.pca_save_checkbox_variable.get():
-                self.mic_array.record_running = False
-                self.gui.Top_Frame.Right_Frame.insert_text('Audio File Saved', 'green')
+                if not self.audio_loaded:
+                    self.mic_array.record_running = False
+                    self.gui.Top_Frame.Right_Frame.insert_text('Audio File Saved', 'green')
             self.stop_all_queues()
             self.gui.Middle_Frame.Center_Frame.stop_updates()
+            self.setup_project_directory()
 
 
         elif event == Event.PCA_CALIBRATION:
-            if not self.mic_array.audio_receiver.running:
-                self.gui.Top_Frame.Right_Frame.insert_text(f'Phased Array not connected', 'red')
-                if not self.audio_loaded:
-                    self.gui.Top_Frame.Right_Frame.insert_text(f'No Audio is Loaded', 'red')
+            if not self.mic_array.audio_receiver.running and not self.audio_loaded:
+                self.gui.Top_Frame.Right_Frame.insert_text(f'Phased Array not connected and No Audio is Loaded', 'red')
             else:
                 self.app_state = State.CALIBRATING
                 self.gui.Top_Frame.Center_Frame.toggle_calibrate()
@@ -390,11 +402,12 @@ class Controller:
             self.stop_all_queues()
             self.detector.baseline_calculated = True
             if self.gui.Top_Frame.Center_Frame.pca_save_checkbox_variable.get():
-                self.mic_array.record_running = False
-                np.save(f'{self.calibration_filepath}/baseline_means.npy', self.detector.baseline_means)
-                np.save(f'{self.calibration_filepath}/baseline_stds.npy', self.detector.baseline_stds)
-                print(f'Baseline stats saved in folder: {self.calibration_filepath}')
-                self.gui.Top_Frame.Right_Frame.insert_text('Calibration Saved', 'green')
+                if not self.audio_loaded:
+                    self.mic_array.record_running = False
+                    np.save(f'{self.calibration_filepath}/baseline_means.npy', self.detector.baseline_means)
+                    np.save(f'{self.calibration_filepath}/baseline_stds.npy', self.detector.baseline_stds)
+                    print(f'Baseline stats saved in folder: {self.calibration_filepath}')
+                    self.gui.Top_Frame.Right_Frame.insert_text('Calibration Saved', 'green')
 
             self.app_state = State.IDLE
             self.gui.Top_Frame.Center_Frame.toggle_calibrate()
