@@ -102,6 +102,15 @@ class Controller:
                 self.gui.Top_Frame.Left_Frame.fpga_connection = self.temp_sensor.connected
                 self.gui.Top_Frame.Left_Frame.current_temp = '-'
 
+            if not self.audio_loaded:
+                if self.app_state == State.RUNNING:
+                    if self.gui.Top_Frame.Center_Frame.pca_save_checkbox_variable.get():
+                        if not self.temp_sensor.connected or not self.mic_array.audio_receiver.connected:
+                            self.mic_array.record_running = False
+                            self.gui.Top_Frame.Right_Frame.insert_text(f'Network Disconnected', 'red')
+                            self.handle_event(Event.STOP_RECORDER)
+
+
             time.sleep(0.5)
 
     def setup_project_directory(self):
