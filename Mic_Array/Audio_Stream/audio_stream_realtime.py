@@ -53,6 +53,7 @@ class Mic_Array:
             time.sleep(0.1)
 
     def record_save(self, filepath):
+        self.chunk_start_time = datetime.now().strftime("%m-%d-%Y_%I-%M-%S")
         while self.record_running:
             data = self.audio_receiver.get_audio_data()
             if data is not None:
