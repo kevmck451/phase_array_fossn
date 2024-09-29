@@ -9,6 +9,7 @@ from Mic_Array.PCA.pca_realtime import PCA_Calculator
 from Mic_Array.Detector.detector_realtime import Detector
 
 from Application.controller.detector_log import Detector_Log
+from Application.controller.temp_log import Temp_Log
 
 from Application.controller.event_states import Event
 from Application.controller.event_states import State
@@ -61,6 +62,7 @@ class Controller:
         self.bar_chart_updater_running = False
 
         self.data_logger = None
+        self.temp_logger = None
 
         self.queue_check_time = 0.1
 
@@ -74,6 +76,7 @@ class Controller:
         self.calibration_filepath = None
         self.audio_filepath = None
         self.anom_filepath = None
+        self.temp_filepath = None
         self.setup_project_directory()
 
 
@@ -104,7 +107,7 @@ class Controller:
 
             if not self.audio_loaded:
                 if self.app_state == State.RUNNING:
-                    if self.gui.Top_Frame.Center_Frame.pca_save_checkbox_variable.get():
+                    if self.gui.Top_Frame.Center_Frame.audio_save_checkbox_variable.get():
                         if not self.temp_sensor.connected or not self.mic_array.audio_receiver.connected:
                             self.mic_array.record_running = False
                             self.gui.Top_Frame.Right_Frame.insert_text(f'Network Disconnected', 'red')
@@ -138,7 +141,12 @@ class Controller:
             self.anom_filepath = filepath
             os.makedirs(filepath, exist_ok=True)
             self.data_logger = Detector_Log(self.anom_filepath, self.thetas)
-
+        elif option == 'temp':
+            self.temp_filepath = f'{self.project_directory_path}/Temp_'
+            filepath = self.temp_filepath + current_time
+            self.temp_filepath = filepath
+            os.makedirs(filepath, exist_ok=True)
+            self.temp_logger = Temp_Log(self.temp_filepath)
 
 
     # ---------------------------------
@@ -161,6 +169,7 @@ class Controller:
                 elif self.app_state == State.RUNNING:
                     self.create_directory('anomaly')
                     self.create_directory('audio')
+                    self.create_directory('temp')
                     self.mic_array.start_recording(self.audio_filepath)
             else:
                 self.mic_array.record_audio = False
@@ -286,6 +295,8 @@ class Controller:
 
                 if self.gui.Top_Frame.Center_Frame.audio_save_checkbox_variable.get():
                     self.data_logger.log_data(self.gui.Middle_Frame.Center_Frame.anomaly_data)
+                    if not self.audio_loaded:
+                        self.temp_logger.log_data(self.temp_sensor.current_temp)
 
             time.sleep(1)
 
@@ -303,6 +314,8 @@ class Controller:
     def stop_all_queues(self):
         if self.audio_loaded:
             self.mic_array_simulator.running = False
+        if self.gui.Top_Frame.Center_Frame.audio_save_checkbox_variable.get():
+            self.mic_array.record_running = False
         self.beamform_running = False
         self.processor_running = False
         self.pca_calculator_running = False

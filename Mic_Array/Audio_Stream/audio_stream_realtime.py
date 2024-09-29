@@ -43,6 +43,8 @@ class Mic_Array:
             self.recording_thread = Thread(target=self.record, daemon=True).start()
 
     def record(self):
+        while self.audio_receiver.get_audio_data() is not None:
+            x = self.audio_receiver.get_audio_data()
         while self.record_running:
             data = self.audio_receiver.get_audio_data()
             if data is not None:
@@ -53,6 +55,9 @@ class Mic_Array:
             time.sleep(0.1)
 
     def record_save(self, filepath):
+        while self.audio_receiver.get_audio_data() is not None:
+            print('Emptying Queue')
+            x = self.audio_receiver.get_audio_data()
         self.chunk_start_time = datetime.now().strftime("%m-%d-%Y_%I-%M-%S")
         while self.record_running:
             data = self.audio_receiver.get_audio_data()
