@@ -10,9 +10,9 @@ if __name__ == '__main__':
     start_time = time.time()
     base_path = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/2 FOSSN/Data'
     # filename = 'angel_sweep_BF_(-90, 90)-(0)'
-    filename = 'angel_sweep_BF_(-90, 90)-(0)_Pro'
-    filepath = f'{base_path}/Tests/16_beamformed/{filename}.wav'
-    filepath_save = f'{base_path}/Tests/16_beamformed/{filename}_3.mp4'
+    filename = '09-25-2024_10-54-17_chunk_1'
+    filepath = f'{base_path}/Field_Tests/9-25 Field Test/Data/9-25-24 10.42am/Audio_10.54am/{filename}.wav'
+    filepath_save = f'{base_path}/Analysis/angel_beamforming/{filename}_1.mp4'
 
     thetas = [-90, -80, -70, -60, -50, -40, -30, -20, -10, 0, 10, 20, 30, 40, 50, 60, 70, 80, 90]
     phis = [0]

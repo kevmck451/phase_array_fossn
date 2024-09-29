@@ -57,10 +57,10 @@ def generate_beamformed_audio(mapped_audio_data, theta, phi, temp_F, mic_coords)
 
     return beamform(mapped_audio_data, fir_coeffs)
 
-def generate_beamformed_audio_iterative(mapped_audio_data, thetas, phi, temp_F, mic_coords):
+def generate_beamformed_audio_iterative(mapped_audio_data, thetas, phis, temp_F, mic_coords):
     beamformed_audio_data = np.zeros((len(thetas), audio.num_samples+200))
     for i, theta in enumerate(thetas):
-        beamformed_audio_data[i, :] = generate_beamformed_audio(mapped_audio_data, theta, phi, temp_F, mic_coords)
+        beamformed_audio_data[i, :] = generate_beamformed_audio(mapped_audio_data, theta, phis[0], temp_F, mic_coords)
         print(f'Completed BF Data for {theta}')
         print('-' * 40)
 
@@ -92,16 +92,21 @@ if __name__ == '__main__':
     # filepath = f'{base_path}/Tests/17_outdoor_testing/cars_drive_by_150m.wav'
     # filepath = f'{base_path}/Tests/17_outdoor_testing/distance_160-50m.wav'
     # filepath = f'{base_path}/Tests/17_outdoor_testing/sweep_angel_100m.wav'
-    filepath = f'{base_path}/Tests/17_outdoor_testing/sweep_semi_100m.wav'
+    # filepath = f'{base_path}/Tests/17_outdoor_testing/sweep_semi_100m.wav'
 
-    filepath_save = f'{base_path}/Tests/18_beamformed'
+    filename = '09-25-2024_10-54-17_chunk_1'
+    filepath = f'{base_path}/Field_Tests/9-25 Field Test/Data/9-25-24 10.42am/Audio_10.54am/{filename}.wav'
+
+
+
+    filepath_save = f'{base_path}/Analysis/angel_beamforming'
     tag_index = '_(-70, 70)-(0)'
 
     # elevation angle: neg is left and pos is right
     # thetas = [-40,-30,-20,-10, 0, 10, 20,30,40]
     thetas = [-70, -60, -50, -40, -30, -20, -10, 0, 10, 20, 30, 40, 50, 60, 70]
     phis = [0]  # azimuth angle: neg is below and pos is above
-    temp_F = 86  # temperature in Fahrenheit
+    temp_F = 74  # temperature in Fahrenheit
 
     print('opening audio')
     audio = Audio(filepath=filepath, num_channels=48)
@@ -117,16 +122,17 @@ if __name__ == '__main__':
     bf_start_time = time.time()
 
     # Iterative Method: takes longer time
-    # beamformed_audio_data = generate_beamformed_audio_iterative(mapped_audio_data, thetas, phi, temp_F, mic_coords)
+    beamformed_audio_data = generate_beamformed_audio_iterative(mapped_audio_data, thetas, phis, temp_F, mic_coords)
 
-    list_of_data = list()
     # Parallel Method: much shorter time
-    for phi in phis:
-        beamformed_audio_data = optimize_beamforming(thetas, mapped_audio_data, phi, temp_F, mic_coords)
-        list_of_data.append(beamformed_audio_data)
-        print('-' * 40)
+    # list_of_data = list()
+    # for phi in phis:
+    #     beamformed_audio_data = optimize_beamforming(thetas, mapped_audio_data, phi, temp_F, mic_coords)
+    #     list_of_data.append(beamformed_audio_data)
+    #     print('-' * 40)
+    # beamformed_audio_data = np.vstack(list_of_data)
 
-    beamformed_audio_data = np.vstack(list_of_data)
+
     print(f'shape: {beamformed_audio_data.shape}')
 
     beamform_time = time.time() - bf_start_time
@@ -157,7 +163,7 @@ if __name__ == '__main__':
     beamformed_audio_object.data = normalize(beamformed_audio_object, percentage)
 
     print('downsampling audio')
-    new_sample_rate = 24000
+    new_sample_rate = 6000
     beamformed_audio_object.data = downsample(beamformed_audio_object, new_sample_rate)
     beamformed_audio_object.sample_rate = new_sample_rate
 
