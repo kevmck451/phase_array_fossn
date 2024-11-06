@@ -341,11 +341,11 @@ nix develop --profile profiles/dev
   - not using the dash, signifies using a nix.flake file
 - for significant changes, it's best use the boot flag
 ```zsh
-nix-rebuild --target-host nixos@192.168.80.1 --fast --use-remote-sudo --flake .#de10-nano boot -L 
+nixos-rebuild --target-host nixos@192.168.80.1 --fast --use-remote-sudo --flake .#de10-nano boot -L 
 ```
 - otherwise the switch command is fine
 ```zsh
-nix-rebuild --target-host nixos@192.168.80.1 --fast --use-remote-sudo --flake .#de10-nano switch -L 
+nixos-rebuild --target-host nixos@192.168.80.1 --fast --use-remote-sudo --flake .#de10-nano switch -L 
 ```
 
 
