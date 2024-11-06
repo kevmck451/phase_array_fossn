@@ -173,7 +173,7 @@ cd phase_array_fossn/FPGA
 
 - run the command:
 ```zsh
-nixos build .#nixosConfigurations.de10-nano -L
+nix build .#nixosConfigurations.de10-nano -L
 ```
 - add the -j1 flag if using small cpu computers (1 job built at a time)
 - -L is to see a verbose output as it builds
@@ -341,11 +341,11 @@ nix develop --profile profiles/dev
   - not using the dash, signifies using a nix.flake file
 - for significant changes, it's best use the boot flag
 ```zsh
-nixos-rebuild --target-host nixos@192.168.80.1 --fast --use-remote-sudo --flake .#de10-nano boot -L 
+nix-rebuild --target-host nixos@192.168.80.1 --fast --use-remote-sudo --flake .#de10-nano boot -L 
 ```
 - otherwise the switch command is fine
 ```zsh
-nixos-rebuild --target-host nixos@192.168.80.1 --fast --use-remote-sudo --flake .#de10-nano switch -L 
+nix-rebuild --target-host nixos@192.168.80.1 --fast --use-remote-sudo --flake .#de10-nano switch -L 
 ```
 
 
