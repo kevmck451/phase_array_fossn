@@ -39,8 +39,11 @@ def beamform(audio_data, fir_coeffs):
 
     for row_index in range(rows):
         for col_index in range(cols):
-            filtered_signal = convolve(audio_data[row_index, col_index, :], fir_coeffs[row_index, col_index, :], mode='full')
-            beamformed_data += filtered_signal
+            if row_index==3 and col_index==8:
+                pass
+            else:
+                filtered_signal = convolve(audio_data[row_index, col_index, :], fir_coeffs[row_index, col_index, :], mode='full')
+                beamformed_data += filtered_signal
 
     # Normalize the beamformed data
     max_val = np.max(np.abs(beamformed_data))
@@ -88,25 +91,67 @@ def optimize_beamforming(thetas, mapped_audio_data, phi, temp_F, mic_coords):
 if __name__ == '__main__':
     start_time = time.time()
 
-    base_path = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/2 FOSSN/Data'
+    # base_path = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/2 FOSSN/Data'
     # filepath = f'{base_path}/Tests/17_outdoor_testing/cars_drive_by_150m.wav'
     # filepath = f'{base_path}/Tests/17_outdoor_testing/distance_160-50m.wav'
     # filepath = f'{base_path}/Tests/17_outdoor_testing/sweep_angel_100m.wav'
     # filepath = f'{base_path}/Tests/17_outdoor_testing/sweep_semi_100m.wav'
 
-    filename = '09-25-2024_10-54-17_chunk_1'
-    filepath = f'{base_path}/Field_Tests/9-25 Field Test/Data/9-25-24 10.42am/Audio_10.54am/{filename}.wav'
+    # filename = '09-25-2024_10-54-17_chunk_1'
+    # filepath = f'{base_path}/Field_Tests/9-25 Field Test/Data/9-25-24 10.42am/Audio_10.54am/{filename}.wav'
 
+    base_path = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/2 FOSSN/Data/Field_Tests/9-25 Field Test/Data'
+    base_path_saving = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/2 FOSSN/Data'
 
+    test = '1 Hex Day Flight'
+    filename = '09-25-2024_10-18-13_chunk_1'
 
-    filepath_save = f'{base_path}/Analysis/angel_beamforming'
-    tag_index = '_(-70, 70)-(0)'
+    # test = '2 Angel Day Flight'
+    # filename = '09-25-2024_10-54-17_chunk_1'
+
+    # test = '3 Tractor Test'
+    # filename = '09-25-2024_11-40-36_chunk_1'
+    # filename = '09-25-2024_11-40-36_chunk_2'
+
+    # test = '4 Truck Speaker Test'
+    # filename = '09-25-2024_12-18-42_chunk_1'
+    # filename = '09-25-2024_12-18-42_chunk_2'
+
+    # test = '5 Dismount Day Test'
+    # filename = '09-25-2024_03-20-43_chunk_1'
+    # filename = '09-25-2024_03-20-43_chunk_2'
+
+    # test = '6 Dismount Day Test'
+    # filename = '09-25-2024_07-05-12_chunk_1'
+    # filename = '09-25-2024_07-05-12_chunk_2'
+
+    # test = '7 Dismount Day Test'
+    # filename = '09-25-2024_07-38-07_chunk_1'
+
+    # test = '8 Dismount Day Test'
+    # filename = '09-25-2024_07-58-48_chunk_1'
+    # filename = '09-25-2024_07-58-48_chunk_2'
+
+    filepath = f'{base_path}/{test}/Audio/{filename}.wav'
+
+    # saving
+
+    # filepath_save = f'{base_path_saving}/Analysis/angel_beamforming'
+    # filepath_save = f'{base_path_saving}/Analysis/dismount_beamforming'
+    filepath_save = f'{base_path_saving}/Analysis/hex_beamforming'
+    # filepath_save = f'{base_path_saving}/Analysis/tractor_beamforming'
+    # filepath_save = f'{base_path_saving}/Analysis/truck_beamforming'
+
+    tag_index = '_(-90, 90)-(0)'
 
     # elevation angle: neg is left and pos is right
-    # thetas = [-40,-30,-20,-10, 0, 10, 20,30,40]
-    thetas = [-70, -60, -50, -40, -30, -20, -10, 0, 10, 20, 30, 40, 50, 60, 70]
+    # thetas = [-80, -70, -60, -50, -40,-30,-20,-10, 0, 10, 20,30,40,50,60,70,80]
+    # thetas = [0, 10, 20,30,40,50,60,70,80,90]
+    thetas = [-90, 0, 90]
+
+    # thetas = [-10, 0, 10]
     phis = [0]  # azimuth angle: neg is below and pos is above
-    temp_F = 74  # temperature in Fahrenheit
+    temp_F = 71  # temperature in Fahrenheit
 
     print('opening audio')
     audio = Audio(filepath=filepath, num_channels=48)
@@ -152,20 +197,20 @@ if __name__ == '__main__':
     # --------------------------------------------------------------
     # print('Reducing Noise')
     # std_threshold = 0.5
-    # audio.data = noise_reduction_filter(audio, std_threshold)
+    # beamformed_audio_object.data = noise_reduction_filter(beamformed_audio_object, std_threshold)
 
-    print('Passing High Freq')
-    bottom_cutoff_freq = 1000
-    beamformed_audio_object.data = high_pass_filter(beamformed_audio_object, bottom_cutoff_freq)
+    # print('Passing High Freq')
+    # bottom_cutoff_freq = 1000
+    # beamformed_audio_object.data = high_pass_filter(beamformed_audio_object, bottom_cutoff_freq)
+
+    print('downsampling audio')
+    new_sample_rate = 24000
+    beamformed_audio_object.data = downsample(beamformed_audio_object, new_sample_rate)
+    beamformed_audio_object.sample_rate = new_sample_rate
 
     print('Normalizing')
     percentage = 100
     beamformed_audio_object.data = normalize(beamformed_audio_object, percentage)
-
-    print('downsampling audio')
-    new_sample_rate = 6000
-    beamformed_audio_object.data = downsample(beamformed_audio_object, new_sample_rate)
-    beamformed_audio_object.sample_rate = new_sample_rate
 
     save_to_wav(beamformed_audio_object.data, beamformed_audio_object.sample_rate, beamformed_audio_object.num_channels, new_filepath)
 
