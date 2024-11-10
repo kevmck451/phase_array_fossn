@@ -196,7 +196,59 @@ class Audio:
         if ret:
             return fig
 
+    # Function to display the waveform of audio with a mirrored and scaled RMS overlay
+    def waveform_rms_overlay(self, window_size=100, rms_scale=0.5, **kwargs):
+        # Calculate the time axis in seconds
+        if self.num_channels > 1:
+            time_axis = np.arange(len(self.data[0])) / self.sample_rate
+        else:
+            time_axis = np.arange(len(self.data)) / self.sample_rate
 
+        # Create the figure and axis objects, with subplots equal to number of channels
+        fig, axs = plt.subplots(self.num_channels, figsize=(14, (4 + self.num_channels)))
+
+        # If only one channel, make axs a list to handle indexing
+        if self.num_channels == 1:
+            axs = [axs]
+
+        # Plot the audio data and mirrored, scaled RMS overlay for each channel
+        for i in range(self.num_channels):
+            # Select data for the current channel
+            channel_data = self.data[i] if self.num_channels > 1 else self.data
+
+            # Plot the original waveform
+            axs[i].plot(time_axis, channel_data, linewidth=0.5)
+
+            # Calculate RMS in a moving window
+            rms = np.sqrt(np.convolve(channel_data ** 2, np.ones(window_size) / window_size, mode='same'))
+
+            # Normalize, scale, and mirror the RMS to fit the amplitude range, centered around zero
+            rms_normalized = rms * rms_scale  # Scale down RMS overlay by rms_scale factor
+            rms_mirrored = rms_normalized * np.sign(channel_data)  # Mirror RMS based on signal's sign
+
+            # Plot mirrored, scaled RMS overlay with lighter blue and transparency
+            axs[i].plot(time_axis, rms_mirrored, color='skyblue', linewidth=0.7, alpha=0.5)
+
+            # Labeling and formatting
+            axs[i].set_ylabel('Amplitude')
+            axs[i].set_ylim([-1, 1])  # Set y-axis limits to -1 and 1
+            axs[i].axhline(y=0, color='black', linewidth=0.5, linestyle='--')  # Horizontal line at y=0
+            axs[i].set_xlabel('Time (s)')
+            axs[i].set_title(f'Waveform: {self.name} - Channel {i + 1}')
+
+        # Make the layout tight to avoid overlap of subplots
+        fig.tight_layout(pad=1)
+
+        save = kwargs.get('save', False)
+        display = kwargs.get('display', False)
+        ret = kwargs.get('ret', False)
+        save_path = kwargs.get('save_path', str(self.path))
+        if save:
+            plt.savefig(f'{save_path}/{self.name}.png')
+        if display:
+            plt.show()
+        if ret:
+            return fig
 
 
 if __name__ == '__main__':
@@ -216,6 +268,7 @@ if __name__ == '__main__':
 
     filepath = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/1 Acoustic/Data/Isolated Samples/Hex/hex_hover_8_thin.wav'
     audio = Audio(filepath=filepath)
+    audio.waveform_rms_overlay(display=True)
     print(audio)
     # # audio.waveform(display=True)
     # max = np.max(audio.data)
