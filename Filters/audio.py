@@ -268,8 +268,9 @@ if __name__ == '__main__':
 
     filepath = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/1 Acoustic/Data/Isolated Samples/Hex/hex_hover_8_thin.wav'
     audio = Audio(filepath=filepath)
+    audio.data = audio.data[:9600]
     audio.waveform_rms_overlay(display=True)
-    print(audio)
+    # print(audio)
     # # audio.waveform(display=True)
     # max = np.max(audio.data)
     # min = np.min(audio.data)
