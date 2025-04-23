@@ -105,10 +105,6 @@
 
   services.dnsmasq = lib.optionalAttrs config.services.hostapd.enable {
     enable = true;
-    systemd.services.dnsmasq = {
-      after = [ "network.target" "sys-subsystem-net-devices-br0.device" ];
-      requires = [ "sys-subsystem-net-devices-br0.device" ];
-    };
     settings = {
       bind-interfaces = true;
       interface = [ "br0" ];
@@ -118,5 +114,11 @@
       server = [ "8.8.8.8" ];
     };
   };
+
+  systemd.services.dnsmasq = {
+    after = [ "network.target" "sys-subsystem-net-devices-br0.device" ];
+    requires = [ "sys-subsystem-net-devices-br0.device" ];
+  };
+
 
 }
