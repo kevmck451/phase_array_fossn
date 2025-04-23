@@ -97,15 +97,13 @@
     after = [ "sys-subsystem-net-devices-enp1s0u1u2.device" ];
     serviceConfig = {
       Type = "oneshot";
-      ExecStart = ''
-        ${pkgs.iproute2}/bin/ip link add name br0 type bridge || true
-        ${pkgs.iproute2}/bin/ip link set enp1s0u1u2 master br0 || true
-        ${pkgs.iproute2}/bin/ip link set enp1s0u1u4c2 master br0 || true
-        ${pkgs.iproute2}/bin/ip addr add 192.168.1.1/24 dev br0 || true
-        ${pkgs.iproute2}/bin/ip link set br0 up
-      '';
-
+      ExecStart = "${pkgs.bash}/bin/bash -c '${pkgs.iproute2}/bin/ip link add name br0 type bridge || true; \
+        ${pkgs.iproute2}/bin/ip link set enp1s0u1u2 master br0 || true; \
+        ${pkgs.iproute2}/bin/ip link set enp1s0u1u4c2 master br0 || true; \
+        ${pkgs.iproute2}/bin/ip addr add 192.168.1.1/24 dev br0 || true; \
+        ${pkgs.iproute2}/bin/ip link set br0 up || true'";
     };
   };
+
 
 }
