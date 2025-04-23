@@ -6,13 +6,13 @@ import time
 
 
 
-
+# ssh -L 7654:192.168.1.201:2048 admin@192.168.1.1
 
 # For collecting RAW data from FPGA server
 class AudioReceiver_MicArray:
     def __init__(self, chan_count):
-        self.host = "192.168.1.201"
-        self.port = 2048
+        self.host = "localhost"
+        self.port = 7654
         self.connected = False
         self.cancel_attempt = False
         self.sock = None

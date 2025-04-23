@@ -79,7 +79,6 @@ class Controller:
         self.temp_filepath = None
         self.setup_project_directory()
 
-
     def add_peripherals(self, temp_sensor, mic_array, gui):
         self.temp_sensor = temp_sensor
         self.mic_array = mic_array

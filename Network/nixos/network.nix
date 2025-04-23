@@ -93,12 +93,13 @@
     serviceConfig = {
       Type = "oneshot";
       ExecStart = ''
-        ip link add name br0 type bridge || true
-        ip link set enp1s0u1u2 master br0 || true
-        ip link set enp1s0u1u4c2 master br0 || true
-        ip addr add 192.168.1.1/24 dev br0 || true
-        ip link set br0 up
+        ${pkgs.iproute2}/bin/ip link add name br0 type bridge || true
+        ${pkgs.iproute2}/bin/ip link set enp1s0u1u2 master br0 || true
+        ${pkgs.iproute2}/bin/ip link set enp1s0u1u4c2 master br0 || true
+        ${pkgs.iproute2}/bin/ip addr add 192.168.1.1/24 dev br0 || true
+        ${pkgs.iproute2}/bin/ip link set br0 up
       '';
+
     };
   };
 

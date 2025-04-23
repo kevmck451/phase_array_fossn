@@ -49,7 +49,6 @@ class Detector:
             self.baseline_means = 0.9 * self.baseline_means + 0.1 * current_mean
             self.baseline_stds = 0.9 * self.baseline_stds + 0.1 * current_std
 
-
     def detect_anomalies(self, pca_data):
         self.num_channels, self.num_pca_components, self.num_samples = pca_data.shape
 
@@ -84,7 +83,6 @@ class Detector:
 
             # Add the anomaly results to the queue for further processing
             self.queue.put(anomalies_list)
-
 
     def detect_anomalies_simulation(self, pca_data):
 
