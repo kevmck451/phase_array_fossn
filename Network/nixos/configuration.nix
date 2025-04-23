@@ -71,4 +71,25 @@
   system.stateVersion = "23.11"; # Did you read the comment?
 
   # for nixpkgs 205fd4226592
+
+  systemd.services.fpgatunnel = {
+    description = "Forward port 7654 to FPGA at 192.168.1.201:2048";
+    wantedBy = [ "multi-user.target" ];
+    after = [ "network-online.target" ];
+    serviceConfig = {
+      ExecStart = [
+        "${pkgs.openssh}/bin/ssh"
+        "-N"
+        "-o"
+        "StrictHostKeyChecking=no"
+        "-o"
+        "UserKnownHostsFile=/dev/null"
+        "-L"
+        "7654:192.168.1.201:2048"
+        "admin@localhost"
+      ];
+      Restart = "always";
+    };
+  };
+
 }
