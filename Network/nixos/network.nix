@@ -8,7 +8,10 @@
   networking.firewall.enable = false;
   networking.useDHCP = true;
 
-  networking.bridges.br0 = { interfaces = [ "enp1s0u1u4c2" "enp1s0u1u2" ]; };
+#  networking.bridges.br0 = { interfaces = [ "enp1s0u1u4c2" "enp1s0u1u2" ]; };
+
+  networking.interfaces.enp1s0u1u2.useDHCP = false;
+  networking.interfaces.enp1s0u1u4c2.useDHCP = false;
 
   networking.interfaces.br0.ipv4.addresses = [ {
     address = "192.168.1.1";
@@ -75,11 +78,28 @@
       wantedBy = [ "multi-user.target" ];
     };
   
-  systemd.services.br0-netdev.serviceConfig = #[ "br0-netdev.service" ];
+#  systemd.services.br0-netdev.serviceConfig = #[ "br0-netdev.service" ];
 
-  { 
-  ExecStartPre = "${pkgs.coreutils}/bin/sleep 3"; # until i guess the wifi or usb or whichever comes up??? 1 was sufficient but better safe
+  systemd.services.br0-netdev = {
+    serviceConfig = {
+      ExecStartPre = "${pkgs.coreutils}/bin/sleep 3";
+    };
   };
 
+  systemd.services.br0-recover = {
+    description = "Recreate br0 when USB interfaces appear";
+    wantedBy = [ "sys-subsystem-net-devices-enp1s0u1u2.device" ];
+    after = [ "sys-subsystem-net-devices-enp1s0u1u2.device" ];
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = ''
+        ip link add name br0 type bridge || true
+        ip link set enp1s0u1u2 master br0 || true
+        ip link set enp1s0u1u4c2 master br0 || true
+        ip addr add 192.168.1.1/24 dev br0 || true
+        ip link set br0 up
+      '';
+    };
+  };
 
 }
