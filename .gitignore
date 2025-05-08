@@ -3,3 +3,8 @@
 
 # Ignore all wav files
 *.wav
+
+Network/nixos/sd-image/results/*.zst
+
+venv/
+venv/
