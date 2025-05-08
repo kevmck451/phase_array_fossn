@@ -1,0 +1,307 @@
+Sep 24 03:27:25 pi-nix kernel: brcm-pcie fd500000.pcie:   No bus range found for /scb/pcie@7d500000, using [bus 00-ff]
+Sep 24 03:27:26 pi-nix kernel: brcm-pcie fd500000.pcie:      MEM 0x0600000000..0x0603ffffff -> 0x00f8000000
+Sep 24 03:27:26 pi-nix kernel: brcm-pcie fd500000.pcie:   IB MEM 0x0000000000..0x00ffffffff -> 0x0400000000
+Sep 24 03:27:26 pi-nix kernel: brcm-pcie fd500000.pcie: PCI host bridge to bus 0000:00
+Sep 24 03:27:26 pi-nix kernel: pci_bus 0000:00: root bus resource [bus 00-ff]
+Sep 24 03:27:26 pi-nix kernel: pci_bus 0000:00: root bus resource [mem 0x600000000-0x603ffffff] (bus address [0xf8000000-0xfbffffff])
+Sep 24 03:27:26 pi-nix kernel: pci 0000:00:00.0: [14e4:2711] type 01 class 0x060400
+Sep 24 03:27:26 pi-nix kernel: pci 0000:00:00.0: PME# supported from D0 D3hot
+Sep 24 03:27:26 pi-nix kernel: pci_bus 0000:01: supply vpcie3v3 not found, using dummy regulator
+Sep 24 03:27:26 pi-nix kernel: pci_bus 0000:01: supply vpcie3v3aux not found, using dummy regulator
+Sep 24 03:27:26 pi-nix kernel: pci_bus 0000:01: supply vpcie12v not found, using dummy regulator
+Sep 24 03:27:26 pi-nix kernel: bcmgenet fd580000.ethernet: GENET 5.0 EPHY: 0x0000
+Sep 24 03:27:26 pi-nix kernel: cfg80211: Loading compiled-in X.509 certificates for regulatory database
+Sep 24 03:27:26 pi-nix kernel: brcm-pcie fd500000.pcie: link up, 5.0 GT/s PCIe x1 (SSC)
+Sep 24 03:27:26 pi-nix kernel: pci 0000:01:00.0: [1106:3483] type 00 class 0x0c0330
+Sep 24 03:27:26 pi-nix kernel: pci 0000:01:00.0: reg 0x10: [mem 0x00000000-0x00000fff 64bit]
+Sep 24 03:27:26 pi-nix kernel: pci 0000:01:00.0: PME# supported from D0 D3hot
+Sep 24 03:27:26 pi-nix kernel: Bluetooth: Core ver 2.22
+Sep 24 03:27:26 pi-nix kernel: NET: Registered PF_BLUETOOTH protocol family
+Sep 24 03:27:26 pi-nix kernel: Bluetooth: HCI device and connection manager initialized
+Sep 24 03:27:26 pi-nix kernel: Bluetooth: HCI socket layer initialized
+Sep 24 03:27:26 pi-nix kernel: Bluetooth: L2CAP socket layer initialized
+Sep 24 03:27:26 pi-nix kernel: Bluetooth: SCO socket layer initialized
+Sep 24 03:27:26 pi-nix kernel: pci 0000:00:00.0: BAR 14: assigned [mem 0x600000000-0x6000fffff]
+Sep 24 03:27:26 pi-nix kernel: pci 0000:01:00.0: BAR 0: assigned [mem 0x600000000-0x600000fff 64bit]
+Sep 24 03:27:26 pi-nix kernel: pci 0000:00:00.0: PCI bridge to [bus 01]
+Sep 24 03:27:26 pi-nix kernel: pci 0000:00:00.0:   bridge window [mem 0x600000000-0x6000fffff]
+Sep 24 03:27:26 pi-nix kernel: pcieport 0000:00:00.0: enabling device (0000 -> 0002)
+Sep 24 03:27:26 pi-nix kernel: pcieport 0000:00:00.0: PME: Signaling with IRQ 39
+Sep 24 03:27:26 pi-nix kernel: pcieport 0000:00:00.0: AER: enabled with IRQ 39
+Sep 24 03:27:26 pi-nix kernel: cfg80211: Loaded X.509 cert 'sforshee: 00b28ddf47aef9cea7'
+Sep 24 03:27:26 pi-nix kernel: cfg80211: Loaded X.509 cert 'wens: 61c038651aabdcf94bd0ac7ff06c7248db18c600'
+Sep 24 03:27:26 pi-nix kernel: Bluetooth: HCI UART driver ver 2.3
+Sep 24 03:27:26 pi-nix kernel: Bluetooth: HCI UART protocol H4 registered
+Sep 24 03:27:26 pi-nix kernel: Bluetooth: HCI UART protocol BCSP registered
+Sep 24 03:27:26 pi-nix kernel: Bluetooth: HCI UART protocol LL registered
+Sep 24 03:27:26 pi-nix kernel: unimac-mdio unimac-mdio.-19: Broadcom UniMAC MDIO bus
+Sep 24 03:27:26 pi-nix kernel: Bluetooth: HCI UART protocol Broadcom registered
+Sep 24 03:27:26 pi-nix kernel: Bluetooth: HCI UART protocol QCA registered
+Sep 24 03:27:26 pi-nix kernel: Bluetooth: HCI UART protocol Marvell registered
+Sep 24 03:27:26 pi-nix kernel: hci_uart_bcm serial0-0: supply vbat not found, using dummy regulator
+Sep 24 03:27:26 pi-nix kernel: hci_uart_bcm serial0-0: supply vddio not found, using dummy regulator
+Sep 24 03:27:26 pi-nix kernel: snd_bcm2835: module is from the staging directory, the quality is unknown, you have been warned.
+Sep 24 03:27:26 pi-nix kernel: uart-pl011 fe201000.serial: no DMA platform data
+Sep 24 03:27:26 pi-nix kernel: [drm] Initialized v3d 1.0.0 20180419 for fec00000.gpu on minor 0
+Sep 24 03:27:26 pi-nix kernel: bcm2835_audio bcm2835_audio: card created with 8 channels
+Sep 24 03:27:26 pi-nix kernel: mc: Linux media interface: v0.10
+Sep 24 03:27:26 pi-nix kernel: bcmgenet fd580000.ethernet end0: renamed from eth0
+Sep 24 03:27:26 pi-nix kernel: Bluetooth: hci0: BCM: chip id 107
+Sep 24 03:27:26 pi-nix kernel: Bluetooth: hci0: BCM: features 0x2f
+Sep 24 03:27:26 pi-nix kernel: Bluetooth: hci0: BCM4345C0
+Sep 24 03:27:26 pi-nix kernel: Bluetooth: hci0: BCM4345C0 (003.001.025) build 0000
+Sep 24 03:27:26 pi-nix kernel: brcmfmac: brcmf_fw_alloc_request: using brcm/brcmfmac43455-sdio for chip BCM4345/6
+Sep 24 03:27:26 pi-nix kernel: usbcore: registered new interface driver brcmfmac
+Sep 24 03:27:26 pi-nix kernel: xhci_hcd 0000:01:00.0: xHCI Host Controller
+Sep 24 03:27:26 pi-nix kernel: xhci_hcd 0000:01:00.0: new USB bus registered, assigned bus number 1
+Sep 24 03:27:26 pi-nix kernel: xhci_hcd 0000:01:00.0: hcc params 0x002841eb hci version 0x100 quirks 0x0000000000000890
+Sep 24 03:27:26 pi-nix kernel: xhci_hcd 0000:01:00.0: xHCI Host Controller
+Sep 24 03:27:26 pi-nix kernel: xhci_hcd 0000:01:00.0: new USB bus registered, assigned bus number 2
+Sep 24 03:27:26 pi-nix kernel: xhci_hcd 0000:01:00.0: Host supports USB 3.0 SuperSpeed
+Sep 24 03:27:26 pi-nix kernel: videodev: Linux video capture interface: v2.00
+Sep 24 03:27:26 pi-nix kernel: hub 1-0:1.0: USB hub found
+Sep 24 03:27:26 pi-nix kernel: hub 1-0:1.0: 1 port detected
+Sep 24 03:27:26 pi-nix kernel: Console: switching to colour dummy device 80x25
+Sep 24 03:27:26 pi-nix kernel: vc4-drm gpu: bound fe400000.hvs (ops vc4_hvs_ops [vc4])
+Sep 24 03:27:26 pi-nix kernel: vc4-drm gpu: bound fef00700.hdmi (ops vc4_hdmi_ops [vc4])
+Sep 24 03:27:26 pi-nix kernel: vc4-drm gpu: bound fef05700.hdmi (ops vc4_hdmi_ops [vc4])
+Sep 24 03:27:26 pi-nix kernel: vc4-drm gpu: bound fe004000.txp (ops vc4_txp_ops [vc4])
+Sep 24 03:27:26 pi-nix kernel: vc4-drm gpu: bound fe206000.pixelvalve (ops vc4_crtc_ops [vc4])
+Sep 24 03:27:26 pi-nix kernel: vc4-drm gpu: bound fe207000.pixelvalve (ops vc4_crtc_ops [vc4])
+Sep 24 03:27:26 pi-nix kernel: vc4-drm gpu: bound fe20a000.pixelvalve (ops vc4_crtc_ops [vc4])
+Sep 24 03:27:26 pi-nix kernel: vc4-drm gpu: bound fe216000.pixelvalve (ops vc4_crtc_ops [vc4])
+Sep 24 03:27:26 pi-nix kernel: [drm] Initialized vc4 0.0.0 20140616 for gpu on minor 1
+Sep 24 03:27:26 pi-nix kernel: Console: switching to colour frame buffer device 128x37
+Sep 24 03:27:26 pi-nix kernel: Bluetooth: hci0: BCM4345C0 'brcm/BCM4345C0.hcd' Patch
+Sep 24 03:27:26 pi-nix kernel: bcm2835_mmal_vchiq: module is from the staging directory, the quality is unknown, you have been warned.
+Sep 24 03:27:26 pi-nix kernel: vc4-drm gpu: [drm] fb0: vc4drmfb frame buffer device
+Sep 24 03:27:26 pi-nix kernel: bcm2835_v4l2: module is from the staging directory, the quality is unknown, you have been warned.
+Sep 24 03:27:26 pi-nix kernel: hub 2-0:1.0: USB hub found
+Sep 24 03:27:26 pi-nix kernel: hub 2-0:1.0: 4 ports detected
+Sep 24 03:27:26 pi-nix kernel: usb 1-1: new high-speed USB device number 2 using xhci_hcd
+Sep 24 03:27:26 pi-nix kernel: brcmfmac: brcmf_c_preinit_dcmds: Firmware: BCM4345/6 wl0: Nov  1 2021 00:37:25 version 7.45.241 (1a2f2fa CY) FWID 01-703fd60
+Sep 24 03:27:25 pi-nix dhcpcd[616]: dhcpcd-9.4.1 starting
+Sep 24 03:27:25 pi-nix systemd-timesyncd[594]: System clock time unset or jumped backwards, restored from recorded timestamp: Tue 2024-09-24 03:27:25 CDT
+Sep 24 03:27:25 pi-nix dhcpcd[636]: dev: loaded udev
+Sep 24 03:27:25 pi-nix systemd[1]: Started Network Time Synchronization.
+Sep 24 03:27:25 pi-nix dhcpcd[636]: DUID 00:01:00:01:2c:56:46:8a:d8:3a:dd:fc:e6:73
+Sep 24 03:27:25 pi-nix systemd[1]: Reached target System Initialization.
+Sep 24 03:27:26 pi-nix hca0vdmwhmxawjs88zmnajchpjpy3p40-audit-disable[619]: No rules
+Sep 24 03:27:25 pi-nix dhcpcd[636]: no valid interfaces found
+Sep 24 03:27:25 pi-nix systemd[1]: Started logrotate.timer.
+Sep 24 03:27:26 pi-nix logrotate[617]: warning: logrotate in debug mode does nothing except printing debug messages!  Consider using verbose mode (-v) instead if this is not what you want.
+Sep 24 03:27:26 pi-nix logrotate[617]: reading config file /nix/store/s49va3dh462vlnxwnjacbgb6a9pg3mdb-logrotate.conf
+Sep 24 03:27:26 pi-nix logrotate[617]: note: 'monthly' overrides previously specified 'weekly'
+Sep 24 03:27:26 pi-nix logrotate[617]: Reading state from file: /var/lib/logrotate.status
+Sep 24 03:27:26 pi-nix logrotate[617]: Allocating hash table for state file, size 64 entries
+Sep 24 03:27:26 pi-nix logrotate[617]: Creating new state
+Sep 24 03:27:26 pi-nix logrotate[617]: Creating new state
+Sep 24 03:27:26 pi-nix logrotate[617]: Handling 2 logs
+Sep 24 03:27:26 pi-nix logrotate[617]: rotating pattern: "/var/log/btmp"  monthly (1 rotations)
+Sep 24 03:27:26 pi-nix logrotate[617]: empty log files are not rotated, only log files >= 1048576 bytes are rotated, old logs are removed
+Sep 24 03:27:26 pi-nix logrotate[617]: considering log /var/log/btmp
+Sep 24 03:27:26 pi-nix logrotate[617]:   Now: 2024-09-24 03:27
+Sep 24 03:27:26 pi-nix logrotate[617]:   Last rotated at 2024-08-07 07:00
+Sep 24 03:27:26 pi-nix logrotate[617]:   log does not need rotating ('minsize' directive is used and the log size is smaller than the minsize value)
+Sep 24 03:27:26 pi-nix logrotate[617]: rotating pattern: "/var/log/wtmp"  monthly (1 rotations)
+Sep 24 03:27:26 pi-nix logrotate[617]: empty log files are not rotated, only log files >= 1048576 bytes are rotated, old logs are removed
+Sep 24 03:27:26 pi-nix logrotate[617]: considering log /var/log/wtmp
+Sep 24 03:27:26 pi-nix logrotate[617]:   Now: 2024-09-24 03:27
+Sep 24 03:27:26 pi-nix logrotate[617]:   Last rotated at 2024-08-07 07:00
+Sep 24 03:27:26 pi-nix logrotate[617]:   log does not need rotating ('minsize' directive is used and the log size is smaller than the minsize value)
+Sep 24 03:27:26 pi-nix dhcpcd[616]: no valid interfaces found
+Sep 24 03:27:25 pi-nix systemd[1]: Started Daily Cleanup of Temporary Directories.
+Sep 24 03:27:25 pi-nix systemd[1]: Reached target Timer Units.
+Sep 24 03:27:26 pi-nix nsncd[618]: Sep 24 08:27:25.768 INFO started, config: Config { ignored_request_types: {}, worker_count: 8, handoff_timeout: 3s }, path: "/var/run/nscd/socket"
+Sep 24 03:27:25 pi-nix systemd[1]: Listening on D-Bus System Message Bus Socket.
+Sep 24 03:27:25 pi-nix systemd[1]: Listening on Nix Daemon Socket.
+Sep 24 03:27:25 pi-nix systemd[1]: Reached target Socket Units.
+Sep 24 03:27:26 pi-nix wpa_supplicant-start[639]: Waiting for wireless interfaces
+Sep 24 03:27:25 pi-nix systemd[1]: Reached target Basic System.
+Sep 24 03:27:25 pi-nix systemd[1]: System is tainted: support-ended
+Sep 24 03:27:25 pi-nix systemd[1]: Starting Kernel Auditing...
+Sep 24 03:27:25 pi-nix systemd[1]: Starting DHCP Client...
+Sep 24 03:27:25 pi-nix systemd[1]: Starting Logrotate configuration check...
+Sep 24 03:27:25 pi-nix systemd[1]: Starting Name Service Cache Daemon (nsncd)...
+Sep 24 03:27:25 pi-nix systemd[1]: Started Reset console on configuration changes.
+Sep 24 03:27:25 pi-nix systemd[1]: Starting resolvconf update...
+Sep 24 03:27:25 pi-nix systemd[1]: Started Temperature Sensor Server.
+Sep 24 03:27:25 pi-nix systemd[1]: Started WPA Supplicant instance.
+Sep 24 03:27:25 pi-nix systemd[1]: Finished Kernel Auditing.
+Sep 24 03:27:25 pi-nix systemd[1]: Finished Logrotate configuration check.
+Sep 24 03:27:25 pi-nix systemd[1]: Started Name Service Cache Daemon (nsncd).
+Sep 24 03:27:25 pi-nix systemd[1]: Reached target Bluetooth Support.
+Sep 24 03:27:25 pi-nix systemd[1]: Reached target Host and Network Name Lookups.
+Sep 24 03:27:25 pi-nix systemd[1]: Reached target User and Group Name Lookups.
+Sep 24 03:27:25 pi-nix systemd[1]: Listening on Load/Save RF Kill Switch Status /dev/rfkill Watch.
+Sep 24 03:27:25 pi-nix systemd[1]: Starting D-Bus System Message Bus...
+Sep 24 03:27:25 pi-nix systemd[1]: Starting User Login Management...
+Sep 24 03:27:26 pi-nix systemd-timesyncd[594]: Network configuration changed, trying to establish connection.
+Sep 24 03:27:26 pi-nix systemd[1]: Starting Virtual Console Setup...
+Sep 24 03:27:26 pi-nix systemd[1]: Finished resolvconf update.
+Sep 24 03:27:26 pi-nix systemd[1]: Reached target Preparation for Network.
+Sep 24 03:27:26 pi-nix systemd[1]: Reached target All Network Interfaces (deprecated).
+Sep 24 03:27:26 pi-nix systemd[1]: Reached target Sound Card.
+Sep 24 03:27:26 pi-nix systemd[1]: Starting Load/Save RF Kill Switch Status...
+Sep 24 03:27:26 pi-nix systemd-logind[724]: New seat seat0.
+Sep 24 03:27:26 pi-nix systemd[1]: Started User Login Management.
+Sep 24 03:27:26 pi-nix systemd[1]: Started Load/Save RF Kill Switch Status.
+Sep 24 03:27:26 pi-nix systemd[1]: Stopping WPA Supplicant instance...
+Sep 24 03:27:26 pi-nix systemd[1]: wpa_supplicant.service: Deactivated successfully.
+Sep 24 03:27:26 pi-nix systemd[1]: Stopped WPA Supplicant instance.
+Sep 24 03:27:26 pi-nix kernel: hub 1-1:1.0: USB hub found
+Sep 24 03:27:26 pi-nix kernel: hub 1-1:1.0: 4 ports detected
+Sep 24 03:27:26 pi-nix systemd[1]: Started WPA Supplicant instance.
+Sep 24 03:27:26 pi-nix wpa_supplicant-start[753]: Adding interface wlan0
+Sep 24 03:27:26 pi-nix systemd[1]: Finished Virtual Console Setup.
+Sep 24 03:27:26 pi-nix kernel: usb 1-1.2: new high-speed USB device number 3 using xhci_hcd
+Sep 24 03:27:26 pi-nix systemd[1]: Started D-Bus System Message Bus.
+Sep 24 03:27:26 pi-nix wpa_supplicant[753]: Successfully initialized wpa_supplicant
+Sep 24 03:27:26 pi-nix dbus-daemon[707]: [system] Successfully activated service 'org.freedesktop.systemd1'
+Sep 24 03:27:26 pi-nix kernel: Bluetooth: hci0: BCM: features 0x2f
+Sep 24 03:27:26 pi-nix kernel: Bluetooth: hci0: BCM43455 37.4MHz Raspberry Pi 3+-0190
+Sep 24 03:27:26 pi-nix kernel: Bluetooth: hci0: BCM4345C0 (003.001.025) build 0382
+Sep 24 03:27:26 pi-nix kernel: usb 1-1.3: new full-speed USB device number 4 using xhci_hcd
+Sep 24 03:27:27 pi-nix kernel: input:   mini keyboard as /devices/platform/scb/fd500000.pcie/pci0000:00/0000:00:00.0/0000:01:00.0/usb1/1-1/1-1.3/1-1.3:1.0/0003:1997:2433.0001/input/input0
+Sep 24 03:27:27 pi-nix python3[632]: Server listening on 0.0.0.0:12345
+Sep 24 03:27:27 pi-nix kernel: bcmgenet fd580000.ethernet: configuring instance for external RGMII (RX delay)
+Sep 24 03:27:27 pi-nix kernel: hid-generic 0003:1997:2433.0001: input,hidraw0: USB HID v1.01 Keyboard [  mini keyboard] on usb-0000:01:00.0-1.3/input0
+Sep 24 03:27:27 pi-nix kernel: input:   mini keyboard Mouse as /devices/platform/scb/fd500000.pcie/pci0000:00/0000:00:00.0/0000:01:00.0/usb1/1-1/1-1.3/1-1.3:1.1/0003:1997:2433.0002/input/input1
+Sep 24 03:27:27 pi-nix kernel: input:   mini keyboard System Control as /devices/platform/scb/fd500000.pcie/pci0000:00/0000:00:00.0/0000:01:00.0/usb1/1-1/1-1.3/1-1.3:1.1/0003:1997:2433.0002/input/input2
+Sep 24 03:27:27 pi-nix dhcpcd[636]: end0: waiting for carrier
+Sep 24 03:27:27 pi-nix dhcpcd[636]: end0: waiting for carrier
+Sep 24 03:27:27 pi-nix kernel: bcmgenet fd580000.ethernet end0: Link is Down
+Sep 24 03:27:27 pi-nix kernel: input:   mini keyboard Consumer Control as /devices/platform/scb/fd500000.pcie/pci0000:00/0000:00:00.0/0000:01:00.0/usb1/1-1/1-1.3/1-1.3:1.1/0003:1997:2433.0002/input/input3
+Sep 24 03:27:27 pi-nix kernel: hid-generic 0003:1997:2433.0002: input,hidraw1: USB HID v1.01 Mouse [  mini keyboard] on usb-0000:01:00.0-1.3/input1
+Sep 24 03:27:27 pi-nix dhcpcd[636]: wlan0: waiting for carrier
+Sep 24 03:27:27 pi-nix kernel: usb 1-1.4: new high-speed USB device number 5 using xhci_hcd
+Sep 24 03:27:27 pi-nix kernel: mousedev: PS/2 mouse device common for all mice
+Sep 24 03:27:27 pi-nix kernel: usbcore: registered new interface driver cdc_ether
+Sep 24 03:27:27 pi-nix systemd-logind[724]: Watching system buttons on /dev/input/event0 (  mini keyboard)
+Sep 24 03:27:27 pi-nix kernel: cdc_ncm 1-1.2:1.0: MAC-Address: de:3a:18:a4:fe:b4
+Sep 24 03:27:27 pi-nix kernel: cdc_ncm 1-1.2:1.0 usb0: register 'cdc_ncm' at usb-0000:01:00.0-1.2, CDC NCM (NO ZLP), de:3a:18:a4:fe:b4
+Sep 24 03:27:27 pi-nix systemd-logind[724]: Watching system buttons on /dev/input/event3 (  mini keyboard Consumer Control)
+Sep 24 03:27:27 pi-nix systemd-logind[724]: Watching system buttons on /dev/input/event2 (  mini keyboard System Control)
+Sep 24 03:27:27 pi-nix kernel: cdc_ncm 1-1.4:2.0: MAC-Address: a0:ce:c8:bb:68:56
+Sep 24 03:27:27 pi-nix kernel: cdc_ncm 1-1.4:2.0: setting rx_max = 16384
+Sep 24 03:27:27 pi-nix kernel: cdc_ncm 1-1.4:2.0: setting tx_max = 16384
+Sep 24 03:27:27 pi-nix kernel: cdc_ncm 1-1.4:2.0 eth0: register 'cdc_ncm' at usb-0000:01:00.0-1.4, CDC NCM (NO ZLP), a0:ce:c8:bb:68:56
+Sep 24 03:27:27 pi-nix kernel: usbcore: registered new interface driver cdc_ncm
+Sep 24 03:27:27 pi-nix kernel: usbcore: registered new interface driver cdc_wdm
+Sep 24 03:27:27 pi-nix kernel: usbcore: registered new interface driver cdc_mbim
+Sep 24 03:27:27 pi-nix kernel: cdc_ncm 1-1.2:1.0 enp1s0u1u2: renamed from usb0
+Sep 24 03:27:27 pi-nix kernel: cdc_ncm 1-1.4:2.0 enp1s0u1u4c2: renamed from eth0
+Sep 24 03:27:27 pi-nix systemd[1]: Found device Linux-USB Ethernet Gadget.
+Sep 24 03:27:28 pi-nix systemd[1]: Found device AX88179 Gigabit Ethernet.
+Sep 24 03:27:28 pi-nix systemd[1]: Starting Address configuration of enp1s0u1u2...
+Sep 24 03:27:28 pi-nix systemd[1]: Starting Address configuration of enp1s0u1u4c2...
+Sep 24 03:27:28 pi-nix systemd[1]: Finished Address configuration of enp1s0u1u2.
+Sep 24 03:27:28 pi-nix systemd[1]: Finished Address configuration of enp1s0u1u4c2.
+Sep 24 03:27:28 pi-nix kernel: IPv6: ADDRCONF(NETDEV_CHANGE): enp1s0u1u2: link becomes ready
+Sep 24 03:27:28 pi-nix systemd[1]: Starting Bridge Interface br0...
+Sep 24 03:27:30 pi-nix kernel: IPv6: ADDRCONF(NETDEV_CHANGE): enp1s0u1u4c2: link becomes ready
+Sep 24 03:27:31 pi-nix br0-netdev-start[806]: Removing old bridge br0...
+Sep 24 03:27:31 pi-nix br0-netdev-start[806]: Adding bridge br0...
+Sep 24 03:27:31 pi-nix kernel: br0: port 1(enp1s0u1u4c2) entered blocking state
+Sep 24 03:27:31 pi-nix kernel: br0: port 1(enp1s0u1u4c2) entered disabled state
+Sep 24 03:27:31 pi-nix kernel: device enp1s0u1u4c2 entered promiscuous mode
+Sep 24 03:27:31 pi-nix kernel: br0: port 2(enp1s0u1u2) entered blocking state
+Sep 24 03:27:31 pi-nix kernel: br0: port 2(enp1s0u1u2) entered disabled state
+Sep 24 03:27:31 pi-nix kernel: device enp1s0u1u2 entered promiscuous mode
+Sep 24 03:27:31 pi-nix kernel: br0: port 2(enp1s0u1u2) entered blocking state
+Sep 24 03:27:31 pi-nix kernel: br0: port 2(enp1s0u1u2) entered forwarding state
+Sep 24 03:27:31 pi-nix kernel: br0: port 1(enp1s0u1u4c2) entered blocking state
+Sep 24 03:27:31 pi-nix kernel: br0: port 1(enp1s0u1u4c2) entered forwarding state
+Sep 24 03:27:31 pi-nix systemd[1]: Finished Bridge Interface br0.
+Sep 24 03:27:31 pi-nix systemd[1]: Starting Address configuration of br0...
+Sep 24 03:27:31 pi-nix network-addresses-br0-start[821]: adding address 192.168.1.1/24... done
+Sep 24 03:27:31 pi-nix systemd[1]: systemd-rfkill.service: Deactivated successfully.
+Sep 24 03:27:31 pi-nix systemd[1]: Finished Address configuration of br0.
+Sep 24 03:27:31 pi-nix systemd[1]: Starting Networking Setup...
+Sep 24 03:27:31 pi-nix systemd[1]: Finished Networking Setup.
+Sep 24 03:27:31 pi-nix systemd[1]: Starting Extra networking commands....
+Sep 24 03:27:31 pi-nix systemd[1]: Finished Extra networking commands..
+Sep 24 03:27:31 pi-nix systemd[1]: Reached target Network.
+Sep 24 03:27:31 pi-nix systemd[1]: Started Custom NAT setup for wlp1s0u1u4.
+Sep 24 03:27:31 pi-nix systemd[1]: Starting Dnsmasq Daemon...
+Sep 24 03:27:31 pi-nix systemd[1]: Starting SSH Daemon...
+Sep 24 03:27:31 pi-nix systemd[1]: Starting Permit User Sessions...
+Sep 24 03:27:31 pi-nix systemd[1]: Started SSH Daemon.
+Sep 24 03:27:31 pi-nix systemd[1]: Finished Permit User Sessions.
+Sep 24 03:27:31 pi-nix systemd[1]: Started Getty on tty1.
+Sep 24 03:27:31 pi-nix systemd[1]: Started Serial Getty on ttyS1.
+Sep 24 03:27:31 pi-nix dnsmasq-pre-start[897]: dnsmasq: syntax check OK.
+Sep 24 03:27:31 pi-nix systemd[1]: Reached target Login Prompts.
+Sep 24 03:27:31 pi-nix systemd[1]: custom-nat.service: Deactivated successfully.
+Sep 24 03:27:31 pi-nix sshd[898]: Server listening on 0.0.0.0 port 22.
+Sep 24 03:27:31 pi-nix sshd[898]: Server listening on :: port 22.
+Sep 24 03:27:31 pi-nix systemd[1]: Started Dnsmasq Daemon.
+Sep 24 03:27:31 pi-nix dnsmasq[907]: started, version 2.90 cachesize 150
+Sep 24 03:27:31 pi-nix dnsmasq[907]: compile time options: IPv6 GNU-getopt DBus no-UBus no-i18n IDN DHCP DHCPv6 no-Lua TFTP conntrack ipset nftset auth cryptohash DNSSEC loop-detect inotify dumpfile
+Sep 24 03:27:31 pi-nix dnsmasq[907]: DBus support enabled: connected to system bus
+Sep 24 03:27:31 pi-nix dnsmasq-dhcp[907]: DHCP, IP range 192.168.1.100 -- 192.168.1.200, lease time 12h
+Sep 24 03:27:31 pi-nix dnsmasq-dhcp[907]: DHCP, sockets bound exclusively to interface br0
+Sep 24 03:27:31 pi-nix dnsmasq[907]: using nameserver 8.8.8.8#53
+Sep 24 03:27:31 pi-nix dnsmasq[907]: no servers found in /etc/dnsmasq-resolv.conf, will retry
+Sep 24 03:27:31 pi-nix dnsmasq[907]: read /etc/hosts - 4 names
+Sep 24 03:27:45 pi-nix sshd[911]: Accepted publickey for admin from 192.168.1.209 port 63317 ssh2: ED25519 SHA256:X/FPV1pr1P7mgcWSdTPhkY9nXANsc6exIgmO6WRPzYA
+Sep 24 03:27:45 pi-nix sshd[911]: pam_unix(sshd:session): session opened for user admin(uid=1000) by (uid=0)
+Sep 24 03:27:45 pi-nix systemd[1]: Created slice Slice /user/1000.
+Sep 24 03:27:45 pi-nix systemd[1]: Starting User Runtime Directory /run/user/1000...
+Sep 24 03:27:45 pi-nix systemd-timesyncd[594]: Network configuration changed, trying to establish connection.
+Sep 24 03:27:45 pi-nix systemd-logind[724]: New session 1 of user admin.
+Sep 24 03:27:45 pi-nix systemd[1]: Finished User Runtime Directory /run/user/1000.
+Sep 24 03:27:45 pi-nix systemd[1]: Starting User Manager for UID 1000...
+Sep 24 03:27:45 pi-nix (systemd)[916]: pam_unix(systemd-user:session): session opened for user admin(uid=1000) by (uid=0)
+Sep 24 03:27:45 pi-nix systemd[916]: Queued start job for default target Main User Target.
+Sep 24 03:27:45 pi-nix systemd[916]: Created slice User Application Slice.
+Sep 24 03:27:45 pi-nix systemd[916]: Reached target Paths.
+Sep 24 03:27:45 pi-nix systemd[916]: Reached target Timers.
+Sep 24 03:27:45 pi-nix systemd[916]: Starting D-Bus User Message Bus Socket...
+Sep 24 03:27:45 pi-nix systemd[916]: Listening on D-Bus User Message Bus Socket.
+Sep 24 03:27:45 pi-nix systemd[916]: Reached target Sockets.
+Sep 24 03:27:45 pi-nix systemd[916]: Reached target Basic System.
+Sep 24 03:27:45 pi-nix systemd[1]: Started User Manager for UID 1000.
+Sep 24 03:27:45 pi-nix systemd[916]: Starting Run user-specific NixOS activation...
+Sep 24 03:27:45 pi-nix systemd[1]: Started Session 1 of User admin.
+Sep 24 03:27:45 pi-nix systemd[916]: Finished Run user-specific NixOS activation.
+Sep 24 03:27:45 pi-nix systemd[916]: Reached target Main User Target.
+Sep 24 03:27:45 pi-nix systemd[916]: Startup finished in 489ms.
+Sep 24 03:27:53 pi-nix python3[632]: client accepted
+Sep 24 03:27:53 pi-nix python3[632]: Connection from macbook with address: ('192.168.1.209', 63319)
+Sep 24 03:27:53 pi-nix python3[632]: Air Temp: 70
+Sep 24 03:27:55 pi-nix python3[632]: Air Temp: 70
+Sep 24 03:27:55 pi-nix dhcpcd[636]: timed out
+Sep 24 03:27:55 pi-nix systemd[1]: Started DHCP Client.
+Sep 24 03:27:55 pi-nix systemd[1]: Reached target Network is Online.
+Sep 24 03:27:57 pi-nix python3[632]: Air Temp: 70
+Sep 24 03:27:59 pi-nix python3[632]: Air Temp: 70
+Sep 24 03:28:01 pi-nix python3[632]: Air Temp: 70
+Sep 24 03:28:03 pi-nix python3[632]: Air Temp: 70
+Sep 24 03:28:05 pi-nix python3[632]: Air Temp: 70
+Sep 24 03:28:07 pi-nix python3[632]: Air Temp: 70
+Sep 24 03:28:09 pi-nix python3[632]: Air Temp: 70
+Sep 24 03:28:11 pi-nix python3[632]: Air Temp: 70
+Sep 24 03:28:13 pi-nix python3[632]: Air Temp: 70
+Sep 24 03:28:15 pi-nix python3[632]: Air Temp: 70
+Sep 24 03:28:17 pi-nix python3[632]: Air Temp: 70
+Sep 24 03:28:19 pi-nix python3[632]: Air Temp: 70
+Sep 24 03:28:21 pi-nix python3[632]: Air Temp: 70
+Sep 24 03:28:23 pi-nix python3[632]: Air Temp: 70
+Sep 24 03:28:25 pi-nix python3[632]: Air Temp: 70
+Sep 24 03:28:27 pi-nix python3[632]: Air Temp: 70
+Sep 24 03:28:29 pi-nix python3[632]: Air Temp: 70
+Sep 24 03:28:31 pi-nix python3[632]: Air Temp: 70
+Sep 24 03:28:33 pi-nix python3[632]: Air Temp: 70
+Sep 24 03:28:35 pi-nix python3[632]: Air Temp: 70
+Sep 24 03:28:37 pi-nix python3[632]: Air Temp: 70
+Sep 24 03:28:39 pi-nix python3[632]: Air Temp: 70
+Sep 24 03:28:41 pi-nix python3[632]: Air Temp: 70
+Sep 24 03:28:42 pi-nix login[902]: pam_unix(login:session): session opened for user admin(uid=1000) by LOGIN(uid=0)
+Sep 24 03:28:42 pi-nix systemd-logind[724]: New session 3 of user admin.
+Sep 24 03:28:42 pi-nix systemd[1]: Started Session 3 of User admin.
+Sep 24 03:28:43 pi-nix python3[632]: Air Temp: 70
+Sep 24 03:28:45 pi-nix python3[632]: Air Temp: 70
+Sep 24 03:28:47 pi-nix python3[632]: Air Temp: 70
+Sep 24 03:28:49 pi-nix python3[632]: Air Temp: 70
+Sep 24 03:28:51 pi-nix python3[632]: Air Temp: 70

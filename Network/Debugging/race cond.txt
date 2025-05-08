@@ -1,0 +1,59 @@
+app is running
+computer is connect with usb/ethernet
+
+log_try1
+
+1: nothing
+2: nothing
+3: nothing
+4: nothing
+5: nothing
+6: nothing
+
+instead of sudo reboot, just started unplugging power cable
+
+7: nothing
+8: nothing
+9: nothing
+
+subnet mask on macbook wasnt right. made right
+
+log_try2
+
+1: nothing
+2: nothing
+3: nothing
+
+instead of sudo reboot, just started unplugging power cable
+
+4: nothing
+5: nothing
+
+fpga wasnt plugged in so maybe real conditions werent met
+
+
+log_worked
+
+fpga was on
+laptop ethernet was plugged in
+
+
+1: worked: 
+	pi connected, but mic status not connected
+
+sudo reboot
+
+2: worked:
+	ssh -L 7654:192.168.1.201:2048 admin@192.168.1.1 was run
+	then app could connect to both mic and pi
+
+pi power cable unplugged
+
+3: worked:
+	app was running
+	pi connected, but not fpga
+	ssh -L 7654:192.168.1.201:2048 admin@192.168.1.1 was run but no fpga status change
+	turned app off and back on and fpga status was good. both were good
+
+
+	unplugged the fpga to put flash drive in and it said the temp sensor also wasnt connected which is weird

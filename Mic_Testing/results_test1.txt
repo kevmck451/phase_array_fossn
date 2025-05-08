@@ -1,0 +1,510 @@
+Enter Mic Number & press 'Enter' to test mic 1: 60
+Testing mic 1
+Mic 1 RMS value: 0.3185
+Mic 1 Peak value: 0.67871
+
+Mic 1: +++++++ PASSED +++++++
+
+Enter Mic Number & press 'Enter' to test mic 2: 53
+Testing mic 2
+Mic 2 RMS value: 0.32118
+Mic 2 Peak value: 0.67136
+
+Mic 2: ------- FAILED -------
+
+Enter Mic Number & press 'Enter' to test mic 3: 23
+Testing mic 3
+Mic 3 RMS value: 0.27022
+Mic 3 Peak value: 0.75284
+
+Mic 3: +++++++ PASSED +++++++
+
+Enter Mic Number & press 'Enter' to test mic 4: 49
+Testing mic 4
+Mic 4 RMS value: 0.29756
+Mic 4 Peak value: 0.67899
+
+Mic 4: +++++++ PASSED +++++++
+
+Enter Mic Number & press 'Enter' to test mic 5: 47
+Testing mic 5
+Mic 5 RMS value: 0.29206
+Mic 5 Peak value: 0.63147
+
+Mic 5: +++++++ PASSED +++++++
+
+Enter Mic Number & press 'Enter' to test mic 6: 59
+Testing mic 6
+Mic 6 RMS value: 0.23177
+Mic 6 Peak value: 0.52496
+
+Mic 6: ------- FAILED -------
+
+Enter Mic Number & press 'Enter' to test mic 7: 42
+Testing mic 7
+Mic 7 RMS value: 0.29907
+Mic 7 Peak value: 0.70834
+
+Mic 7: +++++++ PASSED +++++++
+
+Enter Mic Number & press 'Enter' to test mic 8: 51
+Testing mic 8
+Mic 8 RMS value: 0.27661
+Mic 8 Peak value: 0.62933
+
+Mic 8: +++++++ PASSED +++++++
+
+Enter Mic Number & press 'Enter' to test mic 1: 61
+Testing mic 1
+Mic 1 RMS value: 0.31569
+Mic 1 Peak value: 0.65967
+
+Mic 1: +++++++ PASSED +++++++
+
+Enter Mic Number & press 'Enter' to test mic 2: 38
+Testing mic 2
+Mic 2 RMS value: 0.28749
+Mic 2 Peak value: 0.63348
+
+Mic 2: +++++++ PASSED +++++++
+
+Enter Mic Number & press 'Enter' to test mic 3: 55
+Testing mic 3
+Mic 3 RMS value: 0.35095
+Mic 3 Peak value: 0.72604
+
+Mic 3: ------- FAILED -------
+
+Enter Mic Number & press 'Enter' to test mic 4: 21
+Testing mic 4
+Mic 4 RMS value: 0.34016
+Mic 4 Peak value: 0.70981
+
+Mic 4: ------- FAILED -------
+
+Enter Mic Number & press 'Enter' to test mic 5: 58
+Testing mic 5
+Mic 5 RMS value: 0.2633
+Mic 5 Peak value: 0.56183
+
+Mic 5: +++++++ PASSED +++++++
+
+Enter Mic Number & press 'Enter' to test mic 6: 65
+Testing mic 6
+Mic 6 RMS value: 0.31367
+Mic 6 Peak value: 0.6622
+
+Mic 6: +++++++ PASSED +++++++
+
+Enter Mic Number & press 'Enter' to test mic 7: 44
+Testing mic 7
+Mic 7 RMS value: 0.31848
+Mic 7 Peak value: 0.65149
+
+Mic 7: +++++++ PASSED +++++++
+
+Enter Mic Number & press 'Enter' to test mic 8: 25
+Testing mic 8
+Mic 8 RMS value: 0.26488
+Mic 8 Peak value: 0.59198
+
+Mic 8: +++++++ PASSED +++++++
+
+Enter Mic Number & press 'Enter' to test mic 1: 43
+Testing mic 1
+Mic 1 RMS value: 0.34946
+Mic 1 Peak value: 0.84
+
+Mic 1: ------- FAILED -------
+
+Enter Mic Number & press 'Enter' to test mic 2: 20
+Testing mic 2
+Mic 2 RMS value: 0.28108
+Mic 2 Peak value: 0.60083
+
+Mic 2: +++++++ PASSED +++++++
+
+Enter Mic Number & press 'Enter' to test mic 3: 48
+Testing mic 3
+Mic 3 RMS value: 0.17708
+Mic 3 Peak value: 0.49088
+
+Mic 3: ------- FAILED -------
+
+Enter Mic Number & press 'Enter' to test mic 4: 13
+Testing mic 4
+Mic 4 RMS value: 0.24467
+Mic 4 Peak value: 0.53015
+
+Mic 4: ------- FAILED -------
+
+Enter Mic Number & press 'Enter' to test mic 5: 4
+Testing mic 5
+Mic 5 RMS value: 0.27863
+Mic 5 Peak value: 0.57193
+
+Mic 5: +++++++ PASSED +++++++
+
+Enter Mic Number & press 'Enter' to test mic 6: 5
+Testing mic 6
+Mic 6 RMS value: 0.28536
+Mic 6 Peak value: 0.6076
+
+Mic 6: +++++++ PASSED +++++++
+
+Enter Mic Number & press 'Enter' to test mic 7: 152
+Testing mic 7
+Mic 7 RMS value: 0.28828
+Mic 7 Peak value: 0.6105
+
+Mic 7: +++++++ PASSED +++++++
+
+Enter Mic Number & press 'Enter' to test mic 8: 56
+Testing mic 8
+Mic 8 RMS value: 0.26731
+Mic 8 Peak value: 0.56213
+
+Mic 8: +++++++ PASSED +++++++
+
+Enter Mic Number & press 'Enter' to test mic 1: 26
+Testing mic 1
+Mic 1 RMS value: 0.26358
+Mic 1 Peak value: 0.61288
+
+Mic 1: +++++++ PASSED +++++++
+
+Enter Mic Number & press 'Enter' to test mic 2: 7
+Testing mic 2
+Mic 2 RMS value: 0.26876
+Mic 2 Peak value: 0.61987
+
+Mic 2: +++++++ PASSED +++++++
+
+Enter Mic Number & press 'Enter' to test mic 3: 3
+Testing mic 3
+Mic 3 RMS value: 0.24069
+Mic 3 Peak value: 0.52258
+
+Mic 3: ------- FAILED -------
+
+Enter Mic Number & press 'Enter' to test mic 4: 1
+Testing mic 4
+Mic 4 RMS value: 0.22421
+Mic 4 Peak value: 0.63846
+
+Mic 4: ------- FAILED -------
+
+Enter Mic Number & press 'Enter' to test mic 5: 17
+Testing mic 5
+Mic 5 RMS value: 0.2847
+Mic 5 Peak value: 0.65436
+
+Mic 5: +++++++ PASSED +++++++
+
+Enter Mic Number & press 'Enter' to test mic 6: 45
+Testing mic 6
+Mic 6 RMS value: 0.29279
+Mic 6 Peak value: 0.62912
+
+Mic 6: +++++++ PASSED +++++++
+
+Enter Mic Number & press 'Enter' to test mic 7: 62
+Testing mic 7
+Mic 7 RMS value: 0.34903
+Mic 7 Peak value: 0.80042
+
+Mic 7: ------- FAILED -------
+
+Enter Mic Number & press 'Enter' to test mic 8: 28
+Testing mic 8
+Mic 8 RMS value: 0.24394
+Mic 8 Peak value: 0.67627
+
+Mic 8: ------- FAILED -------
+
+Enter Mic Number & press 'Enter' to test mic 1: 11
+Testing mic 1
+Mic 1 RMS value: 0.27168
+Mic 1 Peak value: 0.57196
+
+Mic 1: +++++++ PASSED +++++++
+
+Enter Mic Number & press 'Enter' to test mic 2: 37
+Testing mic 2
+Mic 2 RMS value: 0.25045
+Mic 2 Peak value: 0.54388
+
+Mic 2: ------- FAILED -------
+
+Enter Mic Number & press 'Enter' to test mic 3: 12
+Testing mic 3
+Mic 3 RMS value: 0.32259
+Mic 3 Peak value: 0.77188
+
+Mic 3: ------- FAILED -------
+
+Enter Mic Number & press 'Enter' to test mic 4: 52
+Testing mic 4
+Mic 4 RMS value: 0.36733
+Mic 4 Peak value: 0.75745
+
+Mic 4: ------- FAILED -------
+
+Enter Mic Number & press 'Enter' to test mic 5: 9
+Testing mic 5
+Mic 5 RMS value: 0.33212
+Mic 5 Peak value: 0.70111
+
+Mic 5: ------- FAILED -------
+
+Enter Mic Number & press 'Enter' to test mic 6: 6
+Testing mic 6
+Mic 6 RMS value: 0.27868
+Mic 6 Peak value: 0.5856
+
+Mic 6: +++++++ PASSED +++++++
+
+Enter Mic Number & press 'Enter' to test mic 7: 33
+Testing mic 7
+Mic 7 RMS value: 0.35364
+Mic 7 Peak value: 0.73132
+
+Mic 7: ------- FAILED -------
+
+Enter Mic Number & press 'Enter' to test mic 8: 34
+Testing mic 8
+Mic 8 RMS value: 0.27876
+Mic 8 Peak value: 0.5946
+
+Mic 8: +++++++ PASSED +++++++
+
+Enter Mic Number & press 'Enter' to test mic 1: 57
+Testing mic 1
+Mic 1 RMS value: 0.25448
+Mic 1 Peak value: 0.52783
+
+Mic 1: +++++++ PASSED +++++++
+
+Enter Mic Number & press 'Enter' to test mic 2: 14
+Testing mic 2
+Mic 2 RMS value: 0.28608
+Mic 2 Peak value: 0.61737
+
+Mic 2: +++++++ PASSED +++++++
+
+Enter Mic Number & press 'Enter' to test mic 3: 8
+Testing mic 3
+Mic 3 RMS value: 0.29352
+Mic 3 Peak value: 0.60944
+
+Mic 3: +++++++ PASSED +++++++
+
+Enter Mic Number & press 'Enter' to test mic 4: 27
+Testing mic 4
+Mic 4 RMS value: 0.2697
+Mic 4 Peak value: 0.55817
+
+Mic 4: +++++++ PASSED +++++++
+
+Enter Mic Number & press 'Enter' to test mic 5: 14
+Testing mic 5
+Mic 5 RMS value: 0.2484
+Mic 5 Peak value: 0.51788
+
+Mic 5: ------- FAILED -------
+
+Enter Mic Number & press 'Enter' to test mic 6: 30
+Testing mic 6
+Mic 6 RMS value: 0.31312
+Mic 6 Peak value: 0.64975
+
+Mic 6: +++++++ PASSED +++++++
+
+Enter Mic Number & press 'Enter' to test mic 7: 36
+Testing mic 7
+Mic 7 RMS value: 0.31013
+Mic 7 Peak value: 0.65131
+
+Mic 7: +++++++ PASSED +++++++
+
+Enter Mic Number & press 'Enter' to test mic 8: 24
+Testing mic 8
+Mic 8 RMS value: 0.37688
+Mic 8 Peak value: 0.78378
+
+Mic 8: ------- FAILED -------
+
+Enter Mic Number & press 'Enter' to test mic 1: 2
+Testing mic 1
+Mic 1 RMS value: 0.27449
+Mic 1 Peak value: 0.65216
+
+Mic 1: +++++++ PASSED +++++++
+
+Enter Mic Number & press 'Enter' to test mic 2: 35
+Testing mic 2
+Mic 2 RMS value: 0.14223
+Mic 2 Peak value: 0.99997
+
+Mic 2: ------- FAILED -------
+
+Enter Mic Number & press 'Enter' to test mic 3: 10
+Testing mic 3
+Mic 3 RMS value: 0.28091
+Mic 3 Peak value: 0.58881
+
+Mic 3: +++++++ PASSED +++++++
+
+Enter Mic Number & press 'Enter' to test mic 4: 32
+Testing mic 4
+Mic 4 RMS value: 0.22254
+Mic 4 Peak value: 0.47183
+
+Mic 4: ------- FAILED -------
+
+Enter Mic Number & press 'Enter' to test mic 5: 18
+Testing mic 5
+Mic 5 RMS value: 0.32016
+Mic 5 Peak value: 0.67023
+
+Mic 5: ------- FAILED -------
+
+Enter Mic Number & press 'Enter' to test mic 6: 46
+Testing mic 6
+Mic 6 RMS value: 0.31007
+Mic 6 Peak value: 0.64877
+
+Mic 6: +++++++ PASSED +++++++
+
+Enter Mic Number & press 'Enter' to test mic 7: 31
+Testing mic 7
+Mic 7 RMS value: 0.23287
+Mic 7 Peak value: 0.49838
+
+Mic 7: ------- FAILED -------
+
+Enter Mic Number & press 'Enter' to test mic 8: 50
+Testing mic 8
+Mic 8 RMS value: 0.22932
+Mic 8 Peak value: 0.4986
+
+Mic 8: ------- FAILED -------
+
+Enter Mic Number & press 'Enter' to test mic 1: 29
+Testing mic 1
+Mic 1 RMS value: 0.25957
+Mic 1 Peak value: 0.59473
+
+Mic 1: +++++++ PASSED +++++++
+
+Enter Mic Number & press 'Enter' to test mic 2: 40
+Testing mic 2
+Mic 2 RMS value: 0.29142
+Mic 2 Peak value: 0.59915
+
+Mic 2: +++++++ PASSED +++++++
+
+Enter Mic Number & press 'Enter' to test mic 3: 64
+Testing mic 3
+Mic 3 RMS value: 0.26319
+Mic 3 Peak value: 0.55518
+
+Mic 3: +++++++ PASSED +++++++
+
+Enter Mic Number & press 'Enter' to test mic 4: 39
+Testing mic 4
+Mic 4 RMS value: 0.22534
+Mic 4 Peak value: 0.47797
+
+Mic 4: ------- FAILED -------
+
+Enter Mic Number & press 'Enter' to test mic 5: 63
+Testing mic 5
+Mic 5 RMS value: 0.31744
+Mic 5 Peak value: 0.66757
+
+Mic 5: +++++++ PASSED +++++++
+
+Enter Mic Number & press 'Enter' to test mic 6: 54
+Testing mic 6
+Mic 6 RMS value: 0.30674
+Mic 6 Peak value: 0.66196
+
+Mic 6: +++++++ PASSED +++++++
+
+Enter Mic Number & press 'Enter' to test mic 7: 22
+Testing mic 7
+Mic 7 RMS value: 0.26108
+Mic 7 Peak value: 0.55832
+
+Mic 7: +++++++ PASSED +++++++
+
+Enter Mic Number & press 'Enter' to test mic 8: 41
+Testing mic 8
+Mic 8 RMS value: 0.28246
+Mic 8 Peak value: 0.58978
+
+Mic 8: +++++++ PASSED +++++++
+
+Enter Mic Number & press 'Enter' to test mic 1: 
+Testing mic 1
+Mic 1 RMS value: 0.10297
+Mic 1 Peak value: 0.99997
+
+Mic 1: ------- FAILED -------
+
+Enter Mic Number & press 'Enter' to test mic 2: 70
+Testing mic 2
+Mic 2 RMS value: 0.31719
+Mic 2 Peak value: 0.66364
+
+Mic 2: +++++++ PASSED +++++++
+
+Enter Mic Number & press 'Enter' to test mic 3: 16
+Testing mic 3
+Mic 3 RMS value: 0.355
+Mic 3 Peak value: 0.73383
+
+Mic 3: ------- FAILED -------
+
+Enter Mic Number & press 'Enter' to test mic 4: 68
+Testing mic 4
+Mic 4 RMS value: 0.27761
+Mic 4 Peak value: 0.58627
+
+Mic 4: +++++++ PASSED +++++++
+
+Enter Mic Number & press 'Enter' to test mic 5: 69
+Testing mic 5
+Mic 5 RMS value: 0.27874
+Mic 5 Peak value: 0.58105
+
+Mic 5: +++++++ PASSED +++++++
+
+Enter Mic Number & press 'Enter' to test mic 6: 66
+Testing mic 6
+Mic 6 RMS value: 0.26748
+Mic 6 Peak value: 0.5607
+
+Mic 6: +++++++ PASSED +++++++
+
+Enter Mic Number & press 'Enter' to test mic 7: 67
+Testing mic 7
+Mic 7 RMS value: 0.26825
+Mic 7 Peak value: 0.56384
+
+Mic 7: +++++++ PASSED +++++++
+
+Enter Mic Number & press 'Enter' to test mic 8: 72
+Testing mic 8
+Mic 8 RMS value: 0.27391
+Mic 8 Peak value: 0.57681
+
+Mic 8: +++++++ PASSED +++++++
+
+Enter Mic Number & press 'Enter' to test mic 1: 35
+Testing mic 1
+Mic 1 RMS value: 0.2793
+Mic 1 Peak value: 0.57874
+
+Mic 1: +++++++ PASSED +++++++

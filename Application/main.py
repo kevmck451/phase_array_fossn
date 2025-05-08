@@ -9,7 +9,7 @@ from Mic_Array.Audio_Stream.audio_stream_realtime import Mic_Array
 
 
 
-
+# ssh -L 7654:192.168.1.201:2048 admin@192.168.1.1
 
 
 if __name__ == "__main__":

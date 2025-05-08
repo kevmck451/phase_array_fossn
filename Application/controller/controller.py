@@ -405,7 +405,6 @@ class Controller:
             self.gui.Middle_Frame.Center_Frame.stop_updates()
             self.setup_project_directory()
 
-
         elif event == Event.PCA_CALIBRATION:
             if not self.mic_array.audio_receiver.running and not self.audio_loaded:
                 self.gui.Top_Frame.Right_Frame.insert_text(f'Phased Array not connected and No Audio is Loaded', 'red')
