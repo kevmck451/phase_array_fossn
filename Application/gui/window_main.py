@@ -11,13 +11,13 @@ import tkinter as tk
 
 
 class Main_Window(ctk.CTk):
-    def __init__(self, event_handler):
+    def __init__(self, event_handler, array_config):
         super().__init__()
         ctk.set_appearance_mode("dark")
         self.event_handler = event_handler
 
         # Main Setup ------------------------------------------------------------
-        self.title(configuration.window_title)
+        self.title(f'{configuration.window_title}: {array_config.title}')
 
         # Screen: can see window
         screen_width = self.winfo_screenwidth()

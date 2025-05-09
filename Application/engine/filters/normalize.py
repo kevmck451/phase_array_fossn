@@ -3,7 +3,7 @@
 import numpy as np
 
 # Function to Normalize Data
-def normalize(audio_object, percentage=100):
+def normalize(data, percentage=100, multiCh=True):
 
     def norm(data):
         max_value = np.max(np.abs(data))
@@ -14,14 +14,15 @@ def normalize(audio_object, percentage=100):
 
         return data / (max_value * (percentage / 100.0))
 
-    normalized_data = np.zeros_like(audio_object.data)
+    normalized_data = np.zeros_like(data)
 
-    if audio_object.num_channels == 1:
-        normalized_data = norm(audio_object.data)
+    if not multiCh:
+        normalized_data = norm(data)
 
     else:
-
-        for i in range(audio_object.data.shape[0]):
-            normalized_data[i, :] = norm(audio_object.data[i, :])
+        for i in range(data.shape[0]):
+            normalized_data[i, :] = norm(data[i, :])
 
     return normalized_data
+
+

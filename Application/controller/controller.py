@@ -1,9 +1,9 @@
 
 
-from Mic_Array.Audio_Stream.AudioStreamSimulator import AudioStreamSimulator
-from Filters.audio import Audio
+from Application.engine.array.AudioStreamSimulator import AudioStreamSimulator
+from Application.engine.filters.audio import Audio
+from Application.engine.beamform.beamform import Beamform
 
-from Mic_Array.Beamform.beamform_realtime import Beamform
 from Mic_Array.Processing.process_realtime import Processing
 from Mic_Array.PCA.pca_realtime import PCA_Calculator
 from Mic_Array.Detector.detector_realtime import Detector
@@ -25,9 +25,10 @@ import os
 
 
 class Controller:
-    def __init__(self):
+    def __init__(self, array_config):
         self.app_state = State.IDLE
 
+        self.array_config = array_config
         self.gui = None
         self.temp_sensor = None
         self.mic_array = None
@@ -36,13 +37,14 @@ class Controller:
         self.audio_streamer = None
         self.audio_loaded = False
         self.audio_stream_running = False
+        self.chunk_size_seconds = 1
 
-        self.calibration_time = 20
+        self.calibration_time = 20 # todo: expose to app
         self.calibrate_start_time = 0
-        self.thetas = [-90,-80,-70,-60,-50,-40,-30,-20,-10,0,10,20,30,40,50,60,70,80,90]
+        self.thetas = [-90,-80,-70,-60,-50,-40,-30,-20,-10,0,10,20,30,40,50,60,70,80,90] # todo: expose to app
         self.phis = [0]  # azimuth angle: neg is below and pos is above
         self.temperature = 90
-        self.beamformer = Beamform(self.thetas, self.phis, self.temperature)
+        self.beamformer = Beamform(self.thetas, self.phis, self.temperature, self.array_config)
         self.beamforming_thread = None
         self.beamform_running = False
 
@@ -175,21 +177,8 @@ class Controller:
                 self.mic_array.start_recording(None)
 
     def audio_simulation(self, filepath):
-        # base_path = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/2 FOSSN/Data'
-        # filename = 'angel_sensitivity'
-        # filepath = f'{base_path}/Tests/15_outdoor_testing/{filename}.wav'
-
-        # filename = 'sweep_angel_100m'
-        # filename = 'sweep_semi_100m'
-        # filename = 'distance_160-50m'
-        # filepath = f'{base_path}/Tests/17_outdoor_testing/{filename}.wav'
-
-        # filename = '08-14-2024_03-57-51_chunk_1'
-        # filepath = f'{base_path}/Tests/19_outdoor_testing/{filename}.wav'
-
-        audio = Audio(filepath=filepath, num_channels=48)
-        chunk_size_seconds = 1
-        self.mic_array_simulator = AudioStreamSimulator(audio, chunk_size_seconds)
+        audio = Audio(filepath=filepath, num_channels=self.array_config.num_mics)
+        self.mic_array_simulator = AudioStreamSimulator(audio, self.chunk_size_seconds)
 
     # ---------------------------------
     # BEAMFORMING ---------------------

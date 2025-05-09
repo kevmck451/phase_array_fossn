@@ -1,9 +1,9 @@
 
 
-from Mic_Array.Processing.noise_reduction_array import noise_reduction_filter
-from Mic_Array.Processing.high_pass_array import high_pass_filter
-from Mic_Array.Processing.normalize import normalize
-from Mic_Array.Processing.down_sample import downsample
+from Application.engine.filters.noise_reduction_array import noise_reduction_filter
+from Application.engine.filters.high_pass_array import high_pass_filter
+from Application.engine.filters.normalize import normalize
+from Application.engine.filters.down_sample import downsample
 
 
 

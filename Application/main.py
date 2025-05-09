@@ -1,11 +1,9 @@
 
 from Application.gui.window_main import Main_Window
 from Application.controller.controller import Controller
-from Application.controller.detector_log import Detector_Log
-
-from Temp_Sensor.client import Sender_Client
-from Mic_Array.Audio_Stream.audio_stream_realtime import Mic_Array
-
+from Application.engine.array.AudioStream import Mic_Array
+from Application.engine.temp_sensor.client import Sender_Client
+from Application.gui.array_selector import get_array_selection
 
 
 
@@ -14,13 +12,18 @@ from Mic_Array.Audio_Stream.audio_stream_realtime import Mic_Array
 
 if __name__ == "__main__":
 
+    selection = get_array_selection()
+
+    if selection == 'RECT':
+        from Application.engine.array import array_config_RECT as array_config
+    else: from Application.engine.array import array_config_LINE as array_config
 
     temp_sensor = Sender_Client(name='macbook')
-    audio_realtime = Mic_Array()
+    audio_realtime = Mic_Array(array_config)
 
-    controller = Controller()
+    controller = Controller(array_config)
 
-    gui = Main_Window(controller.handle_event)
+    gui = Main_Window(controller.handle_event, array_config)
 
     controller.add_peripherals(temp_sensor, audio_realtime, gui)
 

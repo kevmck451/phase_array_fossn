@@ -18,7 +18,7 @@ class PCA_Calculator:
     def __init__(self,
                  nperseg=4096,
                  num_components=3,
-                 threshold_multiplier=10):
+                 threshold_multiplier=1):
         self.nperseg = nperseg
         self.num_components = num_components
         self.threshold_multiplier = threshold_multiplier

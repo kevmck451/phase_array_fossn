@@ -1,10 +1,6 @@
 
-from Mic_Array.Audio_Stream.AudioReceiver import AudioReceiver_MicArray
-
-
-import Mic_Array.array_config as array_config
-from Recorder.save_to_wav import save_to_wav
-
+from Application.engine.array.AudioReceiver import AudioReceiver_MicArray
+from Application.engine.filters.save_to_wav import save_to_wav
 
 from datetime import datetime
 from threading import Thread
@@ -15,13 +11,13 @@ import time
 
 
 class Mic_Array:
-    def __init__(self):
-        self.chan_count = 48  # make sure to include -c 8 or -c 16 depending on #
-        self.audio_receiver = AudioReceiver_MicArray(self.chan_count)
+    def __init__(self, array_config):
+        self.chan_count = array_config.num_mics
+        self.audio_receiver = AudioReceiver_MicArray(self.chan_count, array_config.sample_rate)
 
         self.collected_data = []
-        self.chunk_duration = 15 * 60  # 10 minutes in seconds
-        self.chunk_samples = self.chunk_duration * self.audio_receiver.sample_rate
+        self.chunk_duration = array_config.chunk_duration
+        self.chunk_samples = self.chunk_duration * array_config.sample_rate
 
         self.chunk_index = 1
         self.chunk_start_time = datetime.now().strftime("%m-%d-%Y_%I-%M-%S")
@@ -33,7 +29,6 @@ class Mic_Array:
         self.chunk_size_sec = 1
         self.queue = Queue()
         self.chunk_size = int(self.chunk_size_sec * array_config.sample_rate)
-
 
     def start_recording(self, filepath):
         self.record_running = True

@@ -1,11 +1,9 @@
 
-
-from Mic_Array.FIR_Filter.mic_coordinates import generate_mic_coordinates
-from Mic_Array.FIR_Filter.generate_fir_coeffs import generate_fir_coeffs
-from Mic_Array.Audio_Stream.AudioStreamSimulator import AudioStreamSimulator
-import Mic_Array.array_config as array_config
-from Filters.save_to_wav import save_to_wav
-from Filters.audio import Audio
+from Application.engine.beamform.mic_coordinates import generate_mic_coordinates
+from Application.engine.beamform.generate_fir_coeffs import generate_fir_coeffs
+from Application.engine.array.AudioStreamSimulator import AudioStreamSimulator
+from Application.engine.filters.save_to_wav import save_to_wav
+from Application.engine.filters.audio import Audio
 
 
 from concurrent.futures import ThreadPoolExecutor
@@ -17,14 +15,16 @@ import time
 
 
 class Beamform:
-    def __init__(self, thetas, phis, initial_temp):
+    def __init__(self, thetas, phis, initial_temp, array_config):
+        self.array_config = array_config
         self.num_mics = array_config.num_mics
         self.sample_rate = array_config.sample_rate
-        self.mic_coordinates = generate_mic_coordinates()
+        self.mic_coordinates = generate_mic_coordinates(self.array_config)
         self.thetas = thetas
         self.phis = phis
         self.temperature = int(initial_temp)
         self.temperature_current = int(initial_temp)
+        self.num_taps = 201
         self.fir_coeffs = self.compile_all_fir_coeffs()
         self.desired_channels = self.fir_coeffs.shape[0]
         self.num_coeffs = self.fir_coeffs.shape[3]
@@ -40,7 +40,7 @@ class Beamform:
         fir_coeffs_list = []
         for phi in self.phis:
             for theta in self.thetas:
-                fir_coeffs = generate_fir_coeffs(self.mic_coordinates, theta, phi, self.temperature_current)
+                fir_coeffs = generate_fir_coeffs(self.mic_coordinates, theta, phi, self.temperature_current, self.array_config, self.num_taps)
                 # print(f'FIR C Shape: {fir_coeffs.shape}')
                 fir_coeffs_list.append(fir_coeffs)
 
@@ -49,10 +49,10 @@ class Beamform:
     def map_channels_to_positions(self, audio_data):
         num_samples = audio_data.shape[1]
 
-        mapped_data = np.zeros((array_config.rows, array_config.cols, num_samples))
+        mapped_data = np.zeros((self.array_config.rows, self.array_config.cols, num_samples))
 
         for ch_index in range(self.num_mics):
-            mic_x, mic_y = array_config.mic_positions[ch_index]
+            mic_x, mic_y = self.array_config.mic_positions[ch_index]
             mapped_data[mic_x, mic_y, :] = audio_data[ch_index, :]
 
         return mapped_data
@@ -93,18 +93,6 @@ class Beamform:
 
         return beamformed_data
 
-
-
-        # print('packing audio')
-        # original_path = Path(filepath)
-        # export_tag = f'_BF{self.tag_index}'
-        # new_filename = original_path.stem + export_tag + original_path.suffix
-        # filepath_save = f'{base_path}/Tests/20_beamformed_RT'
-        # new_filepath = f'{filepath_save}/{new_filename}'
-        # save_to_wav(beamformed_data, self.sample_rate, 1, new_filepath)
-        # self.tag_index += 1
-
-
     def save_file(self):
         beamformed_data = np.array(self.data_list)
 
@@ -127,6 +115,8 @@ class Beamform:
 
 if __name__ == '__main__':
 
+    from Application.engine.array import array_config_RECT as array_config
+    # from Application.engine.array import array_config_LINE as array_config
 
     # initial set up
     # 1. Set up Mic Coordinates (WILL ONLY HAPPEN ONCE)
@@ -146,7 +136,7 @@ if __name__ == '__main__':
     chunk_size_seconds = 1
 
     temp_F = 86  # temperature in Fahrenheit
-    beamform = Beamform(thetas, phis, temp_F)
+    beamform = Beamform(thetas, phis, temp_F, array_config)
 
 
     stream = AudioStreamSimulator(audio, chunk_size_seconds)

@@ -1,20 +1,19 @@
 
-import Mic_Array.array_config as array_config
 
 import numpy as np
 
 
-# Array Configuration
-rows = array_config.rows
-cols = array_config.cols
-mic_spacing = array_config.mic_spacing  # meters - based on center freq
-num_mics = array_config.num_mics
-
-def generate_mic_coordinates():
+def generate_mic_coordinates(array_config):
     '''
         these grid coordinate are from the perspective of in front the array with (0,0) at the top left
         the reference is from the center of the array
     '''
+
+    rows = array_config.rows
+    cols = array_config.cols
+    mic_spacing = array_config.mic_spacing  # meters - based on center freq
+    num_mics = array_config.num_mics
+
     mic_coords = np.zeros((num_mics, 3))  # Initialize coordinates array
 
     idx = 0
@@ -29,8 +28,24 @@ def generate_mic_coordinates():
 
     return mic_coords
 
+
+
+
+
+
+
+
 if __name__ == '__main__':
-    mic_coordinates = generate_mic_coordinates()
+
+    from Application.engine.array import array_config_RECT as array_config
+    # from Application.engine.array import array_config_LINE as array_config
+
+    mic_coordinates = generate_mic_coordinates(array_config)
+
+    rows = array_config.rows
+    cols = array_config.cols
+    mic_spacing = array_config.mic_spacing  # meters - based on center freq
+    num_mics = array_config.num_mics
 
     # Print the coordinates as a 4x12 grid
     print("Microphone coordinates in a 4x12 grid:")
