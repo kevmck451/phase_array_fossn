@@ -7,6 +7,7 @@ import Application.gui.configuration as configuration
 from tkinter import filedialog
 import customtkinter as ctk
 import tkinter as tk
+import numpy as np
 
 
 
@@ -580,6 +581,7 @@ class Bottom_Left_Frame(ctk.CTkFrame):
         self.beamform_settings_label = ctk.CTkLabel(self, text="Beamform Settings", font=configuration.console_font_style)
         self.beamform_settings_label.grid(row=0, column=0, columnspan=3, sticky='nsew', padx=10, pady=10)
 
+        '''
         # Thetas Label
         self.thetas_label = ctk.CTkLabel(self, text="Thetas: [-90,-80,-70,-60,-50,-40,-30,-20,-10,0,10,20,30,40,50,60,70,80,90]", font=configuration.console_font_style)
         self.thetas_label.grid(row=1, column=0, columnspan=3, sticky='w', padx=10, pady=5)
@@ -587,7 +589,93 @@ class Bottom_Left_Frame(ctk.CTkFrame):
         # Phis Label
         self.phis_label = ctk.CTkLabel(self, text="Phis: [ 0 ]", font=configuration.console_font_style)
         self.phis_label.grid(row=2, column=0, columnspan=3, sticky='w', padx=10, pady=5)
+        '''
 
+        # — Thetas container (fills columns 0–2 of the parent) —
+        thetas_frame = ctk.CTkFrame(self)
+        thetas_frame.grid(
+            row=1, column=0, columnspan=3, sticky='ew', padx=10, pady=2
+        )
+        # inside this frame we make 5 tiny columns
+        for c in range(5):
+            thetas_frame.grid_columnconfigure(c, weight=0)
+
+        # checkbox + label + Lθ, Rθ, Δθ inside thetas_frame
+        self.enable_thetas = tk.BooleanVar(value=True)
+        ctk.CTkCheckBox(
+            thetas_frame, text="", variable=self.enable_thetas,
+            command=self.toggle_thetas
+        ).grid(row=0, column=0, sticky='w', padx=(0, 2))
+
+        ctk.CTkLabel(
+            thetas_frame, text="Thetas:", font=configuration.console_font_style
+        ).grid(row=0, column=1, sticky='w', padx=(0, 5))
+
+        self.ltheta_entry = ctk.CTkEntry(
+            thetas_frame, font=configuration.console_font_style, width=40
+        )
+        self.ltheta_entry.insert(0, "-70")
+        self.ltheta_entry.grid(row=0, column=2, sticky='w', padx=(0, 2))
+
+        self.rtheta_entry = ctk.CTkEntry(
+            thetas_frame, font=configuration.console_font_style, width=40
+        )
+        self.rtheta_entry.insert(0, "70")
+        self.rtheta_entry.grid(row=0, column=3, sticky='w', padx=(0, 2))
+
+        self.theta_inc_var = tk.StringVar(value="10")
+        self.theta_inc_seg = ctk.CTkSegmentedButton(
+            thetas_frame,
+            values=["10", "5", "2"],
+            variable=self.theta_inc_var,
+            width=60
+        )
+        self.theta_inc_seg.grid(row=0, column=4, sticky='w')
+
+        # — Phis container (also fills columns 0–2) —
+        phis_frame = ctk.CTkFrame(self)
+        phis_frame.grid(
+            row=2, column=0, columnspan=3, sticky='ew', padx=10, pady=2
+        )
+        for c in range(5):
+            phis_frame.grid_columnconfigure(c, weight=0)
+
+        self.enable_phis = tk.BooleanVar(value=False)
+        ctk.CTkCheckBox(
+            phis_frame, text="", variable=self.enable_phis,
+            command=self.toggle_phis
+        ).grid(row=0, column=0, sticky='w', padx=(0, 2))
+
+        ctk.CTkLabel(
+            phis_frame, text="Phis:", font=configuration.console_font_style
+        ).grid(row=0, column=1, sticky='w', padx=(0, 5))
+
+        self.lphi_entry = ctk.CTkEntry(
+            phis_frame, font=configuration.console_font_style, width=40
+        )
+        self.lphi_entry.insert(0, "0")
+        self.lphi_entry.grid(row=0, column=2, sticky='w', padx=(0, 2))
+
+        self.rphi_entry = ctk.CTkEntry(
+            phis_frame, font=configuration.console_font_style, width=40
+        )
+        self.rphi_entry.insert(0, "0")
+        self.rphi_entry.grid(row=0, column=3, sticky='w', padx=(0, 2))
+
+        self.phi_inc_var = tk.StringVar(value="10")
+        self.phi_inc_seg = ctk.CTkSegmentedButton(
+            phis_frame,
+            values=["10", "5", "2"],
+            variable=self.phi_inc_var,
+            width=60
+        )
+        self.phi_inc_seg.grid(row=0, column=4, sticky='w')
+
+        # initialize visibility
+        self.toggle_thetas()
+        self.toggle_phis()
+
+        # Temp Stuff -----------------------------------
         # Manual Temp Entry Frame
         manual_temp_frame = ctk.CTkFrame(self)
         manual_temp_frame.grid(row=3, column=0, columnspan=3, sticky='ew', padx=10, pady=5)
@@ -617,6 +705,54 @@ class Bottom_Left_Frame(ctk.CTkFrame):
         if self.temp_value != '':
             print(f"Temperature set to: {self.temp_value} F")
             self.event_handler(Event.SET_TEMP)
+
+    def toggle_thetas(self):
+        if self.enable_thetas.get():
+            # reset back to your θ‑defaults
+            self.ltheta_entry.configure(state="normal")
+            self.ltheta_entry.delete(0, tk.END)
+            self.ltheta_entry.insert(0, "-70")
+
+            self.rtheta_entry.configure(state="normal")
+            self.rtheta_entry.delete(0, tk.END)
+            self.rtheta_entry.insert(0, "70")
+
+            self.theta_inc_var.set("10")
+            self.theta_inc_seg.configure(state="normal")
+        else:
+            # disable and set to 0
+            for entry in (self.ltheta_entry, self.rtheta_entry):
+                entry.configure(state="normal")
+                entry.delete(0, tk.END)
+                entry.insert(0, "0")
+                entry.configure(state="disabled")
+
+            self.theta_inc_var.set("10")
+            self.theta_inc_seg.configure(state="disabled")
+
+    def toggle_phis(self):
+        if self.enable_phis.get():
+            # reset back to your φ‑defaults (here both 0)
+            self.lphi_entry.configure(state="normal")
+            self.lphi_entry.delete(0, tk.END)
+            self.lphi_entry.insert(0, "0")
+
+            self.rphi_entry.configure(state="normal")
+            self.rphi_entry.delete(0, tk.END)
+            self.rphi_entry.insert(0, "0")
+
+            self.phi_inc_var.set("10")
+            self.phi_inc_seg.configure(state="normal")
+        else:
+            # disable and set to 0
+            for entry in (self.lphi_entry, self.rphi_entry):
+                entry.configure(state="normal")
+                entry.delete(0, tk.END)
+                entry.insert(0, "0")
+                entry.configure(state="disabled")
+
+            self.phi_inc_var.set("10")
+            self.phi_inc_seg.configure(state="disabled")
 
 
 class Bottom_Middle_Frame(ctk.CTkFrame):
