@@ -4,11 +4,10 @@
 from Application.controller.event_states import Event
 import Application.gui.configuration as configuration
 
-from tkinter import filedialog
+
 import customtkinter as ctk
 import tkinter as tk
-import numpy as np
-
+import subprocess
 
 
 class Main_Window(ctk.CTk):
@@ -216,16 +215,27 @@ class Top_Middle_Frame(ctk.CTkFrame):
         self.save_checkbox_audio.grid(row=0, column=2, padx=5)
 
     def load_audio_file(self):
-        # Open file dialog to select the audio file
-        audio_file_path = filedialog.askopenfilename(title="Select Audio File", filetypes=(("Audio Files", "*.wav"), ("All Files", "*.*")))
+        try:
+            script = '''
+            set chosenFile to choose file with prompt "Select Audio File" of type {"public.audio"}
+            set filePath to POSIX path of chosenFile
+            return filePath
+            '''
 
-        # Store the selected file path in an instance variable
-        if audio_file_path:
-            self.selected_audio_file = audio_file_path
-            print(f"Selected audio file: {self.selected_audio_file}")
+            result = subprocess.run(
+                ['osascript', '-e', script],
+                capture_output=True,
+                text=True
+            )
+            audio_file_path = result.stdout.strip()
 
-            # Trigger the event for loading audio (without passing the file path directly)
-            self.event_handler(Event.LOAD_AUDIO)
+            if audio_file_path:
+                self.selected_audio_file = audio_file_path
+                print(f"Selected audio file: {self.selected_audio_file}")
+                self.event_handler(Event.LOAD_AUDIO)
+
+        except Exception as e:
+            print("File dialog failed:", e)
 
     def calibration_frame(self, frame):
         self.calibration_label = ctk.CTkLabel(frame, text="Baseline Calibration for Detector", font=configuration.console_font_style)
@@ -257,20 +267,31 @@ class Top_Middle_Frame(ctk.CTkFrame):
         self.save_checkbox_pca.grid(row=0, column=2, padx=5)
 
     def load_pca_file(self):
-        # Open a directory dialog to select the folder
-        folder_path = filedialog.askdirectory(title="Select Folder Containing PCA Calibration Files")
+        try:
+            script = '''
+            set chosenFolder to choose folder with prompt "Select Folder Containing PCA Calibration Files"
+            set folderPath to POSIX path of chosenFolder
+            return folderPath
+            '''
 
-        # Store the selected folder path in an instance variable
-        if folder_path:
-            self.selected_pca_folder = folder_path
-            print(f"Selected PCA folder: {self.selected_pca_folder}")
+            result = subprocess.run(
+                ['osascript', '-e', script],
+                capture_output=True,
+                text=True
+            )
+            folder_path = result.stdout.strip()
 
-            # Construct file paths for the baseline files
-            self.baseline_means_path = f"{self.selected_pca_folder}/baseline_means.npy"
-            self.baseline_stds_path = f"{self.selected_pca_folder}/baseline_stds.npy"
+            if folder_path:
+                self.selected_pca_folder = folder_path
+                print(f"Selected PCA folder: {self.selected_pca_folder}")
 
-            # Trigger the event for loading PCA calibration
-            self.event_handler(Event.LOAD_CALIBRATION)
+                self.baseline_means_path = f"{self.selected_pca_folder}/baseline_means.npy"
+                self.baseline_stds_path = f"{self.selected_pca_folder}/baseline_stds.npy"
+
+                self.event_handler(Event.LOAD_CALIBRATION)
+
+        except Exception as e:
+            print("Folder dialog failed:", e)
 
     def toggle_play(self):
         if self.playing:
@@ -580,16 +601,6 @@ class Bottom_Left_Frame(ctk.CTkFrame):
         # Beamform Settings Label
         self.beamform_settings_label = ctk.CTkLabel(self, text="Beamform Settings", font=configuration.console_font_style)
         self.beamform_settings_label.grid(row=0, column=0, columnspan=3, sticky='nsew', padx=10, pady=10)
-
-        '''
-        # Thetas Label
-        self.thetas_label = ctk.CTkLabel(self, text="Thetas: [-90,-80,-70,-60,-50,-40,-30,-20,-10,0,10,20,30,40,50,60,70,80,90]", font=configuration.console_font_style)
-        self.thetas_label.grid(row=1, column=0, columnspan=3, sticky='w', padx=10, pady=5)
-
-        # Phis Label
-        self.phis_label = ctk.CTkLabel(self, text="Phis: [ 0 ]", font=configuration.console_font_style)
-        self.phis_label.grid(row=2, column=0, columnspan=3, sticky='w', padx=10, pady=5)
-        '''
 
         # — Thetas container (fills columns 0–2 of the parent) —
         thetas_frame = ctk.CTkFrame(self)
