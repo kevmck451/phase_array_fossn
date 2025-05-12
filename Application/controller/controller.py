@@ -459,6 +459,18 @@ class Controller:
                 self.last_time_stamp = current_time_stamp
                 self.last_anomaly_locations = current_anomaly_locations.copy()
 
+        elif event == Event.UPDATE_BEAM_DIRECTIONS:
+            if self.app_state == State.IDLE:
+                Ltheta = int(self.gui.Bottom_Frame.Left_Frame.ltheta_entry.get())
+                Rtheta = int(self.gui.Bottom_Frame.Left_Frame.rtheta_entry.get())
+                increment = int(self.gui.Bottom_Frame.Left_Frame.theta_inc_var.get())
+                theta_list = list(range(Ltheta, Rtheta + 1, increment))
+
+                self.beamformer.thetas = theta_list
+                self.gui.Middle_Frame.Center_Frame.directions = theta_list
+                self.gui.Middle_Frame.Center_Frame.anomaly_data = [0] * len(theta_list)
+
+
         elif event == Event.DUMMY_BUTTON:
             # dummy button
             print('BUTTON PRESSED')

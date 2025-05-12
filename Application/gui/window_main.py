@@ -9,7 +9,6 @@ import customtkinter as ctk
 import tkinter as tk
 import subprocess
 
-
 class Main_Window(ctk.CTk):
     def __init__(self, event_handler, array_config):
         super().__init__()
@@ -436,10 +435,11 @@ class Main_Middle_Frame(ctk.CTkFrame):
         self.event_handler = event_handler
         self.parent = parent
 
-        # Configure two-column layout
+        # Configure three-column layout explicitly
         self.grid_rowconfigure(0, weight=1)
-        self.grid_columnconfigure(0, weight=1)  # Left (visual)
-        self.grid_columnconfigure(1, weight=1)  # Right (empty or future content)
+        self.grid_columnconfigure(0, weight=1)  # Left
+        self.grid_columnconfigure(1, weight=1)  # Center
+        self.grid_columnconfigure(2, weight=1)  # Right
 
         # Left frame for visual
         left_frame = ctk.CTkFrame(self)
@@ -448,17 +448,25 @@ class Main_Middle_Frame(ctk.CTkFrame):
         left_frame.grid_rowconfigure(1, weight=1)
         left_frame.grid_columnconfigure(0, weight=1)
 
+        # Center side
+        center_frame = ctk.CTkFrame(self)
+        center_frame.grid(row=0, column=1, padx=10, pady=10, sticky='nsew')
+        center_frame.grid_columnconfigure(0, weight=1)
+
+        right_frame = ctk.CTkFrame(self)
+        right_frame.grid(row=0, column=2, padx=10, pady=10, sticky='nsew')
+        right_frame.grid_columnconfigure(0, weight=1)
+
+
+        # LEFT FRAME ------------------------------
+
         self.detector_label = ctk.CTkLabel(left_frame, text="Beamformed PCA Detector Output", font=("Arial", 16))
         self.detector_label.grid(row=0, column=0, sticky='ew')
 
-        self.canvas = tk.Canvas(left_frame, bg="#333333")
-        self.canvas.grid(row=1, column=0, sticky='nsew', padx=20, pady=20)
+        self.canvas_left = tk.Canvas(left_frame, bg="#333333")
+        self.canvas_left.grid(row=1, column=0, sticky='nsew', padx=20, pady=20)
 
         self.draw_threshold_lines()
-
-        # Right side (optional, currently empty)
-        right_frame = ctk.CTkFrame(self)
-        right_frame.grid(row=0, column=1, padx=10, pady=10, sticky='nsew')
 
         self.updating = True  # Flag to control updates
 
@@ -475,22 +483,47 @@ class Main_Middle_Frame(ctk.CTkFrame):
             'red': 100,   # More than 60% anomalies
         }
 
-        # Schedule the draw_bar_chart to run after the canvas is ready
+        # Schedule the draw_bar_chart to run after the canvas_left is ready
         self.after(1000, self.draw_bar_chart)
 
+        # CENTER FRAME ------------------------------
+        self.heatmap_label = ctk.CTkLabel(center_frame, text="Time Series Heatmap of Anomalies", font=("Arial", 16))
+        self.heatmap_label.grid(row=0, column=0, sticky='ew')
+
+
+
+
+        # RIGHT FRAME ------------------------------
+        self.classifier_label = ctk.CTkLabel(right_frame, text="Sound Classifier", font=("Arial", 16))
+        self.classifier_label.grid(row=0, column=0, sticky='ew')
+
     def draw_bar_chart(self):
-        self.canvas.delete("all")  # Clear the canvas
+        width = self.canvas_left.winfo_width()
+        height = self.canvas_left.winfo_height()
+
+        if width < 100 or height < 100:
+            self.after(200, self.draw_bar_chart)
+            return
+
+        num_channels = min(len(self.anomaly_data), len(self.directions))
+        self.anomaly_data = self.anomaly_data[:num_channels]
+        self.directions = self.directions[:num_channels]
+
+        self.canvas_left.delete("all")  # Clear the canvas_left
         self.draw_threshold_lines()  # Draw threshold lines
 
         num_channels = len(self.anomaly_data)
-        canvas_width = self.canvas.winfo_width()
-        canvas_height = self.canvas.winfo_height()
+        canvas_width = self.canvas_left.winfo_width()
+        canvas_height = self.canvas_left.winfo_height()
 
-        # Calculate bar width to evenly fill the canvas
+        font_size = max(6, int(225 / num_channels))
+
+        # Calculate bar width to evenly fill the canvas_left
         bar_width = canvas_width / num_channels
         chart_height = canvas_height * 0.8  # Use 80% of the height for the chart
 
-        for i, value in enumerate(self.anomaly_data):
+        for i in range(num_channels):
+            value = self.anomaly_data[i]
 
             # Determine the color based on the threshold
             percentage = (value / self.max_anomalies) * 100
@@ -521,30 +554,30 @@ class Main_Middle_Frame(ctk.CTkFrame):
             y2 = chart_height
 
             # Draw the bar
-            self.canvas.create_rectangle(x1, y1, x2, y2, fill=bar_color)
+            self.canvas_left.create_rectangle(x1, y1, x2, y2, fill=bar_color)
 
             # Draw the percentage value inside the bar
             text_position_y = y2 - bar_height / 2
             if bar_height < 20:
                 text_position_y = y1 - 10
-            self.canvas.create_text(x1 + bar_width / 2, text_position_y, text=f"{percentage:.0f}%", fill=text_color, anchor='center')
+            self.canvas_left.create_text(x1 + bar_width / 2, text_position_y, text=f"{percentage:.0f}%", fill=text_color, anchor='center', font=("Arial", font_size))
 
             # Draw the direction label below the bar
-            self.canvas.create_text(x1 + bar_width / 2, chart_height + 20, text=f'{self.directions[i]}\u00B0', anchor='n')
+            self.canvas_left.create_text(x1 + bar_width / 2, chart_height + 20, text=f'{self.directions[i]}\u00B0', anchor='n', font=("Arial", font_size))
 
         self.anomaly_list.clear()
         # Draw the chart's axis
-        self.canvas.create_line(0, chart_height, canvas_width, chart_height)
+        self.canvas_left.create_line(0, chart_height, canvas_width, chart_height)
 
         self.after(1000, self.draw_bar_chart)
 
     def draw_threshold_lines(self):
         # Clear any existing lines
-        self.canvas.delete("threshold_lines")
+        self.canvas_left.delete("threshold_lines")
 
-        # Calculate canvas dimensions
-        canvas_width = self.canvas.winfo_width()
-        canvas_height = self.canvas.winfo_height()
+        # Calculate canvas_left dimensions
+        canvas_width = self.canvas_left.winfo_width()
+        canvas_height = self.canvas_left.winfo_height()
 
         # Define thresholds as percentages
         threshold_percentages = {
@@ -558,8 +591,8 @@ class Main_Middle_Frame(ctk.CTkFrame):
             # Calculate the position for the threshold line
             threshold_position = (percentage / 100) * chart_height
             # Draw the threshold line
-            self.canvas.create_line(0, chart_height - threshold_position, canvas_width, chart_height - threshold_position,
-                                    fill=color, dash=(4, 4), tags="threshold_lines")
+            self.canvas_left.create_line(0, chart_height - threshold_position, canvas_width, chart_height - threshold_position,
+                                         fill=color, dash=(4, 4), tags="threshold_lines")
 
     def start_updates(self):
         self.updating = True
@@ -619,9 +652,7 @@ class Bottom_Left_Frame(ctk.CTkFrame):
 
         # — Thetas container (fills columns 0–2 of the parent) —
         thetas_frame = ctk.CTkFrame(self)
-        thetas_frame.grid(
-            row=1, column=0, columnspan=3, sticky='ew', padx=10, pady=2
-        )
+        thetas_frame.grid(row=1, column=0, columnspan=3, sticky='ew', padx=10, pady=2)
         # inside this frame we make 5 tiny columns
         for c in range(5):
             thetas_frame.grid_columnconfigure(c, weight=0)
@@ -697,6 +728,13 @@ class Bottom_Left_Frame(ctk.CTkFrame):
         )
         self.phi_inc_seg.grid(row=0, column=4, sticky='w')
 
+        # Update Button (below theta and phi settings)
+        self.update_thetas_button = ctk.CTkButton(
+            self, text="Update",
+            command=lambda: self.event_handler(Event.UPDATE_BEAM_DIRECTIONS)
+        )
+        self.update_thetas_button.grid(row=3, column=0, columnspan=3, sticky='ew', padx=10, pady=(5, 10))
+
         # initialize visibility
         self.toggle_thetas()
         self.toggle_phis()
@@ -704,7 +742,7 @@ class Bottom_Left_Frame(ctk.CTkFrame):
         # Temp Stuff -----------------------------------
         # Manual Temp Entry Frame
         manual_temp_frame = ctk.CTkFrame(self)
-        manual_temp_frame.grid(row=3, column=0, columnspan=3, sticky='ew', padx=10, pady=5)
+        manual_temp_frame.grid(row=4, column=0, columnspan=3, sticky='ew', padx=10, pady=5)
 
         # Center Container Frame
         center_frame = ctk.CTkFrame(manual_temp_frame)
