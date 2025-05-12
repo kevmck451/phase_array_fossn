@@ -21,3 +21,5 @@ mic_positions = [
 chunk_duration = 15 * 60  # 10 minutes in seconds
 
 title = 'Rectangular Array'
+
+directory_name = 'Rect'

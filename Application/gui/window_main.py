@@ -164,6 +164,7 @@ class Top_Middle_Frame(ctk.CTkFrame):
 
         self.playing = False
         self.calibrating = False
+        self.project_name = ''
 
         # Top Frame
         top_frame = ctk.CTkFrame(self)
@@ -193,7 +194,6 @@ class Top_Middle_Frame(ctk.CTkFrame):
         button_frame = ctk.CTkFrame(frame)
         button_frame.pack(pady=5)
 
-
         self.load_button_audio = ctk.CTkButton(button_frame, text="Load",
                                          fg_color=configuration.gray_fg_color,
                                          hover_color=configuration.gray_hover_color,
@@ -213,6 +213,14 @@ class Top_Middle_Frame(ctk.CTkFrame):
                                              fg_color=configuration.bluelight_fg_color,
                                              hover_color=configuration.bluelight_hover_color)
         self.save_checkbox_audio.grid(row=0, column=2, padx=5)
+
+        entry_frame = ctk.CTkFrame(frame)
+        entry_frame.pack(pady=10)
+
+        self.project_name = ctk.CTkEntry(entry_frame, width=300, placeholder_text="Data Collection Name, if desired...")
+        self.project_name.pack()
+
+
 
     def load_audio_file(self):
         try:

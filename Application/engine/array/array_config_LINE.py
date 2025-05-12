@@ -33,3 +33,5 @@ mic_positions = [
 chunk_duration = 15 * 60  # 10 minutes in seconds
 
 title = 'Line Array'
+
+directory_name = 'Line'

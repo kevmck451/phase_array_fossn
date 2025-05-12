@@ -120,11 +120,18 @@ class Controller:
     def setup_project_directory(self):
         self.project_directory_base_path = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/2 FOSSN/Data/Field_Tests'
         current_datetime = datetime.now().strftime('%-m-%d-%y %-I.%M%p').lower()
-        self.project_directory_path = os.path.join(self.project_directory_base_path, current_datetime)
+        self.project_directory_path = os.path.join(self.project_directory_base_path,
+                                                   f'{current_datetime} {self.array_config.directory_name}')
         os.makedirs(self.project_directory_path, exist_ok=True)
 
     def create_directory(self, option):
         current_time = datetime.now().strftime('%-I.%M%p').lower()
+
+        project_name = self.gui.Top_Frame.Center_Frame.project_name.get()
+        if project_name != '':
+            print(f'Project Name: {project_name}')
+            self.project_directory_path = os.path.join(self.project_directory_path, project_name)
+            os.makedirs(self.project_directory_path, exist_ok=True)
 
         if option == 'cal':
             self.calibration_filepath = f'{self.project_directory_path}/Calibration_'
