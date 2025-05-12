@@ -217,10 +217,8 @@ class Top_Middle_Frame(ctk.CTkFrame):
         entry_frame = ctk.CTkFrame(frame)
         entry_frame.pack(pady=10)
 
-        self.project_name = ctk.CTkEntry(entry_frame, width=300, placeholder_text="Data Collection Name, if desired...")
+        self.project_name = ctk.CTkEntry(entry_frame, width=300, placeholder_text="Enter a Test Name, if desired...")
         self.project_name.pack()
-
-
 
     def load_audio_file(self):
         try:
@@ -434,24 +432,29 @@ class Main_Middle_Frame(ctk.CTkFrame):
         self.event_handler = event_handler
         self.parent = parent
 
-        middle_frame = ctk.CTkFrame(self)
-        middle_frame.grid(row=0, column=0, padx=10, pady=10, sticky='nsew')
-        middle_frame.grid_rowconfigure(0, weight=1)
-        middle_frame.grid_columnconfigure(0, weight=1)
-
-        # Configure the grid rows and columns for self
+        # Configure two-column layout
         self.grid_rowconfigure(0, weight=1)
-        self.grid_columnconfigure(0, weight=1)
+        self.grid_columnconfigure(0, weight=1)  # Left (visual)
+        self.grid_columnconfigure(1, weight=1)  # Right (empty or future content)
 
-        # Create and place the detector label
-        self.detector_label = ctk.CTkLabel(middle_frame, text="Beamformed PCA Detector Output", font=("Arial", 16))
-        self.detector_label.pack(fill='both')
+        # Left frame for visual
+        left_frame = ctk.CTkFrame(self)
+        left_frame.grid(row=0, column=0, padx=10, pady=10, sticky='nsew')
+        left_frame.grid_rowconfigure(0, weight=0)
+        left_frame.grid_rowconfigure(1, weight=1)
+        left_frame.grid_columnconfigure(0, weight=1)
 
-        # Create the canvas for the bar chart
-        self.canvas = tk.Canvas(middle_frame, bg="#333333")  # Changed background to gray
-        self.canvas.pack(fill='both', expand=True, padx=20, pady=20)
+        self.detector_label = ctk.CTkLabel(left_frame, text="Beamformed PCA Detector Output", font=("Arial", 16))
+        self.detector_label.grid(row=0, column=0, sticky='ew')
+
+        self.canvas = tk.Canvas(left_frame, bg="#333333")
+        self.canvas.grid(row=1, column=0, sticky='nsew', padx=20, pady=20)
 
         self.draw_threshold_lines()
+
+        # Right side (optional, currently empty)
+        right_frame = ctk.CTkFrame(self)
+        right_frame.grid(row=0, column=1, padx=10, pady=10, sticky='nsew')
 
         self.updating = True  # Flag to control updates
 
@@ -520,7 +523,7 @@ class Main_Middle_Frame(ctk.CTkFrame):
             text_position_y = y2 - bar_height / 2
             if bar_height < 20:
                 text_position_y = y1 - 10
-            self.canvas.create_text(x1 + bar_width / 2, text_position_y, text=f"{percentage:.1f}%", fill=text_color, anchor='center')
+            self.canvas.create_text(x1 + bar_width / 2, text_position_y, text=f"{percentage:.0f}%", fill=text_color, anchor='center')
 
             # Draw the direction label below the bar
             self.canvas.create_text(x1 + bar_width / 2, chart_height + 20, text=f'{self.directions[i]}\u00B0', anchor='n')
