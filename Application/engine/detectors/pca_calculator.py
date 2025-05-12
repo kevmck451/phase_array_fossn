@@ -8,8 +8,6 @@ from Filters.audio import Audio
 from sklearn.decomposition import PCA
 from scipy.signal import stft
 import numpy as np
-
-
 from queue import Queue
 import time
 

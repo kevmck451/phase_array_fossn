@@ -4,9 +4,9 @@ from Application.engine.array.AudioStreamSimulator import AudioStreamSimulator
 from Application.engine.filters.audio import Audio
 from Application.engine.beamform.beamform import Beamform
 
-from Mic_Array.Processing.process_realtime import Processing
-from Mic_Array.PCA.pca_realtime import PCA_Calculator
-from Mic_Array.Detector.detector_realtime import Detector
+from Application.engine.filters.processor import Processing
+from Application.engine.detectors.pca_calculator import PCA_Calculator
+from Application.engine.detectors.detector import Detector
 
 from Application.controller.detector_log import Detector_Log
 from Application.controller.temp_log import Temp_Log

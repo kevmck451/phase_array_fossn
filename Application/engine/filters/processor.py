@@ -2,12 +2,15 @@
 
 from Application.engine.filters.noise_reduction_array import noise_reduction_filter
 from Application.engine.filters.high_pass_array import high_pass_filter
+from Application.engine.filters.low_pass_array import low_pass_filter
 from Application.engine.filters.normalize import normalize
 from Application.engine.filters.down_sample import downsample
 
 
 
 from queue import Queue
+
+
 
 
 
@@ -45,10 +48,15 @@ class Processing:
                 new_data = noise_reduction_filter(new_data, self.processing_chain[process])
 
 
-            elif process == 'hp':
+            elif process == 'lp':
                 # print(f'High Pass ({process})      \t|\tBC: {self.processing_chain[process]} Hz')
-                new_data = high_pass_filter(new_data, self.processing_chain[process])
+                new_data = low_pass_filter(new_data, self.processing_chain[process])
+                # new_data = low_pass_filter(new_data, self.processing_chain[process], order=8)
 
+
+            elif process == 'hp':
+                new_data = high_pass_filter(new_data, self.processing_chain[process])
+                # new_data = high_pass_filter(new_data, self.processing_chain[process], order=8)
 
             elif process == 'nm':
                 # print(f'Normalization ({process})  \t|\t%: {self.processing_chain[process]} %')
@@ -59,6 +67,11 @@ class Processing:
                 # print(f'Down Sampling ({process})  \t|\tSR: {self.processing_chain[process]} Hz')
                 new_data = downsample(new_data, self.processing_chain[process])
 
+
+            elif process == 'custom':
+                # way to get band of filters without actually running high/low
+                # just slice out what you need
+                print()
 
             else:
                 print('processing input not recognized')
