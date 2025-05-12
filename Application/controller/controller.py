@@ -39,7 +39,7 @@ class Controller:
         self.audio_stream_running = False
         self.chunk_size_seconds = 1
 
-        self.calibration_time = 20  # todo: expose to app
+        self.calibration_time = 60
         self.calibrate_start_time = 0
         self.thetas = self.array_config.default_theta_directions
 
@@ -403,6 +403,9 @@ class Controller:
             self.setup_project_directory()
 
         elif event == Event.PCA_CALIBRATION:
+            entry_val = self.gui.Top_Frame.Center_Frame.calibration_time_entry.get()
+            if entry_val.isdigit():
+                self.calibration_time = int(entry_val)
             if not self.mic_array.audio_receiver.running and not self.audio_loaded:
                 self.gui.Top_Frame.Right_Frame.insert_text(f'Phased Array not connected and No Audio is Loaded', 'red')
             else:

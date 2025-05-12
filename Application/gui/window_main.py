@@ -273,6 +273,9 @@ class Top_Middle_Frame(ctk.CTkFrame):
                                              hover_color=configuration.bluelight_hover_color)
         self.save_checkbox_pca.grid(row=0, column=2, padx=5)
 
+        self.calibration_time_entry = ctk.CTkEntry(button_frame, width=40, placeholder_text="60s")
+        self.calibration_time_entry.grid(row=0, column=3, padx=5)
+
     def load_pca_file(self):
         try:
             script = '''
