@@ -39,9 +39,10 @@ class Controller:
         self.audio_stream_running = False
         self.chunk_size_seconds = 1
 
-        self.calibration_time = 20 # todo: expose to app
+        self.calibration_time = 20  # todo: expose to app
         self.calibrate_start_time = 0
-        self.thetas = [-90,-80,-70,-60,-50,-40,-30,-20,-10,0,10,20,30,40,50,60,70,80,90] # todo: expose to app
+        self.thetas = self.array_config.default_theta_directions
+
         self.phis = [0]  # azimuth angle: neg is below and pos is above
         self.temperature = 90
         self.beamformer = Beamform(self.thetas, self.phis, self.temperature, self.array_config)

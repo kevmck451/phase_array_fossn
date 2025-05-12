@@ -15,9 +15,10 @@ class Main_Window(ctk.CTk):
         super().__init__()
         ctk.set_appearance_mode("dark")
         self.event_handler = event_handler
+        self.array_config = array_config
 
         # Main Setup ------------------------------------------------------------
-        self.title(f'{configuration.window_title}: {array_config.title}')
+        self.title(f'{configuration.window_title}: {self.array_config.title}')
 
         # Screen: can see window
         screen_width = self.winfo_screenwidth()
@@ -458,7 +459,7 @@ class Main_Middle_Frame(ctk.CTkFrame):
 
         self.updating = True  # Flag to control updates
 
-        self.directions = list(range(-90, 100, 10))  # Direction labels from -90 to 90 degrees
+        self.directions = self.parent.parent.array_config.default_theta_directions
         self.anomaly_list = []
 
         # Example data for the bar chart
@@ -636,16 +637,16 @@ class Bottom_Left_Frame(ctk.CTkFrame):
         self.ltheta_entry = ctk.CTkEntry(
             thetas_frame, font=configuration.console_font_style, width=40
         )
-        self.ltheta_entry.insert(0, "-70")
+        self.ltheta_entry.insert(0, f'{self.parent.parent.array_config.Ltheta}')
         self.ltheta_entry.grid(row=0, column=2, sticky='w', padx=(0, 2))
 
         self.rtheta_entry = ctk.CTkEntry(
             thetas_frame, font=configuration.console_font_style, width=40
         )
-        self.rtheta_entry.insert(0, "70")
+        self.rtheta_entry.insert(0, f'{self.parent.parent.array_config.Rtheta}')
         self.rtheta_entry.grid(row=0, column=3, sticky='w', padx=(0, 2))
 
-        self.theta_inc_var = tk.StringVar(value="10")
+        self.theta_inc_var = tk.StringVar(value=f'{self.parent.parent.array_config.increment}')
         self.theta_inc_seg = ctk.CTkSegmentedButton(
             thetas_frame,
             values=["10", "5", "2"],

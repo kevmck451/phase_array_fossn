@@ -5,6 +5,7 @@ from enum import Enum, auto
 # Define the events
 class Event(Enum):
     ON_CLOSE = auto()
+    GET_BEAM_DIRECTIONS = auto()
     START_RECORDER = auto()
     STOP_RECORDER = auto()
     LOAD_AUDIO = auto()

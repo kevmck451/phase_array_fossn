@@ -23,3 +23,8 @@ chunk_duration = 15 * 60  # 10 minutes in seconds
 title = 'Rectangular Array'
 
 directory_name = 'Rect'
+
+Ltheta = -70
+Rtheta = 70
+increment = 10
+default_theta_directions = list(range(Ltheta, Rtheta + 1, increment))
