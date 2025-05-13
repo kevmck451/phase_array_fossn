@@ -377,6 +377,12 @@ class Controller:
                 self.gui.Top_Frame.Right_Frame.insert_text(f'Files Not Found. Try Again', 'red')
 
         elif event == Event.START_RECORDER:
+            entry_val = self.gui.Top_Frame.Center_Frame.chunk_time_entry.get()
+            if entry_val.isdigit():
+                self.chunk_size_seconds = int(entry_val)
+                self.mic_array.chunk_size_sec = self.chunk_size_seconds
+                self.mic_array.audio_receiver.chunk_secs = self.chunk_size_seconds
+
             if not self.mic_array.audio_receiver.running and not self.audio_loaded:
                 self.gui.Top_Frame.Right_Frame.insert_text(f'Phased Array not connected and No Audio is Loaded', 'red')
                 print('FPGA not connected')
@@ -406,6 +412,7 @@ class Controller:
             entry_val = self.gui.Top_Frame.Center_Frame.calibration_time_entry.get()
             if entry_val.isdigit():
                 self.calibration_time = int(entry_val)
+
             if not self.mic_array.audio_receiver.running and not self.audio_loaded:
                 self.gui.Top_Frame.Right_Frame.insert_text(f'Phased Array not connected and No Audio is Loaded', 'red')
             else:
