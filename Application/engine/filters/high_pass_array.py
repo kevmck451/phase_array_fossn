@@ -22,7 +22,7 @@ def high_pass_filter(data, cutoff_freq, multiCh=True, order=5):
         b, a = butter(order, cutoff_frequency, btype='high', analog=False)
         filtered_data = lfilter(b, a, data)
         # Normalize the filtered data to stay within the range [-1, 1]
-        filtered_data = np.clip(filtered_data, -1.0, 1.0)
+        # filtered_data = np.clip(filtered_data, -1.0, 1.0)
         return filtered_data
 
     # Apply the high-pass filter to each channel
