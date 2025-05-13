@@ -7,6 +7,7 @@ from Application.engine.beamform.beamform import Beamform
 from Application.engine.filters.processor import Processing
 from Application.engine.detectors.pca_calculator import PCA_Calculator
 from Application.engine.detectors.detector import Detector
+from Application.engine.detectors.heatmap import Heatmap
 
 from Application.controller.detector_log import Detector_Log
 from Application.controller.temp_log import Temp_Log
@@ -60,6 +61,8 @@ class Controller:
         self.detector = Detector()
         self.detector_thread = None
         self.detector_running = False
+
+        self.heatmap = Heatmap()
 
         self.bar_chart_updater_thread = None
         self.bar_chart_updater_running = False
@@ -287,10 +290,20 @@ class Controller:
         while self.bar_chart_updater_running:
             if not self.detector.queue.empty():
                 # print('GUI BAR CHART UPDATING----------')
-                self.gui.Middle_Frame.Center_Frame.anomaly_data = self.detector.queue.get()
 
+                current_anomaly_data = self.detector.queue.get()
+
+                # give anomaly data to bar chart
+                self.gui.Middle_Frame.Center_Frame.anomaly_data = current_anomaly_data
+
+                # give anomaly data to heatmap
+                self.heatmap.update(self.thetas, current_anomaly_data)
+                image = self.heatmap.render_heatmap_image()
+                self.gui.Middle_Frame.Center_Frame.next_heatmap_image = image
+
+                # save data if box checked
                 if self.gui.Top_Frame.Center_Frame.audio_save_checkbox_variable.get():
-                    self.data_logger.log_data(self.gui.Middle_Frame.Center_Frame.anomaly_data)
+                    self.data_logger.log_data(current_anomaly_data)
                     if not self.audio_loaded:
                         self.temp_logger.log_data(self.temp_sensor.current_temp)
 

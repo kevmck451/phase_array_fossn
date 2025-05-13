@@ -8,6 +8,7 @@ import Application.gui.configuration as configuration
 import customtkinter as ctk
 import tkinter as tk
 import subprocess
+from PIL import ImageTk
 
 class Main_Window(ctk.CTk):
     def __init__(self, event_handler, array_config):
@@ -455,6 +456,7 @@ class Main_Middle_Frame(ctk.CTkFrame):
         center_frame = ctk.CTkFrame(self)
         center_frame.grid(row=0, column=1, padx=10, pady=10, sticky='nsew')
         center_frame.grid_columnconfigure(0, weight=1)
+        center_frame.rowconfigure(1, weight=1)  # Let row 1 (image) expand
 
         right_frame = ctk.CTkFrame(self)
         right_frame.grid(row=0, column=2, padx=10, pady=10, sticky='nsew')
@@ -467,13 +469,14 @@ class Main_Middle_Frame(ctk.CTkFrame):
         self.detector_label.grid(row=0, column=0, sticky='ew')
 
         self.canvas_left = tk.Canvas(left_frame, bg="#333333")
-        self.canvas_left.grid(row=1, column=0, sticky='nsew', padx=20, pady=20)
+        self.canvas_left.grid(row=1, column=0, sticky='nsew', padx=0, pady=0)
 
         self.draw_threshold_lines()
 
         self.updating = True  # Flag to control updates
 
-        self.directions = self.parent.parent.array_config.default_theta_directions
+        self.all_directions = self.parent.parent.array_config.default_theta_directions
+        self.directions = self.all_directions[:]
         self.anomaly_list = []
 
         # Example data for the bar chart
@@ -486,31 +489,42 @@ class Main_Middle_Frame(ctk.CTkFrame):
             'red': 100,   # More than 60% anomalies
         }
 
+        self.next_heatmap_image = None
+        # self.after(1000, self.update_heatmap_image)
+        self._heatmap_loop_started = False
+        self.start_heatmap_updates()
+
         # Schedule the draw_bar_chart to run after the canvas_left is ready
-        self.after(1000, self.draw_bar_chart)
+        # self.after(1000, self.draw_bar_chart)
+        self.start_updates()
 
         # CENTER FRAME ------------------------------
-        self.heatmap_label = ctk.CTkLabel(center_frame, text="Time Series Heatmap of Anomalies", font=("Arial", 16))
-        self.heatmap_label.grid(row=0, column=0, sticky='ew')
+        self.heatmap_title = ctk.CTkLabel(center_frame, text="Time Series Heatmap of Anomalies", font=("Arial", 16))
+        self.heatmap_title.grid(row=0, column=0, sticky='ew')
 
-
-
+        # New: Image container
+        self.heatmap_canvas = tk.Label(center_frame, bg="black")
+        self.heatmap_canvas.grid(row=1, column=0, sticky='nsew', padx=5, pady=5)
 
         # RIGHT FRAME ------------------------------
         self.classifier_label = ctk.CTkLabel(right_frame, text="Sound Classifier", font=("Arial", 16))
         self.classifier_label.grid(row=0, column=0, sticky='ew')
+
+        self.anomaly_data = [0] * len(self.directions)
 
     def draw_bar_chart(self):
         width = self.canvas_left.winfo_width()
         height = self.canvas_left.winfo_height()
 
         if width < 100 or height < 100:
-            self.after(200, self.draw_bar_chart)
+            self.after(1000, self.draw_bar_chart)
             return
 
-        num_channels = min(len(self.anomaly_data), len(self.directions))
-        self.anomaly_data = self.anomaly_data[:num_channels]
-        self.directions = self.directions[:num_channels]
+        num_channels = len(self.anomaly_data)
+        font_size = max(6, int(225 / num_channels))
+
+        directions_to_draw = self.directions[:num_channels]
+        # print(f"DIRECTIONS LENGTH: {len(self.directions)} -- {self.directions}")
 
         self.canvas_left.delete("all")  # Clear the canvas_left
         self.draw_threshold_lines()  # Draw threshold lines
@@ -518,8 +532,6 @@ class Main_Middle_Frame(ctk.CTkFrame):
         num_channels = len(self.anomaly_data)
         canvas_width = self.canvas_left.winfo_width()
         canvas_height = self.canvas_left.winfo_height()
-
-        font_size = max(6, int(225 / num_channels))
 
         # Calculate bar width to evenly fill the canvas_left
         bar_width = canvas_width / num_channels
@@ -547,7 +559,7 @@ class Main_Middle_Frame(ctk.CTkFrame):
             else:
                 bar_color = 'red'
                 text_color = 'white'
-                self.anomaly_list.append(self.directions[i])
+                self.anomaly_list.append(directions_to_draw[i])
                 self.event_handler(Event.ANOMALY_DETECTED)
 
             # Calculate the position of each bar
@@ -566,7 +578,7 @@ class Main_Middle_Frame(ctk.CTkFrame):
             self.canvas_left.create_text(x1 + bar_width / 2, text_position_y, text=f"{percentage:.0f}%", fill=text_color, anchor='center', font=("Arial", font_size))
 
             # Draw the direction label below the bar
-            self.canvas_left.create_text(x1 + bar_width / 2, chart_height + 20, text=f'{self.directions[i]}\u00B0', anchor='n', font=("Arial", font_size))
+            self.canvas_left.create_text(x1 + bar_width / 2, chart_height + 20, text=f'{directions_to_draw[i]}\u00B0', anchor='n', font=("Arial", font_size))
 
         self.anomaly_list.clear()
         # Draw the chart's axis
@@ -598,6 +610,11 @@ class Main_Middle_Frame(ctk.CTkFrame):
                                          fill=color, dash=(4, 4), tags="threshold_lines")
 
     def start_updates(self):
+        if getattr(self, "_chart_loop_started", False):
+            # print("draw_bar_chart() loop already running.")
+            return
+        # print("starting draw_bar_chart() loop.")
+        self._chart_loop_started = True
         self.updating = True
         self.draw_bar_chart()
 
@@ -605,6 +622,22 @@ class Main_Middle_Frame(ctk.CTkFrame):
         self.anomaly_data = list(0 for x in range(len(self.directions)))
         self.updating = False
 
+    def start_heatmap_updates(self):
+        if self._heatmap_loop_started:
+            return
+        self._heatmap_loop_started = True
+        self.update_heatmap_image()
+
+    def update_heatmap_image(self):
+        # print('Heatmap')
+        if self.next_heatmap_image:
+            image = self.next_heatmap_image
+            photo = ImageTk.PhotoImage(image)
+            self.heatmap_canvas.configure(image=photo)
+            self.heatmap_canvas.image = photo
+            self.next_heatmap_image = None
+
+        self.after(1000, self.update_heatmap_image)
 
 
 # --------------------------------------------------------------------------------------------------
