@@ -8,3 +8,6 @@ Network/nixos/sd-image/results/*.zst
 
 venv/
 venv/
+
+*.pyc
+__pycache__/
