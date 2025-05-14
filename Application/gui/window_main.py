@@ -365,7 +365,6 @@ class Top_Middle_Right_Frame(ctk.CTkFrame):
             self.grid_columnconfigure(0, weight=1, uniform='col')
 
             self.clock_frame(top_frame)
-            # self.calibration_frame(bottom_frame)
 
             self.calibration_seconds = 0
             self.recording_seconds = 0
@@ -380,11 +379,19 @@ class Top_Middle_Right_Frame(ctk.CTkFrame):
             )
             self.clock_display.pack(pady=5)
 
-            # Initialize clock state
-            self.calibration_seconds = 0
-            self.recording_seconds = 0
-            self.calibration_running = False
-            self.recording_running = False
+            # # Initialize clock state
+            # self.calibration_seconds = 0
+            # self.recording_seconds = 0
+            # self.calibration_running = False
+            # self.recording_running = False
+
+            self.real_time_checkbox_variable = ctk.BooleanVar(value=True)
+
+            self.real_time_checkbox = ctk.CTkCheckBox(frame, text="Real-Time",
+                                                      variable=self.real_time_checkbox_variable,
+                                                      fg_color=configuration.bluelight_fg_color,
+                                                      hover_color=configuration.bluelight_hover_color, font=configuration.button_font_style)
+            self.real_time_checkbox.pack(pady=5)
 
         def start_calibration(self, seconds):
             self.calibration_seconds = seconds
@@ -677,7 +684,7 @@ class Main_Middle_Frame(ctk.CTkFrame):
         # Draw the chart's axis
         self.canvas_left.create_line(0, chart_height, canvas_width, chart_height)
 
-        self.after(1000, self.draw_bar_chart)
+        self.after(500, self.draw_bar_chart)
 
     def draw_threshold_lines(self):
         # Clear any existing lines
@@ -730,7 +737,7 @@ class Main_Middle_Frame(ctk.CTkFrame):
             self.heatmap_canvas.image = photo
             self.next_heatmap_image = None
 
-        self.after(1000, self.update_heatmap_image)
+        self.after(500, self.update_heatmap_image)
 
 
 # --------------------------------------------------------------------------------------------------
@@ -756,6 +763,7 @@ class Bottom_Frame(ctk.CTkFrame):
         self.Left_Frame.grid(row=0, column=0, sticky='nsew')  # Left frame in column 0
         self.Center_Frame.grid(row=0, column=1, sticky='nsew')  # Right frame in column 1
         self.Right_Frame.grid(row=0, column=2, sticky='nsew')  # Right frame in column 1
+
 
 class Bottom_Left_Frame(ctk.CTkFrame):
     def __init__(self, parent, event_handler):

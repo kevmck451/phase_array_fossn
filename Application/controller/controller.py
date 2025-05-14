@@ -39,6 +39,8 @@ class Controller:
         self.audio_loaded = False
         self.audio_stream_running = False
         self.chunk_size_seconds = 1
+        self.realtime = True
+        self.calibrate_timer_iterator = 0
 
         self.calibration_time = 60
         self.calibrate_start_time = 0
@@ -167,6 +169,7 @@ class Controller:
     def audio_setup(self):
         if self.audio_loaded:
             self.audio_streamer = self.mic_array_simulator
+            self.mic_array_simulator.realtime = self.realtime
             self.mic_array_simulator.start_stream()
             if self.gui.Top_Frame.Center_Frame.audio_save_checkbox_variable.get():
                 if self.app_state == State.RUNNING:
@@ -188,6 +191,11 @@ class Controller:
                 self.mic_array.start_recording(None)
 
     def audio_simulation(self, filepath):
+        import soundfile as sf
+        info = sf.info(str(filepath))
+        if info.channels != self.array_config.num_mics:
+            self.gui.Top_Frame.Right_Frame.insert_text(f'File Contains {info.channels} chs and App is for {self.array_config.num_mics}', self.color_pink)
+            self.gui.Top_Frame.Right_Frame.insert_text(f'Is this a mistake?', self.color_pink)
         audio = Audio(filepath=filepath, num_channels=self.array_config.num_mics)
         self.mic_array_simulator = AudioStreamSimulator(audio, self.chunk_size_seconds)
 
@@ -218,7 +226,8 @@ class Controller:
                 # print(f'Audio Data Size: {current_audio_data.shape}')
                 self.beamformer.beamform_data(current_audio_data)
 
-            time.sleep(self.queue_check_time)
+            if self.realtime:
+                time.sleep(self.queue_check_time)
 
     # ---------------------------------
     # PROCESSING ----------------------
@@ -237,7 +246,8 @@ class Controller:
                 # print(f'Beamform Data Size: {current_data.shape}')
                 self.processor.process_data(current_data)
 
-            time.sleep(self.queue_check_time)
+            if self.realtime:
+                time.sleep(self.queue_check_time)
 
     # ---------------------------------
     # PCA CALCULATOR ------------------
@@ -255,7 +265,9 @@ class Controller:
                 current_data = self.processor.queue.get()
                 # print(f'Processor Data Size: {current_data.shape}')
                 self.pca_calculator.process_chunk(current_data)
-            time.sleep(self.queue_check_time)
+
+            if self.realtime:
+                time.sleep(self.queue_check_time)
 
     # ---------------------------------
     # DETECTOR  -----------------------
@@ -275,7 +287,8 @@ class Controller:
                 self.detector.detect_anomalies(current_data)
                 # self.detector.detect_anomalies_simulation(current_data)
 
-            time.sleep(self.queue_check_time)
+            if self.realtime:
+                time.sleep(self.queue_check_time)
 
     # ---------------------------------
     # GUI BAR CHART UPDATER -----------
@@ -284,7 +297,8 @@ class Controller:
         self.bar_chart_updater_running = True
         self.bar_chart_updater_thread = Thread(target=self.bar_chart_updater_start, daemon=True)
         self.bar_chart_updater_thread.start()
-        self.gui.Middle_Frame.Center_Frame.start_updates()
+        if self.realtime:
+            self.gui.Middle_Frame.Center_Frame.start_updates()
 
     def bar_chart_updater_start(self):
         while self.bar_chart_updater_running:
@@ -293,13 +307,13 @@ class Controller:
 
                 current_anomaly_data = self.detector.queue.get()
 
-                # give anomaly data to bar chart
-                self.gui.Middle_Frame.Center_Frame.anomaly_data = current_anomaly_data
-
-                # give anomaly data to heatmap
-                self.heatmap.update(self.thetas, current_anomaly_data)
-                image = self.heatmap.render_heatmap_image()
-                self.gui.Middle_Frame.Center_Frame.next_heatmap_image = image
+                if self.realtime:
+                    # give anomaly data to bar chart
+                    self.gui.Middle_Frame.Center_Frame.anomaly_data = current_anomaly_data
+                    # give anomaly data to heatmap
+                    self.heatmap.update(self.thetas, current_anomaly_data)
+                    image = self.heatmap.render_heatmap_image()
+                    self.gui.Middle_Frame.Center_Frame.next_heatmap_image = image
 
                 # save data if box checked
                 if self.gui.Top_Frame.Center_Frame.audio_save_checkbox_variable.get():
@@ -307,7 +321,12 @@ class Controller:
                     if not self.audio_loaded:
                         self.temp_logger.log_data(self.temp_sensor.current_temp)
 
-            time.sleep(1)
+            if self.realtime:
+                time.sleep(self.chunk_size_seconds)
+
+            if not self.realtime and self.app_state is State.CALIBRATING:
+                self.calibrate_timer_iterator += 1
+
 
     # ---------------------------------
     # START / STOP QUEUES ------------
@@ -333,19 +352,33 @@ class Controller:
         self.gui.Middle_Frame.Center_Frame.stop_updates()
 
     def calibrate_timer(self):
-        current_time = time.time()
-        while (current_time - self.calibrate_start_time) < self.calibration_time:
-            # print(self.detector.baseline_means)
-            # print(self.detector.baseline_calculated)
-            time.sleep(0.1)
+
+        if self.realtime:
             current_time = time.time()
-        if self.app_state == State.CALIBRATING:
+            while (current_time - self.calibrate_start_time) < self.calibration_time:
+                # print(self.detector.baseline_means)
+                # print(self.detector.baseline_calculated)
+                time.sleep(0.1)
+                current_time = time.time()
+            if self.app_state == State.CALIBRATING:
+                self.handle_event(Event.STOP_PCA_CALIBRATION)
+        else:
+            while self.calibrate_timer_iterator < self.calibration_time:
+                time.sleep(0.001)
+
             self.handle_event(Event.STOP_PCA_CALIBRATION)
+            self.calibrate_timer_iterator = 0
 
     def wait_for_start(self):
-        while self.app_state != State.IDLE:
-            time.sleep(0.5)
-        self.handle_event(Event.START_RECORDER)
+        if self.realtime:
+            while self.app_state != State.IDLE:
+                time.sleep(0.5)
+            self.handle_event(Event.START_RECORDER)
+        else:
+            while self.app_state != State.CALIBRATING:
+                time.sleep(0.001)
+            self.handle_event(Event.START_RECORDER)
+
 
     # ---------------------------------
     # EVENT HANDLER -------------------
@@ -390,6 +423,7 @@ class Controller:
                 self.gui.Top_Frame.Right_Frame.insert_text(f'Files Not Found. Try Again', 'red')
 
         elif event == Event.START_RECORDER:
+            self.realtime = self.gui.Top_Frame.Center_Right_Frame.real_time_checkbox_variable.get()
             self.gui.Top_Frame.Center_Right_Frame.reset_clock()
             entry_val = self.gui.Top_Frame.Center_Frame.chunk_time_entry.get()
             if entry_val.isdigit():
@@ -410,7 +444,8 @@ class Controller:
                     self.app_state = State.RUNNING
                     self.gui.Top_Frame.Center_Frame.toggle_play()
                     self.start_all_queues()
-                    self.gui.Top_Frame.Center_Right_Frame.start_recording()
+                    if self.realtime:
+                        self.gui.Top_Frame.Center_Right_Frame.start_recording()
 
         elif event == Event.STOP_RECORDER:
             self.gui.Top_Frame.Center_Frame.toggle_play()

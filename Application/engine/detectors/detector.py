@@ -52,8 +52,13 @@ class Detector:
     def detect_anomalies(self, pca_data):
         self.num_channels, self.num_pca_components, self.num_samples = pca_data.shape
 
+        if self.baseline_means is None or self.baseline_stds is None:
+            self.calculate_baseline(pca_data)
+            return
+
         if not self.baseline_calculated:
             self.calculate_baseline(pca_data)
+            return
 
         else:
             anomalies_list = []

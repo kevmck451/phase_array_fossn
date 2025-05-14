@@ -24,6 +24,7 @@ class AudioStreamSimulator:
         self.num_chunks = audio_object.data.shape[1] // self.chunk_size
 
         self.running = False
+        self.realtime = True
 
     def start_stream(self):
         print('starting simulated stream')
@@ -34,7 +35,9 @@ class AudioStreamSimulator:
         for i in range(self.num_chunks):
             chunk = self.audio_object.data[:, int(i * self.chunk_size):int((i + 1) * self.chunk_size)]
             self.queue.put(chunk)
-            time.sleep(self.chunk_size_sec)
+
+            if self.realtime:
+                time.sleep(self.chunk_size_sec) # todo: fixed
 
         self.running = False
 
