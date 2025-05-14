@@ -472,8 +472,10 @@ class Controller:
                 if not self.audio_loaded:
                     self.mic_array.record_running = False
                     self.gui.Top_Frame.Right_Frame.insert_text('Audio File Saved', 'green')
-            final_image = self.heatmap.render_heatmap_image()
-            self.heatmap_logger.save_heatmap_image(final_image, "final")
+
+            if self.gui.Top_Frame.Center_Frame.audio_save_checkbox_variable.get():
+                final_image = self.heatmap.render_heatmap_image()
+                self.heatmap_logger.save_heatmap_image(final_image, "final")
             self.stop_all_queues()
             self.gui.Middle_Frame.Center_Frame.stop_updates()
             self.setup_project_directory()
@@ -565,8 +567,7 @@ class Controller:
 
                 self.phis = [phi]
                 self.beamformer.thetas = theta_list
-                self.gui.Middle_Frame.Center_Frame.directions = theta_list
-                self.gui.Middle_Frame.Center_Frame.anomaly_data = [0] * len(theta_list)
+                self.gui.Middle_Frame.Center_Frame.update_directions(theta_list)
                 self.gui.Top_Frame.Right_Frame.insert_text(f'Theta: ({Ltheta}, {Rtheta}, {increment}) | Phi: {phi}', self.color_pink)
 
         elif event == Event.DUMMY_BUTTON:
