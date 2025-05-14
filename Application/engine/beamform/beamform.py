@@ -24,7 +24,7 @@ class Beamform:
         self.phis = phis
         self.temperature = int(initial_temp)
         self.temperature_current = int(initial_temp)
-        self.num_taps = 201
+        self.num_taps = array_config.number_of_taps
         self.fir_coeffs = self.compile_all_fir_coeffs()
         self.desired_channels = self.fir_coeffs.shape[0]
         self.num_coeffs = self.fir_coeffs.shape[3]

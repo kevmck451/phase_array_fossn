@@ -28,3 +28,5 @@ Ltheta = -70
 Rtheta = 70
 increment = 10
 default_theta_directions = list(range(Ltheta, Rtheta + 1, increment))
+
+number_of_taps = 201
