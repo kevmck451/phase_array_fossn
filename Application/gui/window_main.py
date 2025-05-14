@@ -642,7 +642,6 @@ class Main_Middle_Frame(ctk.CTkFrame):
 
             # Determine the color based on the threshold
             percentage = (value / self.max_anomalies) * 100
-            display_percentage = min(percentage, 100)
 
             # Calculate the height of the bar
             # bar_height = (value / self.max_anomalies) * chart_height
@@ -676,7 +675,7 @@ class Main_Middle_Frame(ctk.CTkFrame):
             text_position_y = y2 - bar_height / 2
             if bar_height < 20:
                 text_position_y = y1 - 10
-            self.canvas_left.create_text(x1 + bar_width / 2, text_position_y, text=f"{display_percentage:.0f}%", fill=text_color, anchor='center', font=("Arial", font_size))
+            self.canvas_left.create_text(x1 + bar_width / 2, text_position_y, text=f"{percentage:.0f}%", fill=text_color, anchor='center', font=("Arial", font_size))
 
             # Draw the direction label below the bar
             self.canvas_left.create_text(x1 + bar_width / 2, chart_height + 20, text=f'{directions_to_draw[i]}\u00B0', anchor='n', font=("Arial", font_size))
