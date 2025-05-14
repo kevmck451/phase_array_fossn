@@ -548,7 +548,7 @@ class Main_Middle_Frame(ctk.CTkFrame):
         # Left frame for visual
         left_frame = ctk.CTkFrame(self)
         left_frame.grid(row=0, column=0, padx=10, pady=10, sticky='nsew')
-        left_frame.grid_rowconfigure(0, weight=0)
+        left_frame.grid_rowconfigure(1, weight=1)
         left_frame.grid_rowconfigure(1, weight=1)
         left_frame.grid_columnconfigure(0, weight=1)
 

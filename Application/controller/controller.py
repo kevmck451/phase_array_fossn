@@ -567,7 +567,8 @@ class Controller:
 
                 self.phis = [phi]
                 self.beamformer.thetas = theta_list
-                self.gui.Middle_Frame.Center_Frame.update_directions(theta_list)
+                self.gui.Middle_Frame.Center_Frame.directions = theta_list
+                self.gui.Middle_Frame.Center_Frame.anomaly_data = [0] * len(theta_list)
                 self.gui.Top_Frame.Right_Frame.insert_text(f'Theta: ({Ltheta}, {Rtheta}, {increment}) | Phi: {phi}', self.color_pink)
 
         elif event == Event.DUMMY_BUTTON:
