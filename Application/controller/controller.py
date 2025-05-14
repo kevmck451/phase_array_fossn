@@ -339,7 +339,7 @@ class Controller:
 
             # check if sim audio is finished
             if self.audio_loaded:
-                if not self.mic_array_simulator:
+                if not self.mic_array_simulator.running:
                     self.handle_event(Event.STOP_RECORDER)
 
 
@@ -465,7 +465,6 @@ class Controller:
                         self.gui.Top_Frame.Center_Right_Frame.start_recording()
 
         elif event == Event.STOP_RECORDER:
-            self.gui.Top_Frame.Center_Frame.toggle_play()
             self.app_state = State.IDLE
             if self.gui.Top_Frame.Center_Frame.pca_save_checkbox_variable.get():
                 if not self.audio_loaded:
@@ -477,6 +476,7 @@ class Controller:
             self.gui.Middle_Frame.Center_Frame.stop_updates()
             self.setup_project_directory()
             self.gui.Top_Frame.Center_Right_Frame.stop_recording()
+            self.gui.Top_Frame.Center_Frame.toggle_play()
 
         elif event == Event.PCA_CALIBRATION:
             entry_val = self.gui.Top_Frame.Center_Frame.calibration_time_entry.get()
