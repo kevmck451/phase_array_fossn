@@ -45,8 +45,8 @@ class Controller:
         self.calibration_time = 60
         self.calibrate_start_time = 0
         self.thetas = self.array_config.default_theta_directions
-
         self.phis = [0]  # azimuth angle: neg is below and pos is above
+
         self.temperature = 90
         self.beamformer = Beamform(self.thetas, self.phis, self.temperature, self.array_config)
         self.beamforming_thread = None
@@ -72,7 +72,7 @@ class Controller:
         self.data_logger = None
         self.temp_logger = None
 
-        self.queue_check_time = 0.1
+        self.queue_check_time = 0.01
 
         self.color_pink = (255, 0, 150)
         self.color_light_blue = (0, 150, 255)
@@ -322,7 +322,7 @@ class Controller:
                         self.temp_logger.log_data(self.temp_sensor.current_temp)
 
             if self.realtime:
-                time.sleep(self.chunk_size_seconds)
+                time.sleep(self.chunk_size_seconds/2)
 
             if not self.realtime and self.app_state is State.CALIBRATING:
                 self.calibrate_timer_iterator += 1
@@ -372,7 +372,7 @@ class Controller:
     def wait_for_start(self):
         if self.realtime:
             while self.app_state != State.IDLE:
-                time.sleep(0.5)
+                time.sleep(0.1)
             self.handle_event(Event.START_RECORDER)
         else:
             while self.app_state != State.CALIBRATING:
@@ -512,10 +512,10 @@ class Controller:
             current_time_stamp = datetime.now().strftime("%I:%M:%S %p")
             current_anomaly_locations = self.gui.Middle_Frame.Center_Frame.anomaly_list
             if current_time_stamp != self.last_time_stamp or current_anomaly_locations != self.last_anomaly_locations:
-                self.gui.Top_Frame.Right_Frame.insert_text(
-                    f'{current_time_stamp}: ANOMALY DETECTED AT {current_anomaly_locations}',
-                    'red'
-                )
+                # self.gui.Top_Frame.Right_Frame.insert_text(
+                #     f'{current_time_stamp}: ANOMALY DETECTED AT {current_anomaly_locations}',
+                #     'red'
+                # )
                 self.last_time_stamp = current_time_stamp
                 self.last_anomaly_locations = current_anomaly_locations.copy()
 
@@ -525,11 +525,13 @@ class Controller:
                 Rtheta = int(self.gui.Bottom_Frame.Left_Frame.rtheta_entry.get())
                 increment = int(self.gui.Bottom_Frame.Left_Frame.theta_inc_var.get())
                 theta_list = list(range(Ltheta, Rtheta + 1, increment))
+                phi = int(self.gui.Bottom_Frame.Left_Frame.lphi_entry.get())
 
+                self.phis = [phi]
                 self.beamformer.thetas = theta_list
                 self.gui.Middle_Frame.Center_Frame.directions = theta_list
                 self.gui.Middle_Frame.Center_Frame.anomaly_data = [0] * len(theta_list)
-
+                self.gui.Top_Frame.Right_Frame.insert_text(f'Theta: ({Ltheta}, {Rtheta}, {increment}) | Phi: {phi}', self.color_pink)
 
         elif event == Event.DUMMY_BUTTON:
             # dummy button

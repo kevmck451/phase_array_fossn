@@ -802,7 +802,7 @@ class Bottom_Left_Frame(ctk.CTkFrame):
         ).grid(row=0, column=0, sticky='w', padx=(0, 2))
 
         ctk.CTkLabel(
-            thetas_frame, text="Thetas:", font=configuration.console_font_style
+            thetas_frame, text="Theta:", font=configuration.console_font_style
         ).grid(row=0, column=1, sticky='w', padx=(0, 5))
 
         self.ltheta_entry = ctk.CTkEntry(
@@ -841,7 +841,7 @@ class Bottom_Left_Frame(ctk.CTkFrame):
         ).grid(row=0, column=0, sticky='w', padx=(0, 2))
 
         ctk.CTkLabel(
-            phis_frame, text="Phis:", font=configuration.console_font_style
+            phis_frame, text="Phi:", font=configuration.console_font_style
         ).grid(row=0, column=1, sticky='w', padx=(0, 5))
 
         self.lphi_entry = ctk.CTkEntry(
