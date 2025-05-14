@@ -331,16 +331,17 @@ class Controller:
                     if not self.audio_loaded:
                         self.temp_logger.log_data(self.temp_sensor.current_temp)
 
-            if self.realtime:
-                time.sleep(self.chunk_size_seconds/2)
 
             if not self.realtime and self.app_state is State.CALIBRATING:
                 self.calibrate_timer_iterator += 1
 
-            # check if sim audio is finished
-            if self.audio_loaded:
-                if not self.mic_array_simulator.running:
-                    self.handle_event(Event.STOP_RECORDER)
+            if self.realtime:
+                # check if sim audio is finished
+                if self.audio_loaded:
+                    if not self.mic_array_simulator.running:
+                        self.handle_event(Event.STOP_RECORDER)
+
+                time.sleep(self.chunk_size_seconds/2)
 
 
 
@@ -366,7 +367,6 @@ class Controller:
         self.detector_running = False
         self.bar_chart_updater_running = False
         self.gui.Middle_Frame.Center_Frame.stop_updates()
-
 
     def calibrate_timer(self):
 
@@ -441,6 +441,8 @@ class Controller:
 
         elif event == Event.START_RECORDER:
             self.realtime = self.gui.Top_Frame.Center_Right_Frame.real_time_checkbox_variable.get()
+            if not self.realtime:
+                self.gui.Top_Frame.Right_Frame.insert_text(f'App is analyzing & storing Data. Please Wait', self.color_light_blue)
             self.gui.Top_Frame.Center_Right_Frame.reset_clock()
             entry_val = self.gui.Top_Frame.Center_Frame.chunk_time_entry.get()
             if entry_val.isdigit():
@@ -478,6 +480,9 @@ class Controller:
             self.gui.Top_Frame.Center_Right_Frame.stop_recording()
             self.gui.Top_Frame.Center_Frame.toggle_play()
 
+            if not self.realtime:
+                self.gui.Top_Frame.Right_Frame.insert_text(f'App is finished analyzing', 'green')
+
         elif event == Event.PCA_CALIBRATION:
             entry_val = self.gui.Top_Frame.Center_Frame.calibration_time_entry.get()
             if entry_val.isdigit():
@@ -511,6 +516,7 @@ class Controller:
                 self.pca_calculator.queue.get()
             while not self.detector.queue.empty():
                 self.detector.queue.get()
+
             if self.gui.Top_Frame.Center_Frame.pca_save_checkbox_variable.get():
                 if not self.audio_loaded:
                     self.mic_array.record_running = False

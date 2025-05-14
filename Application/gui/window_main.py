@@ -617,7 +617,7 @@ class Main_Middle_Frame(ctk.CTkFrame):
         height = self.canvas_left.winfo_height()
 
         if width < 100 or height < 100:
-            self.after(1000, self.draw_bar_chart)
+            self.after(500, self.draw_bar_chart)
             return
 
         num_channels = len(self.anomaly_data)
