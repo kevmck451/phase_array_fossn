@@ -396,6 +396,17 @@ class Controller:
                 time.sleep(0.001)
             self.handle_event(Event.START_RECORDER)
 
+    def remove_directory_if_empty(self):
+        if os.path.exists(self.project_directory_path):
+            for subdir in os.listdir(self.project_directory_path):
+                full_subdir_path = os.path.join(self.project_directory_path, subdir)
+                if os.path.isdir(full_subdir_path):
+                    if not os.listdir(full_subdir_path):
+                        os.rmdir(full_subdir_path)
+
+            if not os.listdir(self.project_directory_path):
+                os.rmdir(self.project_directory_path)
+
 
     # ---------------------------------
     # EVENT HANDLER -------------------
@@ -411,15 +422,7 @@ class Controller:
             self.mic_array.audio_receiver.close_connection()
             self.app_state = State.IDLE
 
-            if os.path.exists(self.project_directory_path):
-                for subdir in os.listdir(self.project_directory_path):
-                    full_subdir_path = os.path.join(self.project_directory_path, subdir)
-                    if os.path.isdir(full_subdir_path):
-                        if not os.listdir(full_subdir_path):
-                            os.rmdir(full_subdir_path)
-
-                if not os.listdir(self.project_directory_path):
-                    os.rmdir(self.project_directory_path)
+            self.remove_directory_if_empty()
 
         elif event == Event.LOAD_AUDIO:
             self.audio_loaded = True
@@ -478,6 +481,7 @@ class Controller:
                 self.heatmap_logger.save_heatmap_image(final_image, "final")
             self.stop_all_queues()
             self.gui.Middle_Frame.Center_Frame.stop_updates()
+            self.remove_directory_if_empty()
             self.setup_project_directory()
             self.gui.Top_Frame.Center_Right_Frame.stop_recording()
             self.gui.Top_Frame.Center_Frame.toggle_play()
