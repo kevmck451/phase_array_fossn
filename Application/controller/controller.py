@@ -10,6 +10,7 @@ from Application.engine.detectors.detector import Detector
 from Application.engine.detectors.heatmap import Heatmap
 
 from Application.controller.detector_log import Detector_Log
+from Application.controller.heatmap_log import Heatmap_Log
 from Application.controller.temp_log import Temp_Log
 
 from Application.controller.event_states import Event
@@ -70,6 +71,7 @@ class Controller:
         self.bar_chart_updater_running = False
 
         self.data_logger = None
+        self.heatmap_logger = None
         self.temp_logger = None
 
         self.queue_check_time = 0.01
@@ -155,6 +157,7 @@ class Controller:
             self.anom_filepath = filepath
             os.makedirs(filepath, exist_ok=True)
             self.data_logger = Detector_Log(self.anom_filepath, self.thetas)
+            self.heatmap_logger = Heatmap_Log(self.anom_filepath)
         elif option == 'temp':
             self.temp_filepath = f'{self.project_directory_path}/Temp_'
             filepath = self.temp_filepath + current_time
@@ -306,18 +309,24 @@ class Controller:
                 # print('GUI BAR CHART UPDATING----------')
 
                 current_anomaly_data = self.detector.queue.get()
+                self.heatmap.update(self.thetas, current_anomaly_data)
+                image = self.heatmap.render_heatmap_image()
 
                 if self.realtime:
                     # give anomaly data to bar chart
                     self.gui.Middle_Frame.Center_Frame.anomaly_data = current_anomaly_data
                     # give anomaly data to heatmap
-                    self.heatmap.update(self.thetas, current_anomaly_data)
-                    image = self.heatmap.render_heatmap_image()
+
                     self.gui.Middle_Frame.Center_Frame.next_heatmap_image = image
 
                 # save data if box checked
                 if self.gui.Top_Frame.Center_Frame.audio_save_checkbox_variable.get():
                     self.data_logger.log_data(current_anomaly_data)
+
+                    if self.heatmap_logger and self.heatmap.should_log:
+                        self.heatmap_logger.save_heatmap_image(image, "rolling")
+                        self.heatmap.should_log = False
+
                     if not self.audio_loaded:
                         self.temp_logger.log_data(self.temp_sensor.current_temp)
 
@@ -326,6 +335,14 @@ class Controller:
 
             if not self.realtime and self.app_state is State.CALIBRATING:
                 self.calibrate_timer_iterator += 1
+
+            # check if sim audio is finished
+            if self.audio_loaded:
+                if not self.mic_array_simulator:
+                    self.handle_event(Event.STOP_RECORDER)
+
+
+
 
 
     # ---------------------------------
@@ -454,6 +471,8 @@ class Controller:
                 if not self.audio_loaded:
                     self.mic_array.record_running = False
                     self.gui.Top_Frame.Right_Frame.insert_text('Audio File Saved', 'green')
+            final_image = self.heatmap.render_heatmap_image()
+            self.heatmap_logger.save_heatmap_image(final_image, "final")
             self.stop_all_queues()
             self.gui.Middle_Frame.Center_Frame.stop_updates()
             self.setup_project_directory()
