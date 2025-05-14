@@ -9,7 +9,6 @@ import customtkinter as ctk
 from PIL import ImageTk
 import tkinter as tk
 import subprocess
-import time
 
 
 class Main_Window(ctk.CTk):
@@ -204,13 +203,14 @@ class Top_Middle_Frame(ctk.CTkFrame):
         self.load_button_audio = ctk.CTkButton(button_frame, text="Load",
                                          fg_color=configuration.gray_fg_color,
                                          hover_color=configuration.gray_hover_color,
-                                         command=self.load_audio_file)
+                                         command=self.load_audio_file, font=configuration.button_font_style)
         self.load_button_audio.grid(row=0, column=0, padx=5)
 
         self.start_button = ctk.CTkButton(button_frame, text="Start",
                                          fg_color=configuration.start_fg_color,
                                          hover_color=configuration.start_hover_color,
-                                         command=lambda: self.event_handler(Event.START_RECORDER))
+                                         command=lambda: self.event_handler(Event.START_RECORDER),
+                                          font=configuration.button_font_style)
         self.start_button.grid(row=0, column=1, padx=5)
 
         self.audio_save_checkbox_variable = ctk.BooleanVar(value=True)
@@ -218,16 +218,16 @@ class Top_Middle_Frame(ctk.CTkFrame):
         self.save_checkbox_audio = ctk.CTkCheckBox(button_frame, text="Save",
                                              variable=self.audio_save_checkbox_variable,
                                              fg_color=configuration.bluelight_fg_color,
-                                             hover_color=configuration.bluelight_hover_color)
+                                             hover_color=configuration.bluelight_hover_color, font=configuration.button_font_style)
         self.save_checkbox_audio.grid(row=0, column=2, padx=5)
 
-        self.chunk_time_entry = ctk.CTkEntry(button_frame, width=40, placeholder_text="1.0s")
+        self.chunk_time_entry = ctk.CTkEntry(button_frame, width=40, placeholder_text="1.0s", font=configuration.button_font_style)
         self.chunk_time_entry.grid(row=0, column=3, padx=5)
 
         entry_frame = ctk.CTkFrame(frame)
         entry_frame.pack(pady=10)
 
-        self.project_name = ctk.CTkEntry(entry_frame, width=300, placeholder_text="Enter a Test Name, if desired...")
+        self.project_name = ctk.CTkEntry(entry_frame, width=300, placeholder_text="Enter a Test Name, if desired...", font=configuration.button_font_style)
         self.project_name.pack()
 
     def load_audio_file(self):
@@ -264,14 +264,14 @@ class Top_Middle_Frame(ctk.CTkFrame):
         self.load_button_pca = ctk.CTkButton(button_frame, text="Load",
                                          fg_color=configuration.gray_fg_color,
                                          hover_color=configuration.gray_hover_color,
-                                         command=self.load_pca_file)
+                                         command=self.load_pca_file, font=configuration.button_font_style)
         self.load_button_pca.grid(row=0, column=0, padx=5)
 
 
         self.calibrate_button = ctk.CTkButton(button_frame, text="Calibrate PCA",
                                               fg_color=configuration.start_fg_color,
                                               hover_color=configuration.start_hover_color,
-                                              command=lambda: self.event_handler(Event.PCA_CALIBRATION))
+                                              command=lambda: self.event_handler(Event.PCA_CALIBRATION), font=configuration.button_font_style)
         self.calibrate_button.grid(row=0, column=1, padx=5)
 
         self.pca_save_checkbox_variable = ctk.BooleanVar(value=True)
@@ -279,10 +279,10 @@ class Top_Middle_Frame(ctk.CTkFrame):
         self.save_checkbox_pca = ctk.CTkCheckBox(button_frame, text="Save",
                                              variable=self.pca_save_checkbox_variable,
                                              fg_color=configuration.bluelight_fg_color,
-                                             hover_color=configuration.bluelight_hover_color)
+                                             hover_color=configuration.bluelight_hover_color, font=configuration.button_font_style)
         self.save_checkbox_pca.grid(row=0, column=2, padx=5)
 
-        self.calibration_time_entry = ctk.CTkEntry(button_frame, width=40, placeholder_text="60s")
+        self.calibration_time_entry = ctk.CTkEntry(button_frame, width=40, placeholder_text="60s", font=configuration.button_font_style)
         self.calibration_time_entry.grid(row=0, column=3, padx=5)
 
     def load_pca_file(self):
@@ -317,14 +317,14 @@ class Top_Middle_Frame(ctk.CTkFrame):
             self.start_button.configure(text="Start",
                                        fg_color=configuration.start_fg_color,
                                        hover_color=configuration.start_hover_color,
-                                       command=lambda: self.event_handler(Event.START_RECORDER))
+                                       command=lambda: self.event_handler(Event.START_RECORDER), font=configuration.button_font_style)
             self.playing = False
             # Placeholder for stopping audio
         else:
             self.start_button.configure(text="Stop",
                                        fg_color=configuration.stop_fg_color,
                                        hover_color=configuration.stop_hover_color,
-                                       command=lambda: self.event_handler(Event.STOP_RECORDER))
+                                       command=lambda: self.event_handler(Event.STOP_RECORDER), font=configuration.button_font_style)
             self.playing = True
 
     def toggle_calibrate(self):
@@ -332,13 +332,13 @@ class Top_Middle_Frame(ctk.CTkFrame):
             self.calibrate_button.configure(text="Calibrate PCA",
                                         fg_color=configuration.start_fg_color,
                                         hover_color=configuration.start_hover_color,
-                                        command=lambda: self.event_handler(Event.PCA_CALIBRATION))
+                                        command=lambda: self.event_handler(Event.PCA_CALIBRATION), font=configuration.button_font_style)
             self.calibrating = False
         else:
             self.calibrate_button.configure(text="Stop Calibration",
                                         fg_color=configuration.stop_fg_color,
                                         hover_color=configuration.stop_hover_color,
-                                        command=lambda: self.event_handler(Event.STOP_PCA_CALIBRATION))
+                                        command=lambda: self.event_handler(Event.STOP_PCA_CALIBRATION), font=configuration.button_font_style)
             self.calibrating = True
 
 
@@ -351,16 +351,16 @@ class Top_Middle_Right_Frame(ctk.CTkFrame):
             # Top Frame
             top_frame = ctk.CTkFrame(self)
             top_frame.grid(row=0, column=0, padx=configuration.x_pad_main, pady=configuration.y_pad_main, sticky='nsew')
-            top_frame.grid_rowconfigure(0, weight=1, uniform='row')
+            top_frame.grid_rowconfigure(0, weight=0, uniform='row')
 
             # Bottom Frame
             bottom_frame = ctk.CTkFrame(self)
-            bottom_frame.grid(row=1, column=0, padx=configuration.x_pad_main, pady=configuration.y_pad_main, sticky='nsew')
-            bottom_frame.grid_rowconfigure(0, weight=1, uniform='row')
+            # bottom_frame.grid(row=1, column=0, padx=configuration.x_pad_main, pady=configuration.y_pad_main, sticky='nsew')
+            bottom_frame.grid_rowconfigure(0, weight=0)
 
             # Configure the grid rows and column for self
             self.grid_rowconfigure(0, weight=1)
-            self.grid_rowconfigure(1, weight=1)
+            self.grid_rowconfigure(1, weight=0)
 
             self.grid_columnconfigure(0, weight=1, uniform='col')
 
@@ -558,7 +558,7 @@ class Main_Middle_Frame(ctk.CTkFrame):
 
         # LEFT FRAME ------------------------------
 
-        self.detector_label = ctk.CTkLabel(left_frame, text="Beamformed PCA Detector Output", font=("Arial", 16))
+        self.detector_label = ctk.CTkLabel(left_frame, text="Beamformed PCA Detector Output", font=configuration.console_font_style)
         self.detector_label.grid(row=0, column=0, sticky='ew')
 
         self.canvas_left = tk.Canvas(left_frame, bg="#333333")
@@ -592,7 +592,7 @@ class Main_Middle_Frame(ctk.CTkFrame):
         self.start_updates()
 
         # CENTER FRAME ------------------------------
-        self.heatmap_title = ctk.CTkLabel(center_frame, text="Time Series Heatmap of Anomalies", font=("Arial", 16))
+        self.heatmap_title = ctk.CTkLabel(center_frame, text="Time Series Heatmap of Anomalies", font=configuration.console_font_style)
         self.heatmap_title.grid(row=0, column=0, sticky='ew')
 
         # New: Image container
@@ -600,7 +600,7 @@ class Main_Middle_Frame(ctk.CTkFrame):
         self.heatmap_canvas.grid(row=1, column=0, sticky='nsew', padx=5, pady=5)
 
         # RIGHT FRAME ------------------------------
-        self.classifier_label = ctk.CTkLabel(right_frame, text="Sound Classifier", font=("Arial", 16))
+        self.classifier_label = ctk.CTkLabel(right_frame, text="Sound Classifier", font=configuration.console_font_style)
         self.classifier_label.grid(row=0, column=0, sticky='ew')
 
         self.anomaly_data = [0] * len(self.directions)
@@ -790,7 +790,7 @@ class Bottom_Left_Frame(ctk.CTkFrame):
         self.enable_thetas = tk.BooleanVar(value=True)
         ctk.CTkCheckBox(
             thetas_frame, text="", variable=self.enable_thetas,
-            command=self.toggle_thetas
+            command=self.toggle_thetas, font=configuration.button_font_style
         ).grid(row=0, column=0, sticky='w', padx=(0, 2))
 
         ctk.CTkLabel(
@@ -814,7 +814,7 @@ class Bottom_Left_Frame(ctk.CTkFrame):
             thetas_frame,
             values=["10", "5", "2"],
             variable=self.theta_inc_var,
-            width=60
+            width=60, font=configuration.button_font_style
         )
         self.theta_inc_seg.grid(row=0, column=4, sticky='w')
 
@@ -829,7 +829,7 @@ class Bottom_Left_Frame(ctk.CTkFrame):
         self.enable_phis = tk.BooleanVar(value=False)
         ctk.CTkCheckBox(
             phis_frame, text="", variable=self.enable_phis,
-            command=self.toggle_phis
+            command=self.toggle_phis, font=configuration.button_font_style
         ).grid(row=0, column=0, sticky='w', padx=(0, 2))
 
         ctk.CTkLabel(
@@ -853,14 +853,14 @@ class Bottom_Left_Frame(ctk.CTkFrame):
             phis_frame,
             values=["10", "5", "2"],
             variable=self.phi_inc_var,
-            width=60
+            width=60, font=configuration.button_font_style
         )
         self.phi_inc_seg.grid(row=0, column=4, sticky='w')
 
         # Update Button (below theta and phi settings)
         self.update_thetas_button = ctk.CTkButton(
             self, text="Update",
-            command=lambda: self.event_handler(Event.UPDATE_BEAM_DIRECTIONS)
+            command=lambda: self.event_handler(Event.UPDATE_BEAM_DIRECTIONS), font=configuration.button_font_style
         )
         self.update_thetas_button.grid(row=3, column=0, columnspan=3, sticky='ew', padx=10, pady=(5, 10))
 
@@ -882,11 +882,11 @@ class Bottom_Left_Frame(ctk.CTkFrame):
         self.manual_temp_entry_label.pack(side='left', padx=(0, 5))  # Add space between label and entry
 
         # Entry Box
-        self.manual_temp_entry = ctk.CTkEntry(center_frame, width=50)  # Adjust width to fit 3 digits
+        self.manual_temp_entry = ctk.CTkEntry(center_frame, width=50, font=configuration.button_font_style)  # Adjust width to fit 3 digits
         self.manual_temp_entry.pack(side='left', padx=(0, 5))  # Add space between entry and button
 
         # Set Button
-        self.set_button = ctk.CTkButton(center_frame, text="Set", command=self.set_temp)
+        self.set_button = ctk.CTkButton(center_frame, text="Set", command=self.set_temp, font=configuration.button_font_style)
         self.set_button.pack(side='left')
 
         # Default value for manual temperature entry
@@ -979,7 +979,7 @@ class Bottom_Middle_Frame(ctk.CTkFrame):
         self.nr_std_threshold_label.grid(row=1, column=0, sticky='e', padx=10, pady=5)
         self.nr_std_threshold_entry = ctk.CTkEntry(self, width=100)
         self.nr_std_threshold_entry.grid(row=1, column=1, sticky='w', padx=10, pady=5)
-        self.nr_std_threshold_set_button = ctk.CTkButton(self, text="Set", command=self.set_nr_std_threshold)
+        self.nr_std_threshold_set_button = ctk.CTkButton(self, text="Set", command=self.set_nr_std_threshold, font=configuration.button_font_style)
         self.nr_std_threshold_set_button.grid(row=1, column=2, sticky='w', padx=10, pady=5)
         self.nr_std_threshold_entry.insert(0, f'{self.nr_std_threshold}')  # Default value
 
@@ -988,7 +988,7 @@ class Bottom_Middle_Frame(ctk.CTkFrame):
         self.hp_bottom_cutoff_freq_label.grid(row=2, column=0, sticky='e', padx=10, pady=5)
         self.hp_bottom_cutoff_freq_entry = ctk.CTkEntry(self, width=100)
         self.hp_bottom_cutoff_freq_entry.grid(row=2, column=1, sticky='w', padx=10, pady=5)
-        self.hp_bottom_cutoff_freq_set_button = ctk.CTkButton(self, text="Set", command=self.set_hp_bottom_cutoff_freq)
+        self.hp_bottom_cutoff_freq_set_button = ctk.CTkButton(self, text="Set", command=self.set_hp_bottom_cutoff_freq, font=configuration.button_font_style)
         self.hp_bottom_cutoff_freq_set_button.grid(row=2, column=2, sticky='w', padx=10, pady=5)
         self.hp_bottom_cutoff_freq_entry.insert(0, f'{self.hp_bottom_cutoff_freq}')  # Default value
 
@@ -997,7 +997,7 @@ class Bottom_Middle_Frame(ctk.CTkFrame):
         self.nm_percentage_label.grid(row=3, column=0, sticky='e', padx=10, pady=5)
         self.nm_percentage_entry = ctk.CTkEntry(self, width=100)
         self.nm_percentage_entry.grid(row=3, column=1, sticky='w', padx=10, pady=5)
-        self.nm_percentage_set_button = ctk.CTkButton(self, text="Set", command=self.set_nm_percentage)
+        self.nm_percentage_set_button = ctk.CTkButton(self, text="Set", command=self.set_nm_percentage, font=configuration.button_font_style)
         self.nm_percentage_set_button.grid(row=3, column=2, sticky='w', padx=10, pady=5)
         self.nm_percentage_entry.insert(0, f'{self.nm_percentage}')  # Default value
 
@@ -1006,7 +1006,7 @@ class Bottom_Middle_Frame(ctk.CTkFrame):
         self.ds_new_sr_label.grid(row=4, column=0, sticky='e', padx=10, pady=5)
         self.ds_new_sr_entry = ctk.CTkEntry(self, width=100)
         self.ds_new_sr_entry.grid(row=4, column=1, sticky='w', padx=10, pady=5)
-        self.ds_new_sr_set_button = ctk.CTkButton(self, text="Set", command=self.set_ds_new_sr)
+        self.ds_new_sr_set_button = ctk.CTkButton(self, text="Set", command=self.set_ds_new_sr, font=configuration.button_font_style)
         self.ds_new_sr_set_button.grid(row=4, column=2, sticky='w', padx=10, pady=5)
         self.ds_new_sr_entry.insert(0, f'{self.ds_new_sr}')  # Default value
 
@@ -1062,7 +1062,7 @@ class Bottom_Right_Frame(ctk.CTkFrame):
         self.num_components_entry.grid(row=1, column=1, sticky='w', padx=10, pady=5)
         self.num_components_entry.insert(0, "3")  # Default value
 
-        self.num_components_set_button = ctk.CTkButton(self, text="Set", command=self.set_num_components)
+        self.num_components_set_button = ctk.CTkButton(self, text="Set", command=self.set_num_components, font=configuration.button_font_style)
         self.num_components_set_button.grid(row=1, column=2, sticky='w', padx=10, pady=5)
 
         # Threshold Multiplier Label
@@ -1073,7 +1073,7 @@ class Bottom_Right_Frame(ctk.CTkFrame):
         self.threshold_multiplier_entry.grid(row=2, column=1, sticky='w', padx=10, pady=5)
         self.threshold_multiplier_entry.insert(0, "1.0")  # Default value
 
-        self.threshold_multiplier_set_button = ctk.CTkButton(self, text="Set", command=self.set_threshold_multiplier)
+        self.threshold_multiplier_set_button = ctk.CTkButton(self, text="Set", command=self.set_threshold_multiplier, font=configuration.button_font_style)
         self.threshold_multiplier_set_button.grid(row=2, column=2, sticky='w', padx=10, pady=5)
 
         # anomaly threshold value Label
@@ -1084,7 +1084,7 @@ class Bottom_Right_Frame(ctk.CTkFrame):
         self.anomaly_threshold_value_entry.grid(row=3, column=1, sticky='w', padx=10, pady=5)
         self.anomaly_threshold_value_entry.insert(0, f'{self.anomaly_threshold_value}')  # Default value
 
-        self.anomaly_threshold_value_set_button = ctk.CTkButton(self, text="Set", command=self.set_anomaly_threshold_value)
+        self.anomaly_threshold_value_set_button = ctk.CTkButton(self, text="Set", command=self.set_anomaly_threshold_value, font=configuration.button_font_style)
         self.anomaly_threshold_value_set_button.grid(row=3, column=2, sticky='w', padx=10, pady=5)
 
         # max_anomaly_value Label
@@ -1095,7 +1095,7 @@ class Bottom_Right_Frame(ctk.CTkFrame):
         self.max_anomaly_value_entry.grid(row=4, column=1, sticky='w', padx=10, pady=5)
         self.max_anomaly_value_entry.insert(0, f'{self.max_anomaly_value}')  # Default value
 
-        self.max_anomaly_value_set_button = ctk.CTkButton(self, text="Set", command=self.set_max_anomaly_value)
+        self.max_anomaly_value_set_button = ctk.CTkButton(self, text="Set", command=self.set_max_anomaly_value, font=configuration.button_font_style)
         self.max_anomaly_value_set_button.grid(row=4, column=2, sticky='w', padx=10, pady=5)
 
     def set_num_components(self):
