@@ -173,6 +173,7 @@ class Controller:
         if self.audio_loaded:
             self.audio_streamer = self.mic_array_simulator
             self.mic_array_simulator.realtime = self.realtime
+            self.mic_array_simulator.stop_flag = False
             self.mic_array_simulator.start_stream()
             if self.gui.Top_Frame.Center_Frame.audio_save_checkbox_variable.get():
                 if self.app_state == State.RUNNING:
@@ -343,8 +344,6 @@ class Controller:
 
 
 
-
-
     # ---------------------------------
     # START / STOP QUEUES ------------
     # ---------------------------------
@@ -358,7 +357,7 @@ class Controller:
 
     def stop_all_queues(self):
         if self.audio_loaded:
-            self.mic_array_simulator.running = False
+            self.mic_array_simulator.stop_flag = True
         if self.gui.Top_Frame.Center_Frame.audio_save_checkbox_variable.get():
             self.mic_array.record_running = False
         self.beamform_running = False
@@ -367,6 +366,7 @@ class Controller:
         self.detector_running = False
         self.bar_chart_updater_running = False
         self.gui.Middle_Frame.Center_Frame.stop_updates()
+
 
     def calibrate_timer(self):
 
@@ -500,6 +500,17 @@ class Controller:
         elif event == Event.STOP_PCA_CALIBRATION:
             self.stop_all_queues()
             self.detector.baseline_calculated = True
+            # flush all queues
+            while not self.audio_streamer.queue.empty():
+                self.audio_streamer.queue.get()
+            while not self.beamformer.queue.empty():
+                self.beamformer.queue.get()
+            while not self.processor.queue.empty():
+                self.processor.queue.get()
+            while not self.pca_calculator.queue.empty():
+                self.pca_calculator.queue.get()
+            while not self.detector.queue.empty():
+                self.detector.queue.get()
             if self.gui.Top_Frame.Center_Frame.pca_save_checkbox_variable.get():
                 if not self.audio_loaded:
                     self.mic_array.record_running = False

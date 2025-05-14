@@ -24,24 +24,28 @@ class AudioStreamSimulator:
         self.num_chunks = audio_object.data.shape[1] // self.chunk_size
 
         self.running = False
+        self.stop_flag = False
         self.realtime = True
 
     def start_stream(self):
+        if self.running:
+            print("Stream already running. Skipping restart.")
+            return
+        self.stop_flag = False
         print('starting simulated stream')
-        self.stream_thread = Thread(target=self.stream, daemon=True).start()
         self.running = True
+        self.stream_thread = Thread(target=self.stream, daemon=True).start()
 
     def stream(self):
         for i in range(self.num_chunks):
+            if self.stop_flag:
+                break
             chunk = self.audio_object.data[:, int(i * self.chunk_size):int((i + 1) * self.chunk_size)]
             self.queue.put(chunk)
-
             if self.realtime:
-                time.sleep(self.chunk_size_sec) # todo: fixed
-
+                time.sleep(self.chunk_size_sec)
         self.running = False
-
-
+        self.stop_flag = False
 
 
 

@@ -28,11 +28,7 @@ class Heatmap:
         new_row = np.array(values)
 
         # Initialize all tracking on first run or dimension change
-        if (
-                not hasattr(self, "anomaly_matrix")
-                or self.anomaly_matrix is None
-                or self.anomaly_matrix.shape[1] != num_bins
-        ):
+        if self.anomaly_matrix is None or self.anomaly_matrix.shape[1] != num_bins:
             self.anomaly_matrix = np.zeros((0, num_bins))
             self.raw_input_buffer = []
             self.matrix_filled_once = False
@@ -64,7 +60,6 @@ class Heatmap:
                 self.matrix_filled_once = True
                 self.update_counter = 0
                 self.should_log = True
-                self.raw_input_buffer = []
             else:
                 self.update_counter += 1
                 if self.update_counter >= self.max_time_steps:
@@ -78,15 +73,13 @@ class Heatmap:
         self.max_value_seen = max(self.max_value_seen, np.max(new_row))
 
     def render_heatmap_image(self, width=350, height=280):
+
         if self.anomaly_matrix is None or self.anomaly_matrix.shape[0] == 0:
             return None
 
         fig = Figure(figsize=(width / 100, height / 100), dpi=100)
         canvas = FigureCanvas(fig)
         ax = fig.add_subplot(111)
-
-        if self.anomaly_matrix is None:
-            return None
 
         vmax = self.max_value_seen if self.max_value_seen > 0 else 1
 

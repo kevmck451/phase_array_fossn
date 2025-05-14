@@ -19,7 +19,12 @@ data = df.iloc[:, 1:].to_numpy()
 vmax = np.max(data)
 
 plt.figure(figsize=(15, 20))
-plt.imshow(data, aspect='auto', cmap='hot', origin='lower', vmax=vmax)
+plt.imshow(data, aspect='auto',
+            cmap='inferno',
+            vmin=0,
+            vmax=vmax,
+            origin='upper',
+            interpolation='gaussian',)
 plt.colorbar(label='Value')
 plt.xlabel('Frequency (Hz)')
 plt.ylabel('Time (Frame Index)')
