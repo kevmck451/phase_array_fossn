@@ -27,10 +27,12 @@ if __name__ == '__main__':
     base_path = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/2 FOSSN/Data'
     filepath = f'{base_path}/Tests/17_outdoor_testing/08-07-2024_04-40-36_chunk_1.wav'
     # filepath = f'{base_path}/Tests/10_beamformed/07-16-2024_03-25-22_chunk_1_BF_(-40, 40)-(0).wav'
+    filepath = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/2 FOSSN/Data/Field_Tests/5-13-25 2.00pm/Rect/raw/4_0.wav'
+
     num_channels = 48
     audio = Audio(filepath=filepath, num_channels=num_channels)
-    start_time = 543 # s
-    end_time = 701 # s audio.sample_length
+    start_time = 50 # s
+    end_time = audio.sample_length - start_time # s audio.sample_length
     cropped_data = crop(audio, start_time, end_time)
 
     original_path = Path(filepath)
