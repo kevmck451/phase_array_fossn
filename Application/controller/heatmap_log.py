@@ -9,7 +9,6 @@ class Heatmap_Log:
         self.image_counter = 0
 
     def save_heatmap_image(self, image: Image.Image, reason: str):
-        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         filename = f'heatmap_{self.image_counter}_{reason}.png'
         filepath = os.path.join(self.save_directory, filename)
         image.save(filepath)
