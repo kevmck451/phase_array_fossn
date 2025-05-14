@@ -390,6 +390,7 @@ class Controller:
                 self.gui.Top_Frame.Right_Frame.insert_text(f'Files Not Found. Try Again', 'red')
 
         elif event == Event.START_RECORDER:
+            self.gui.Top_Frame.Center_Right_Frame.reset_clock()
             entry_val = self.gui.Top_Frame.Center_Frame.chunk_time_entry.get()
             if entry_val.isdigit():
                 self.chunk_size_seconds = int(entry_val)
@@ -409,6 +410,7 @@ class Controller:
                     self.app_state = State.RUNNING
                     self.gui.Top_Frame.Center_Frame.toggle_play()
                     self.start_all_queues()
+                    self.gui.Top_Frame.Center_Right_Frame.start_recording()
 
         elif event == Event.STOP_RECORDER:
             self.gui.Top_Frame.Center_Frame.toggle_play()
@@ -420,11 +422,14 @@ class Controller:
             self.stop_all_queues()
             self.gui.Middle_Frame.Center_Frame.stop_updates()
             self.setup_project_directory()
+            self.gui.Top_Frame.Center_Right_Frame.stop_recording()
 
         elif event == Event.PCA_CALIBRATION:
             entry_val = self.gui.Top_Frame.Center_Frame.calibration_time_entry.get()
             if entry_val.isdigit():
                 self.calibration_time = int(entry_val)
+
+            self.gui.Top_Frame.Center_Right_Frame.start_calibration(self.calibration_time)
 
             if not self.mic_array.audio_receiver.running and not self.audio_loaded:
                 self.gui.Top_Frame.Right_Frame.insert_text(f'Phased Array not connected and No Audio is Loaded', 'red')

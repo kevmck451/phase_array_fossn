@@ -37,6 +37,7 @@ reset_icon_filepath = base_path('docs/reset icon s.png')
 console_x_pad = 5
 console_y_pad = 1
 console_font_style = ("default_font", 12)
+console_font_style_large = ("default_font", 36)
 
 # Main Frame Settings
 

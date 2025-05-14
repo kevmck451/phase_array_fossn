@@ -6,9 +6,11 @@ import Application.gui.configuration as configuration
 
 
 import customtkinter as ctk
+from PIL import ImageTk
 import tkinter as tk
 import subprocess
-from PIL import ImageTk
+import time
+
 
 class Main_Window(ctk.CTk):
     def __init__(self, event_handler, array_config):
@@ -65,6 +67,7 @@ class Top_Frame(ctk.CTkFrame):
 
         self.Left_Frame = Top_Left_Frame(self, self.event_handler)
         self.Center_Frame = Top_Middle_Frame(self, self.event_handler)
+        self.Center_Right_Frame = Top_Middle_Right_Frame(self, self.event_handler)
         self.Right_Frame = Top_Right_Frame(self, self.event_handler)
 
         # Grid configuration
@@ -72,11 +75,14 @@ class Top_Frame(ctk.CTkFrame):
         self.columnconfigure(0, weight=1)  # Left column with x/3 of the space
         self.columnconfigure(1, weight=1)  # Right column with x/3 of the space
         self.columnconfigure(2, weight=1)  # Right column with x/3 of the space
+        self.columnconfigure(3, weight=1)  # Right column with x/3 of the space
 
         # Place the frames using grid
         self.Left_Frame.grid(row=0, column=0, sticky='nsew')  # Left frame in column 0
         self.Center_Frame.grid(row=0, column=1, sticky='nsew')  # Right frame in column 1
-        self.Right_Frame.grid(row=0, column=2, sticky='nsew')  # Right frame in column 1
+        self.Center_Right_Frame.grid(row=0, column=2, sticky='nsew')  # Right frame in column 1
+        self.Right_Frame.grid(row=0, column=3, sticky='nsew')  # Right frame in column 1
+
 
 class Top_Left_Frame(ctk.CTkFrame):
     def __init__(self, parent, event_handler):
@@ -335,6 +341,92 @@ class Top_Middle_Frame(ctk.CTkFrame):
                                         command=lambda: self.event_handler(Event.STOP_PCA_CALIBRATION))
             self.calibrating = True
 
+
+class Top_Middle_Right_Frame(ctk.CTkFrame):
+        def __init__(self, parent, event_handler):
+            super().__init__(parent)
+            self.event_handler = event_handler
+            self.parent = parent
+
+            # Top Frame
+            top_frame = ctk.CTkFrame(self)
+            top_frame.grid(row=0, column=0, padx=configuration.x_pad_main, pady=configuration.y_pad_main, sticky='nsew')
+            top_frame.grid_rowconfigure(0, weight=1, uniform='row')
+
+            # Bottom Frame
+            bottom_frame = ctk.CTkFrame(self)
+            bottom_frame.grid(row=1, column=0, padx=configuration.x_pad_main, pady=configuration.y_pad_main, sticky='nsew')
+            bottom_frame.grid_rowconfigure(0, weight=1, uniform='row')
+
+            # Configure the grid rows and column for self
+            self.grid_rowconfigure(0, weight=1)
+            self.grid_rowconfigure(1, weight=1)
+
+            self.grid_columnconfigure(0, weight=1, uniform='col')
+
+            self.clock_frame(top_frame)
+            # self.calibration_frame(bottom_frame)
+
+            self.calibration_seconds = 0
+            self.recording_seconds = 0
+            self.calibration_running = False
+            self.recording_running = False
+
+
+        # FRAMES ---------------------------------------------
+        def clock_frame(self, frame):
+            self.clock_display = ctk.CTkLabel(
+                frame, text="00:00", font=configuration.console_font_style_large
+            )
+            self.clock_display.pack(pady=5)
+
+            # Initialize clock state
+            self.calibration_seconds = 0
+            self.recording_seconds = 0
+            self.calibration_running = False
+            self.recording_running = False
+
+        def start_calibration(self, seconds):
+            self.calibration_seconds = seconds
+            self.calibration_running = True
+            self.update_calibration_timer()
+
+        def update_calibration_timer(self):
+            if self.calibration_running and self.calibration_seconds > 0:
+                self.calibration_seconds -= 1
+                self.update_clock_display(self.calibration_seconds)
+                self.after(1000, self.update_calibration_timer)
+            else:
+                self.calibration_running = False
+
+        def start_recording(self):
+            self.recording_seconds = 0
+            self.recording_running = True
+            self.update_recording_timer()
+
+        def update_recording_timer(self):
+            if self.recording_running:
+                self.recording_seconds += 1
+                self.update_clock_display(self.recording_seconds)
+                self.after(1000, self.update_recording_timer)
+
+        def stop_recording(self):
+            self.recording_running = False
+
+        def reset_clock(self):
+            self.calibration_running = False
+            self.recording_running = False
+            self.calibration_seconds = 0
+            self.recording_seconds = 0
+            self.update_clock_display(0)
+
+        def update_clock_display(self, seconds):
+            mins = seconds // 60
+            secs = seconds % 60
+            prefix = "-" if self.calibration_running else ""
+            self.clock_display.configure(text=f"{prefix}{mins:02}:{secs:02}")
+
+
 class Top_Right_Frame(ctk.CTkFrame):
     def __init__(self, parent, event_handler):
         super().__init__(parent)
@@ -361,7 +453,7 @@ class Top_Right_Frame(ctk.CTkFrame):
         self.console_label.pack(side=tk.TOP, fill=tk.X)
 
         # Create a Text widget for console output
-        self.console_text = tk.Text(frame, wrap=tk.WORD, state='disabled', height=10)
+        self.console_text = tk.Text(frame, wrap=tk.WORD, state='disabled', height=10, width=40)
         self.console_text.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
         # Scrollbar for the Text widget
@@ -414,6 +506,7 @@ class Top_Right_Frame(ctk.CTkFrame):
     def rgb_to_hex(self, rgb):
         """Convert an (R, G, B) tuple to a hexadecimal color string."""
         return "#%02x%02x%02x" % rgb
+
 
 # --------------------------------------------------------------------------------------------------
 # MIDDLE FRAMES ------------------------------------------------------------------------------------
