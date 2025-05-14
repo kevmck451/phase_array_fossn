@@ -46,8 +46,8 @@ class Detector:
             current_std = np.std(pca_data, axis=2)
 
             # Moving average update for the mean and std (adjust weight if needed)
-            self.baseline_means = 0.9 * self.baseline_means + 0.1 * current_mean
-            self.baseline_stds = 0.9 * self.baseline_stds + 0.1 * current_std
+            self.baseline_means = 0.8 * self.baseline_means + 0.2 * current_mean
+            self.baseline_stds = 0.8 * self.baseline_stds + 0.2 * current_std
 
     def detect_anomalies(self, pca_data):
         self.num_channels, self.num_pca_components, self.num_samples = pca_data.shape
