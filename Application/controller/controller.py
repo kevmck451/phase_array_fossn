@@ -115,7 +115,7 @@ class Controller:
             self.gui.Top_Frame.Left_Frame.temp_connection = self.temp_sensor.connected
 
             if not self.temp_sensor.connected:
-                self.gui.Top_Frame.Left_Frame.fpga_connection = self.temp_sensor.connected
+                # self.gui.Top_Frame.Left_Frame.fpga_connection = self.temp_sensor.connected
                 self.gui.Top_Frame.Left_Frame.current_temp = '-'
 
             if not self.audio_loaded:
@@ -484,7 +484,8 @@ class Controller:
 
             if self.gui.Top_Frame.Center_Frame.audio_save_checkbox_variable.get():
                 final_image = self.heatmap.render_heatmap_image()
-                self.heatmap_logger.save_heatmap_image(final_image, "final")
+                if final_image is not None:
+                    self.heatmap_logger.save_heatmap_image(final_image, "final")
             self.stop_all_queues()
             self.gui.Middle_Frame.Center_Frame.stop_updates()
             self.remove_directory_if_empty()
