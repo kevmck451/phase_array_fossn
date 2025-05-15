@@ -393,6 +393,31 @@ class Top_Middle_Right_Frame(ctk.CTkFrame):
                                                       hover_color=configuration.bluelight_hover_color, font=configuration.button_font_style)
             self.real_time_checkbox.pack(pady=5)
 
+            # button_frame = ctk.CTkFrame(frame)
+            # button_frame.pack(pady=5)
+
+            self.play_external_button = ctk.CTkButton(frame, text="Start External Audio",
+                                              fg_color=configuration.purple_fg_color,
+                                              hover_color=configuration.purple_hover_color,
+                                              command=lambda: self.event_handler(Event.START_EXTERNAL_PLAY),
+                                              font=configuration.button_font_style)
+            self.play_external_button.pack(pady=5)
+
+        def toggle_play_external_button(self):
+            if self.playing:
+                self.play_external_button.configure(text="Start External Audio",
+                                            fg_color=configuration.purple_fg_color,
+                                            hover_color=configuration.purple_hover_color,
+                                            command=lambda: self.event_handler(Event.START_EXTERNAL_PLAY), font=configuration.button_font_style)
+                self.playing = False
+                # Placeholder for stopping audio
+            else:
+                self.play_external_button.configure(text="Stop External Audio",
+                                            fg_color=configuration.stop_fg_color,
+                                            hover_color=configuration.stop_hover_color,
+                                            command=lambda: self.event_handler(Event.STOP_EXTERNAL_PLAY), font=configuration.button_font_style)
+                self.playing = True
+
         def start_calibration(self, seconds):
             self.calibration_seconds = seconds
             self.calibration_running = True

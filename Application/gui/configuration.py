@@ -20,7 +20,7 @@ x_pad_2 = 10
 y_pad_2 = 10
 main_font_style = "default_font"
 main_font_size = 18 #26
-large_font_size = 40
+large_font_size = 54
 button_font_size = 14
 
 main_window_icon = base_path('docs/papa_icon.png')

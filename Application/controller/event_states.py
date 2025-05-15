@@ -17,6 +17,8 @@ class Event(Enum):
     ANOMALY_DETECTED = auto()
     SET_ANOMALY_THRESHOLD_VALUE = auto()
     LOG_DETECTION = auto()
+    START_EXTERNAL_PLAY = auto()
+    STOP_EXTERNAL_PLAY = auto()
     DUMMY_BUTTON = auto()
 
 
