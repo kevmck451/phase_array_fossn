@@ -10,13 +10,13 @@ import time
 
 # For collecting RAW data from FPGA server
 class AudioReceiver_MicArray:
-    def __init__(self, chan_count, sample_rate):
-        self.host = "localhost"
-        self.port = 7654
+    def __init__(self, chan_count, array_config):
+        self.host = array_config.ip_address
+        self.port = 2048
         self.connected = False
         self.cancel_attempt = False
         self.sock = None
-        self.sample_rate = sample_rate
+        self.sample_rate = array_config.sample_rate
         self.chunk_secs = 1.0
         self.chan_count = chan_count
         self.running = False

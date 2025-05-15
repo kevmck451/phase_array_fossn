@@ -13,7 +13,7 @@ import time
 class Mic_Array:
     def __init__(self, array_config):
         self.chan_count = array_config.num_mics
-        self.audio_receiver = AudioReceiver_MicArray(self.chan_count, array_config.sample_rate)
+        self.audio_receiver = AudioReceiver_MicArray(self.chan_count, array_config)
 
         self.collected_data = []
         self.chunk_duration = array_config.chunk_duration

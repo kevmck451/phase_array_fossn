@@ -42,3 +42,5 @@ increment = 10
 default_theta_directions = list(range(Ltheta, Rtheta + 1, increment))
 
 number_of_taps = 301
+
+ip_address = '192.168.0.3'
