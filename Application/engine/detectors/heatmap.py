@@ -93,7 +93,7 @@ class Heatmap:
         ax.imshow(
             self.anomaly_matrix,
             aspect='auto',
-            cmap='inferno',
+            cmap='gnuplot2', # cubehelix # hot # inferno # gist_heat # bone # gist_earth # gnuplot2  # viridis
             vmin=0,
             vmax=vmax,
             origin='upper',
