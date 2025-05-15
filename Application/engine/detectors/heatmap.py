@@ -77,7 +77,7 @@ class Heatmap:
 
         self.max_value_seen = max(self.max_value_seen, np.max(new_row))
 
-    def render_heatmap_image(self, width=350, height=280):
+    def render_heatmap_image(self, width=550, height=345):
         if self.anomaly_matrix is None or self.anomaly_matrix.shape[0] == 0:
             return None
 
@@ -101,12 +101,23 @@ class Heatmap:
             extent=(0, len(self.current_thetas), 0, self.max_time_steps)
         )
 
-        ax.set_xticks(np.arange(len(self.current_thetas)) + 0.5)
-        ax.set_xticklabels(self.current_thetas, rotation=45, fontsize=6)
-        ax.set_yticks([])
+        tick_positions = np.arange(len(self.current_thetas)) + 0.5
+        ax.set_xticks(tick_positions)
+        ax.set_xticklabels(
+            self.current_thetas,
+            fontsize=6,
+            color='white',
+            va='top'
+        )
+        ax.tick_params(axis='x', colors='white', direction='in', pad=-10, length=0)
+
+        ax.set_yticks(np.linspace(0, self.max_time_steps, 10))  # or any number of horizontal divisions
+        ax.xaxis.grid(True, which='both', color='white', linewidth=0.3, alpha=0.04)
+        ax.yaxis.grid(False)
 
         fig.tight_layout(pad=0)
-        ax.axis('off')
+        # ax.axis('off')
+        ax.tick_params(left=False, bottom=False, labelleft=False)
         fig.subplots_adjust(left=0, right=1, top=1, bottom=0)
 
         buf = io.BytesIO()

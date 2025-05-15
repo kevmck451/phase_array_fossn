@@ -548,18 +548,19 @@ class Main_Middle_Frame(ctk.CTkFrame):
         # Left frame for visual
         left_frame = ctk.CTkFrame(self)
         left_frame.grid(row=0, column=0, padx=10, pady=10, sticky='nsew')
-        left_frame.grid_rowconfigure(1, weight=1)
-        left_frame.grid_rowconfigure(1, weight=1)
+        left_frame.grid_rowconfigure(1, weight=0)
         left_frame.grid_columnconfigure(0, weight=1)
 
         # Center side
         center_frame = ctk.CTkFrame(self)
         center_frame.grid(row=0, column=1, padx=10, pady=10, sticky='nsew')
-        center_frame.grid_columnconfigure(0, weight=1)
         center_frame.rowconfigure(1, weight=1)  # Let row 1 (image) expand
+        center_frame.grid_columnconfigure(0, weight=1)
+
 
         right_frame = ctk.CTkFrame(self)
         right_frame.grid(row=0, column=2, padx=10, pady=10, sticky='nsew')
+        right_frame.grid_rowconfigure(1, weight=0)
         right_frame.grid_columnconfigure(0, weight=1)
 
 
@@ -568,8 +569,11 @@ class Main_Middle_Frame(ctk.CTkFrame):
         self.detector_label = ctk.CTkLabel(left_frame, text="Beamformed PCA Detector Output", font=configuration.console_font_style)
         self.detector_label.grid(row=0, column=0, sticky='ew')
 
-        self.canvas_left = tk.Canvas(left_frame, bg="#333333")
+        self.canvas_left_width = 560
+        self.canvas_left = tk.Canvas(left_frame, bg="#333333", width=self.canvas_left_width, height=385)
         self.canvas_left.grid(row=1, column=0, sticky='nsew', padx=0, pady=0)
+        self.canvas_left.master.grid_propagate(False)
+
 
         self.draw_threshold_lines()
 
@@ -590,21 +594,16 @@ class Main_Middle_Frame(ctk.CTkFrame):
         }
 
         self.next_heatmap_image = None
-        # self.after(1000, self.update_heatmap_image)
         self._heatmap_loop_started = False
-        self.start_heatmap_updates()
-
-        # Schedule the draw_bar_chart to run after the canvas_left is ready
-        # self.after(1000, self.draw_bar_chart)
-        self.start_updates()
 
         # CENTER FRAME ------------------------------
         self.heatmap_title = ctk.CTkLabel(center_frame, text="Time Series Heatmap of Anomalies", font=configuration.console_font_style)
         self.heatmap_title.grid(row=0, column=0, sticky='ew')
 
         # New: Image container
-        self.heatmap_canvas = tk.Label(center_frame, bg="black")
-        self.heatmap_canvas.grid(row=1, column=0, sticky='nsew', padx=5, pady=5)
+        self.heatmap_canvas = tk.Label(center_frame, bg="black", width=800, height=600)
+        self.heatmap_canvas.grid(row=1, column=0, sticky='nsew', padx=0, pady=0)
+        self.heatmap_canvas.master.grid_propagate(False)
 
         # RIGHT FRAME ------------------------------
         self.classifier_label = ctk.CTkLabel(right_frame, text="Sound Classifier", font=configuration.console_font_style)
@@ -612,29 +611,25 @@ class Main_Middle_Frame(ctk.CTkFrame):
 
         self.anomaly_data = [0] * len(self.directions)
 
-    def draw_bar_chart(self):
-        width = self.canvas_left.winfo_width()
-        height = self.canvas_left.winfo_height()
+        self.start_heatmap_updates()
+        self.start_updates()
 
-        if width < 100 or height < 100:
-            self.after(500, self.draw_bar_chart)
-            return
+    def draw_bar_chart(self):
+        font_size = 10
 
         num_channels = len(self.anomaly_data)
-        font_size = max(6, int(225 / num_channels))
 
         directions_to_draw = self.directions[:num_channels]
-        # print(f"DIRECTIONS LENGTH: {len(self.directions)} -- {self.directions}")
 
         self.canvas_left.delete("all")  # Clear the canvas_left
         self.draw_threshold_lines()  # Draw threshold lines
 
-        num_channels = len(self.anomaly_data)
-        canvas_width = self.canvas_left.winfo_width()
+        canvas_width = self.canvas_left_width
         canvas_height = self.canvas_left.winfo_height()
 
         # Calculate bar width to evenly fill the canvas_left
         bar_width = canvas_width / num_channels
+
         chart_height = canvas_height * 0.8  # Use 80% of the height for the chart
 
         for i in range(num_channels):
@@ -642,10 +637,6 @@ class Main_Middle_Frame(ctk.CTkFrame):
 
             # Determine the color based on the threshold
             percentage = (value / self.max_anomalies) * 100
-            display_percentage = min(percentage, 100)
-
-            # Calculate the height of the bar
-            # bar_height = (value / self.max_anomalies) * chart_height
 
             # Cap the bar height to 100% of chart height
             capped_percentage = min(percentage, 100)
@@ -653,13 +644,10 @@ class Main_Middle_Frame(ctk.CTkFrame):
 
             if percentage < self.thresholds['green']:
                 bar_color = 'green'
-                text_color = 'white'
             elif percentage < self.thresholds['yellow']:
                 bar_color = 'yellow'
-                text_color = 'black'
             else:
                 bar_color = 'red'
-                text_color = 'white'
                 self.anomaly_list.append(directions_to_draw[i])
                 self.event_handler(Event.ANOMALY_DETECTED)
 
@@ -672,18 +660,16 @@ class Main_Middle_Frame(ctk.CTkFrame):
             # Draw the bar
             self.canvas_left.create_rectangle(x1, y1, x2, y2, fill=bar_color)
 
-            # Draw the percentage value inside the bar
-            text_position_y = y2 - bar_height / 2
-            if bar_height < 20:
-                text_position_y = y1 - 10
-            self.canvas_left.create_text(x1 + bar_width / 2, text_position_y, text=f"{display_percentage:.0f}%", fill=text_color, anchor='center', font=("Arial", font_size))
-
             # Draw the direction label below the bar
-            self.canvas_left.create_text(x1 + bar_width / 2, chart_height + 20, text=f'{directions_to_draw[i]}\u00B0', anchor='n', font=("Arial", font_size))
+            # self.canvas_left.create_text(x1 + bar_width / 2, chart_height + 20, text=f'{directions_to_draw[i]}\u00B0', anchor='n', font=("Arial", font_size))
+            label_y = canvas_height - 60
+            self.canvas_left.create_text(x1 + bar_width / 2, label_y, text=f'{directions_to_draw[i]}\u00B0', anchor='n', font=("Arial", font_size))
 
         self.anomaly_list.clear()
         # Draw the chart's axis
         self.canvas_left.create_line(0, chart_height, canvas_width, chart_height)
+
+        self.canvas_left.config(scrollregion=(0, 0, canvas_width, canvas_height))
 
         self.after(500, self.draw_bar_chart)
 
@@ -807,13 +793,13 @@ class Bottom_Left_Frame(ctk.CTkFrame):
         ).grid(row=0, column=1, sticky='w', padx=(0, 5))
 
         self.ltheta_entry = ctk.CTkEntry(
-            thetas_frame, font=configuration.console_font_style, width=40
+            thetas_frame, font=configuration.button_font_style, width=40
         )
         self.ltheta_entry.insert(0, f'{self.parent.parent.array_config.Ltheta}')
         self.ltheta_entry.grid(row=0, column=2, sticky='w', padx=(0, 2))
 
         self.rtheta_entry = ctk.CTkEntry(
-            thetas_frame, font=configuration.console_font_style, width=40
+            thetas_frame, font=configuration.button_font_style, width=40
         )
         self.rtheta_entry.insert(0, f'{self.parent.parent.array_config.Rtheta}')
         self.rtheta_entry.grid(row=0, column=3, sticky='w', padx=(0, 2))
@@ -846,13 +832,13 @@ class Bottom_Left_Frame(ctk.CTkFrame):
         ).grid(row=0, column=1, sticky='w', padx=(0, 5))
 
         self.lphi_entry = ctk.CTkEntry(
-            phis_frame, font=configuration.console_font_style, width=40
+            phis_frame, font=configuration.button_font_style, width=40
         )
         self.lphi_entry.insert(0, "0")
         self.lphi_entry.grid(row=0, column=2, sticky='w', padx=(0, 2))
 
         self.rphi_entry = ctk.CTkEntry(
-            phis_frame, font=configuration.console_font_style, width=40
+            phis_frame, font=configuration.button_font_style, width=40
         )
         self.rphi_entry.insert(0, "0")
         self.rphi_entry.grid(row=0, column=3, sticky='w', padx=(0, 2))

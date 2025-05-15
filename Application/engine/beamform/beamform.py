@@ -25,11 +25,10 @@ class Beamform:
         self.temperature = int(initial_temp)
         self.temperature_current = int(initial_temp)
         self.num_taps = array_config.number_of_taps
-        self.fir_coeffs = self.compile_all_fir_coeffs()
-        self.desired_channels = self.fir_coeffs.shape[0]
-        self.num_coeffs = self.fir_coeffs.shape[3]
-
-        # print(f'FIR Coeffs Shape: {self.fir_coeffs.shape}')
+        self.fir_coeffs = None
+        self.desired_channels = None
+        self.num_coeffs = None
+        self.compile_all_fir_coeffs()
 
         self.queue = Queue()
         self.data_list = []
@@ -44,7 +43,11 @@ class Beamform:
                 # print(f'FIR C Shape: {fir_coeffs.shape}')
                 fir_coeffs_list.append(fir_coeffs)
 
-        return np.stack(fir_coeffs_list, axis=0)
+        fir_coeffs_stack = np.stack(fir_coeffs_list, axis=0)
+
+        self.desired_channels = fir_coeffs_stack.shape[0]
+        self.num_coeffs = fir_coeffs_stack.shape[3]
+        self.fir_coeffs = fir_coeffs_stack
 
     def map_channels_to_positions(self, audio_data):
         num_samples = audio_data.shape[1]
@@ -58,22 +61,22 @@ class Beamform:
         return mapped_data
 
     def beamform_data(self, data):
+
+        if self.temperature != self.temperature_current:
+            print(f'Temp Changed => old: {self.temperature} | new: {self.temperature_current}')
+            self.compile_all_fir_coeffs()
+            self.temperature = self.temperature_current
+
         mapped_audio_data = self.map_channels_to_positions(data)
 
         rows, cols, num_samples = mapped_audio_data.shape
         assert rows * cols == self.fir_coeffs.shape[1] * self.fir_coeffs.shape[2], "Mismatch between audio data and FIR coefficients shape."
-        num_output_channels = self.fir_coeffs.shape[0]
 
-        if self.temperature != self.temperature_current:
-            print(f'Temp Changed => old: {self.temperature} | new: {self.temperature_current}')
-            self.fir_coeffs = self.compile_all_fir_coeffs()
-            self.temperature = self.temperature_current
-
-        beamformed_data_all_channels = np.zeros((num_output_channels, num_samples + self.num_coeffs - 1))
+        beamformed_data_all_channels = np.zeros((self.desired_channels, num_samples + self.num_coeffs - 1))
 
         # Use parallel processing
         with ThreadPoolExecutor() as executor:
-            futures = [executor.submit(self.beamform_channel, channel, mapped_audio_data, self.fir_coeffs) for channel in range(num_output_channels)]
+            futures = [executor.submit(self.beamform_channel, channel, mapped_audio_data, self.fir_coeffs) for channel in range(self.desired_channels)]
             for channel, future in enumerate(futures):
                 beamformed_data_all_channels[channel] = future.result()
 

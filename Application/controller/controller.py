@@ -570,7 +570,10 @@ class Controller:
                 phi = int(self.gui.Bottom_Frame.Left_Frame.lphi_entry.get())
 
                 self.phis = [phi]
+                self.beamformer.phis = [phi]
+                self.thetas = theta_list
                 self.beamformer.thetas = theta_list
+                self.beamformer.compile_all_fir_coeffs()
                 self.gui.Middle_Frame.Center_Frame.directions = theta_list
                 self.gui.Middle_Frame.Center_Frame.anomaly_data = [0] * len(theta_list)
                 self.gui.Top_Frame.Right_Frame.insert_text(f'Theta: ({Ltheta}, {Rtheta}, {increment}) | Phi: {phi}', self.color_pink)
