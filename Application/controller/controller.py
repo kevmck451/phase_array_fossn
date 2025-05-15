@@ -1,6 +1,7 @@
 
 
 from Application.engine.array.AudioStreamSimulator import AudioStreamSimulator
+from Application.engine.array.external_play import External_Player
 from Application.engine.filters.audio import Audio
 from Application.engine.beamform.beamform import Beamform
 
@@ -69,6 +70,9 @@ class Controller:
 
         self.bar_chart_updater_thread = None
         self.bar_chart_updater_running = False
+
+        self.external_player = None
+        self.use_external_audio = False
 
         self.data_logger = None
         self.heatmap_logger = None
@@ -193,6 +197,8 @@ class Controller:
             else:
                 self.mic_array.record_audio = False
                 self.mic_array.start_recording(None)
+
+            self.external_player = External_Player(self.audio_streamer, self.array_config)
 
     def audio_simulation(self, filepath):
         import soundfile as sf
@@ -497,7 +503,7 @@ class Controller:
             self.gui.Top_Frame.Center_Right_Frame.start_calibration(self.calibration_time)
 
             if not self.mic_array.audio_receiver.running and not self.audio_loaded:
-                self.gui.Top_Frame.Right_Frame.insert_text(f'Phased Array not connected and No Audio is Loaded', 'red')
+                self.gui.Top_Frame.Right_Frame.insert_text(f'Array not connected and No Audio is Loaded', 'red')
             else:
                 self.app_state = State.CALIBRATING
                 self.gui.Top_Frame.Center_Frame.toggle_calibrate()
@@ -577,6 +583,31 @@ class Controller:
                 self.gui.Middle_Frame.Center_Frame.directions = theta_list
                 self.gui.Middle_Frame.Center_Frame.anomaly_data = [0] * len(theta_list)
                 self.gui.Top_Frame.Right_Frame.insert_text(f'Theta: ({Ltheta}, {Rtheta}, {increment}) | Phi: {phi}', self.color_pink)
+
+        elif event == Event.START_EXTERNAL_PLAY:
+
+            if self.app_state == State.IDLE:
+                self.use_external_audio = True
+                self.gui.Top_Frame.Right_Frame.insert_text(f'External Player Activated', 'green')
+                self.gui.Top_Frame.Center_Right_Frame.toggle_play_external_button()
+            elif self.audio_loaded and (self.app_state == State.RUNNING or self.app_state == State.CALIBRATING):
+                self.audio_streamer.send_to_external_audio_stream = True
+                self.external_player.start()
+                self.gui.Top_Frame.Right_Frame.insert_text("External Audio Player Started", self.color_light_blue)
+            else:
+                print('Remember What State this is and make a condition for it')
+
+
+        elif event == Event.STOP_EXTERNAL_PLAY:
+            if self.audio_loaded and (self.app_state == State.RUNNING or self.app_state == State.CALIBRATING):
+                self.audio_streamer.send_to_external_audio_stream = False
+                self.external_player.stop()
+
+            self.gui.Top_Frame.Right_Frame.insert_text("External Audio Player Stopped", self.color_light_blue)
+            self.gui.Top_Frame.Center_Right_Frame.toggle_play_external_button()
+
+
+
 
         elif event == Event.DUMMY_BUTTON:
             # dummy button

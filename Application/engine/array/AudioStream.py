@@ -28,6 +28,8 @@ class Mic_Array:
 
         self.chunk_size_sec = 1
         self.queue = Queue()
+        self.send_to_external_audio_stream = False
+        self.external_audio_queue = Queue()
         self.chunk_size = int(self.chunk_size_sec * array_config.sample_rate)
 
     def start_recording(self, filepath):
@@ -45,6 +47,9 @@ class Mic_Array:
             if data is not None:
 
                 self.queue.put(data.T)
+
+                if self.send_to_external_audio_stream:
+                    self.external_audio_queue.put(data.T)
                 # print(data.shape)
 
             time.sleep(0.1)
@@ -61,6 +66,9 @@ class Mic_Array:
                 # print(collected_data)
 
                 self.queue.put(data.T)
+
+                if self.send_to_external_audio_stream:
+                    self.external_audio_queue.put(data.T)
                 # print(data.shape)
 
                 # Check if the chunk samples limit is exceeded

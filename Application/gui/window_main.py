@@ -370,7 +370,7 @@ class Top_Middle_Right_Frame(ctk.CTkFrame):
             self.recording_seconds = 0
             self.calibration_running = False
             self.recording_running = False
-
+            self.external_playing = False
 
         # FRAMES ---------------------------------------------
         def clock_frame(self, frame):
@@ -404,19 +404,19 @@ class Top_Middle_Right_Frame(ctk.CTkFrame):
             self.play_external_button.pack(pady=5)
 
         def toggle_play_external_button(self):
-            if self.playing:
-                self.play_external_button.configure(text="Start External Audio",
+            if self.external_playing:
+                self.play_external_button.configure(text="Activate External Audio",
                                             fg_color=configuration.purple_fg_color,
                                             hover_color=configuration.purple_hover_color,
                                             command=lambda: self.event_handler(Event.START_EXTERNAL_PLAY), font=configuration.button_font_style)
-                self.playing = False
+                self.external_playing = False
                 # Placeholder for stopping audio
             else:
                 self.play_external_button.configure(text="Stop External Audio",
-                                            fg_color=configuration.stop_fg_color,
-                                            hover_color=configuration.stop_hover_color,
+                                            fg_color=configuration.darkgray_fg_color,
+                                            hover_color=configuration.darkgray_hover_color,
                                             command=lambda: self.event_handler(Event.STOP_EXTERNAL_PLAY), font=configuration.button_font_style)
-                self.playing = True
+                self.external_playing = True
 
         def start_calibration(self, seconds):
             self.calibration_seconds = seconds

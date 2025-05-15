@@ -27,6 +27,9 @@ class AudioStreamSimulator:
         self.stop_flag = False
         self.realtime = True
 
+        self.send_to_external_audio_stream = False
+        self.external_audio_queue = Queue()
+
     def start_stream(self):
         if self.running:
             print("Stream already running. Skipping restart.")
@@ -42,6 +45,8 @@ class AudioStreamSimulator:
                 break
             chunk = self.audio_object.data[:, int(i * self.chunk_size):int((i + 1) * self.chunk_size)]
             self.queue.put(chunk)
+            if self.send_to_external_audio_stream:
+                self.external_audio_queue.put(chunk)
             if self.realtime:
                 time.sleep(self.chunk_size_sec)
         self.running = False
