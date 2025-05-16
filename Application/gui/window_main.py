@@ -24,11 +24,8 @@ class Main_Window(ctk.CTk):
         icon = ImageTk.PhotoImage(img)
         self.tk.call('wm', 'iconphoto', self._w, icon)
 
-        # if configuration.device_type == 'pi':
+        # if configuration.device_type == 'pi' and sys.platform != 'darwin':
         #     self.attributes('-fullscreen', True)
-
-        if configuration.device_type == 'pi' and sys.platform != 'darwin':
-            self.attributes('-fullscreen', True)
 
         # Main Setup ------------------------------------------------------------
         self.title(f'{self.device_config.window_title}: {self.array_config.title}')
@@ -60,7 +57,7 @@ class Main_Window(ctk.CTk):
         self.bind("<Escape>", self.on_close)
         self.bind("<Control-c>", self.on_close)
 
-    def on_close(self):
+    def on_close(self, event=None):
         # Perform any cleanup or process termination steps here
         # For example, safely terminate any running threads, save state, release resources, etc.
         # self.matrix_mics.stop_stream()
