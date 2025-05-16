@@ -8,21 +8,21 @@ def base_path(relative_path):
 # Main App Settings
 window_title = 'University of Memphis Acoustic'
 
-window_width = 1680 # 1400 # 3200 1400
-window_height = 960 # 800  # 1200 800
+window_width = 800 # 1400 # 3200 1400
+window_height = 400 # 800  # 1200 800
 min_window_width = window_width
 min_window_height = window_height
-x_pad_main = 2
-y_pad_main = 2
-x_pad_1 = 10
-y_pad_1 = 10
-x_pad_2 = 10
-y_pad_2 = 10
+x_pad_main = 1
+y_pad_main = 1
+x_pad_1 = 3
+y_pad_1 = 3
+x_pad_2 = 3
+y_pad_2 = 3
 main_font_style = "default_font"
-small_font_size = 9
-main_font_size = 18 #26
-large_font_size = 54
-button_font_size = 14
+small_font_size = 3
+main_font_size = 8 #26
+large_font_size = 20
+button_font_size = 8
 
 main_window_icon = base_path('docs/papa_icon.png')
 playing_icon_filepath = base_path('docs/playing icon s.png')
@@ -37,7 +37,7 @@ reset_icon_filepath = base_path('docs/reset icon s.png')
 
 
 # Console Settings
-console_x_pad = 5
+console_x_pad = 3
 console_y_pad = 1
 
 console_font_style_small = (main_font_style, small_font_size)
@@ -101,4 +101,4 @@ y_pad_setting = 5
 overlay_threshold_window_title = 'Overlay Threshold Adjustments'
 
 row_weight = 0
-column_weight = 0
+column_weight = 1

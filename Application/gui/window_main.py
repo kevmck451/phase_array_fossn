@@ -2,8 +2,6 @@
 
 
 from Application.controller.event_states import Event
-import Application.gui.configuration as configuration
-
 
 import customtkinter as ctk
 from PIL import ImageTk
@@ -12,22 +10,23 @@ import subprocess
 
 
 class Main_Window(ctk.CTk):
-    def __init__(self, event_handler, array_config):
+    def __init__(self, event_handler, array_config, configuration):
         super().__init__()
         ctk.set_appearance_mode("dark")
         self.event_handler = event_handler
         self.array_config = array_config
+        self.device_config = configuration
 
         # Main Setup ------------------------------------------------------------
-        self.title(f'{configuration.window_title}: {self.array_config.title}')
+        self.title(f'{self.device_config.window_title}: {self.array_config.title}')
 
         # Screen: can see window
         screen_width = self.winfo_screenwidth()
         screen_height = self.winfo_screenheight()
-        center_x = int((screen_width / 2) - (configuration.window_width / 2))
-        center_y = int((screen_height / 2) - (configuration.window_height / 2))
-        self.geometry(f'{configuration.window_width}x{configuration.window_height}+{center_x}+{center_y}')
-        self.minsize(configuration.min_window_width, configuration.min_window_height)
+        center_x = int((screen_width / 2) - (self.device_config.window_width / 2))
+        center_y = int((screen_height / 2) - (self.device_config.window_height / 2))
+        self.geometry(f'{self.device_config.window_width}x{self.device_config.window_height}+{center_x}+{center_y}')
+        self.minsize(self.device_config.min_window_width, self.device_config.min_window_height)
 
         self.Top_Frame = Top_Frame(self, self.event_handler)
         self.Middle_Frame = Middle_Frame(self, self.event_handler)
@@ -88,6 +87,7 @@ class Top_Left_Frame(ctk.CTkFrame):
         super().__init__(parent)
         self.event_handler = event_handler
         self.parent = parent
+        configuration = self.parent.parent.device_config
 
         # Top Frame
         top_frame = ctk.CTkFrame(self)
@@ -118,12 +118,14 @@ class Top_Left_Frame(ctk.CTkFrame):
 
     # FRAMES ---------------------------------------------
     def fpga_connection_frame(self, frame):
+        configuration = self.parent.parent.device_config
         self.fpga_connection_label = ctk.CTkLabel(frame, text="Microphone Connection Status", font=configuration.console_font_style)
         self.fpga_connection_label.pack(fill='both') # , expand=True
         self.fpga_status_label = ctk.CTkLabel(frame, text="Not Connected", text_color='red', font=configuration.console_font_style)
         self.fpga_status_label.pack(fill='both')  # , expand=True
 
     def rpi_connection_frame(self, frame):
+        configuration = self.parent.parent.device_config
         self.rpi_connection_label = ctk.CTkLabel(frame, text="Temp Sensor Connection Status", font=configuration.console_font_style)
         self.rpi_connection_label.pack(fill='both') # , expand=True
         self.rpi_status_label = ctk.CTkLabel(frame, text="Not Connected", text_color='red', font=configuration.console_font_style)
@@ -167,6 +169,7 @@ class Top_Middle_Frame(ctk.CTkFrame):
         super().__init__(parent)
         self.event_handler = event_handler
         self.parent = parent
+        configuration = self.parent.parent.device_config
 
         self.playing = False
         self.calibrating = False
@@ -194,6 +197,7 @@ class Top_Middle_Frame(ctk.CTkFrame):
 
     # FRAMES ---------------------------------------------
     def start_frame(self, frame):
+        configuration = self.parent.parent.device_config
         self.start_label = ctk.CTkLabel(frame, text="Start/Stop Recording, Beamforming, Processing, and PCA Calculator", font=configuration.console_font_style)
         self.start_label.pack(fill='both')  # , expand=True
 
@@ -254,6 +258,7 @@ class Top_Middle_Frame(ctk.CTkFrame):
             print("File dialog failed:", e)
 
     def calibration_frame(self, frame):
+        configuration = self.parent.parent.device_config
         self.calibration_label = ctk.CTkLabel(frame, text="Baseline Calibration for Detector", font=configuration.console_font_style)
         self.calibration_label.pack(fill='both')  # , expand=True
 
@@ -313,6 +318,7 @@ class Top_Middle_Frame(ctk.CTkFrame):
             print("Folder dialog failed:", e)
 
     def toggle_play(self):
+        configuration = self.parent.parent.device_config
         if self.playing:
             self.start_button.configure(text="Start",
                                        fg_color=configuration.start_fg_color,
@@ -328,6 +334,7 @@ class Top_Middle_Frame(ctk.CTkFrame):
             self.playing = True
 
     def toggle_calibrate(self):
+        configuration = self.parent.parent.device_config
         if self.calibrating:
             self.calibrate_button.configure(text="Calibrate PCA",
                                         fg_color=configuration.start_fg_color,
@@ -347,6 +354,7 @@ class Top_Middle_Right_Frame(ctk.CTkFrame):
             super().__init__(parent)
             self.event_handler = event_handler
             self.parent = parent
+            configuration = self.parent.parent.device_config
 
             # Top Frame
             top_frame = ctk.CTkFrame(self)
@@ -374,6 +382,7 @@ class Top_Middle_Right_Frame(ctk.CTkFrame):
 
         # FRAMES ---------------------------------------------
         def clock_frame(self, frame):
+            configuration = self.parent.parent.device_config
             self.clock_display = ctk.CTkLabel(
                 frame, text="00:00", font=configuration.console_font_style_large
             )
@@ -404,6 +413,7 @@ class Top_Middle_Right_Frame(ctk.CTkFrame):
             self.play_external_button.pack(pady=5)
 
         def toggle_play_external_button(self):
+            configuration = self.parent.parent.device_config
             if self.external_playing:
                 self.play_external_button.configure(text="Activate External Audio",
                                             fg_color=configuration.purple_fg_color,
@@ -464,6 +474,7 @@ class Top_Right_Frame(ctk.CTkFrame):
         super().__init__(parent)
         self.event_handler = event_handler
         self.parent = parent
+        configuration = self.parent.parent.device_config
 
         # Top Frame
         main_frame = ctk.CTkFrame(self)
@@ -481,6 +492,7 @@ class Top_Right_Frame(ctk.CTkFrame):
 
     # FRAMES ---------------------------------------------
     def console_frame(self, frame):
+        configuration = self.parent.parent.device_config
         self.console_label = ctk.CTkLabel(frame, text="Output Console", font=configuration.console_font_style)
         self.console_label.pack(side=tk.TOP, fill=tk.X)
 
@@ -563,6 +575,7 @@ class Main_Middle_Frame(ctk.CTkFrame):
         super().__init__(parent)
         self.event_handler = event_handler
         self.parent = parent
+        configuration = self.parent.parent.device_config
 
         # Configure three-column layout explicitly
         self.grid_rowconfigure(0, weight=1)
@@ -798,6 +811,7 @@ class Bottom_Left_Frame(ctk.CTkFrame):
         self.temp_value = None
 
     def beamform_settings_frame(self):
+        configuration = self.parent.parent.device_config
         # Beamform Settings Label
         self.beamform_settings_label = ctk.CTkLabel(self, text="Beamform Settings", font=configuration.console_font_style)
         self.beamform_settings_label.grid(row=0, column=0, columnspan=3, sticky='nsew', padx=10, pady=10)
@@ -990,6 +1004,7 @@ class Bottom_Middle_Center_Frame(ctk.CTkFrame):
         self.heatmap_settings_frame()
 
     def heatmap_settings_frame(self):
+        configuration = self.parent.parent.device_config
         self.heatmap_settings_label = ctk.CTkLabel(
             self, text="Heatmap Settings", font=configuration.console_font_style
         )
@@ -1056,13 +1071,14 @@ class Bottom_Middle_Frame(ctk.CTkFrame):
         self.processing_settings_frame()
 
     def processing_settings_frame(self):
+        configuration = self.parent.parent.device_config
         self.processing_settings_label = ctk.CTkLabel(self, text="Processing Settings", font=configuration.console_font_style)
         self.processing_settings_label.grid(row=0, column=0, columnspan=3, sticky='nsew', padx=10, pady=10)
 
         # NR: STD Threshold
         self.nr_std_threshold_label = ctk.CTkLabel(self, text="NR (STD): ", font=configuration.console_font_style)
         self.nr_std_threshold_label.grid(row=1, column=0, sticky='e', padx=10, pady=5)
-        self.nr_std_threshold_entry = ctk.CTkEntry(self, width=100)
+        self.nr_std_threshold_entry = ctk.CTkEntry(self, width=100, font=configuration.button_font_style)
         self.nr_std_threshold_entry.grid(row=1, column=1, sticky='w', padx=10, pady=5)
         self.nr_std_threshold_set_button = ctk.CTkButton(self, text="Set", command=self.set_nr_std_threshold, font=configuration.button_font_style)
         self.nr_std_threshold_set_button.grid(row=1, column=2, sticky='w', padx=10, pady=5)
@@ -1071,7 +1087,7 @@ class Bottom_Middle_Frame(ctk.CTkFrame):
         # HP: Bottom Cutoff Frequency
         self.hp_bottom_cutoff_freq_label = ctk.CTkLabel(self, text="HP (Hz): ", font=configuration.console_font_style)
         self.hp_bottom_cutoff_freq_label.grid(row=2, column=0, sticky='e', padx=10, pady=5)
-        self.hp_bottom_cutoff_freq_entry = ctk.CTkEntry(self, width=100)
+        self.hp_bottom_cutoff_freq_entry = ctk.CTkEntry(self, width=100, font=configuration.button_font_style)
         self.hp_bottom_cutoff_freq_entry.grid(row=2, column=1, sticky='w', padx=10, pady=5)
         self.hp_bottom_cutoff_freq_set_button = ctk.CTkButton(self, text="Set", command=self.set_hp_bottom_cutoff_freq, font=configuration.button_font_style)
         self.hp_bottom_cutoff_freq_set_button.grid(row=2, column=2, sticky='w', padx=10, pady=5)
@@ -1080,7 +1096,7 @@ class Bottom_Middle_Frame(ctk.CTkFrame):
         # NM: Percentage
         self.nm_percentage_label = ctk.CTkLabel(self, text="NM (%): ", font=configuration.console_font_style)
         self.nm_percentage_label.grid(row=3, column=0, sticky='e', padx=10, pady=5)
-        self.nm_percentage_entry = ctk.CTkEntry(self, width=100)
+        self.nm_percentage_entry = ctk.CTkEntry(self, width=100, font=configuration.button_font_style)
         self.nm_percentage_entry.grid(row=3, column=1, sticky='w', padx=10, pady=5)
         self.nm_percentage_set_button = ctk.CTkButton(self, text="Set", command=self.set_nm_percentage, font=configuration.button_font_style)
         self.nm_percentage_set_button.grid(row=3, column=2, sticky='w', padx=10, pady=5)
@@ -1089,7 +1105,7 @@ class Bottom_Middle_Frame(ctk.CTkFrame):
         # DS: New Sample Rate
         self.ds_new_sr_label = ctk.CTkLabel(self, text="DS (Hz): ", font=configuration.console_font_style)
         self.ds_new_sr_label.grid(row=4, column=0, sticky='e', padx=10, pady=5)
-        self.ds_new_sr_entry = ctk.CTkEntry(self, width=100)
+        self.ds_new_sr_entry = ctk.CTkEntry(self, width=100, font=configuration.button_font_style)
         self.ds_new_sr_entry.grid(row=4, column=1, sticky='w', padx=10, pady=5)
         self.ds_new_sr_set_button = ctk.CTkButton(self, text="Set", command=self.set_ds_new_sr, font=configuration.button_font_style)
         self.ds_new_sr_set_button.grid(row=4, column=2, sticky='w', padx=10, pady=5)
@@ -1136,6 +1152,7 @@ class Bottom_Right_Frame(ctk.CTkFrame):
         self.pca_detector_settings_frame()
 
     def pca_detector_settings_frame(self):
+        configuration = self.parent.parent.device_config
         # Number of Components Label
         self.pca_detector_settings_label = ctk.CTkLabel(self, text="PCA Detector Settings", font=configuration.console_font_style)
         self.pca_detector_settings_label.grid(row=0, column=0, columnspan=3, sticky='nsew', padx=10, pady=10)
@@ -1143,7 +1160,7 @@ class Bottom_Right_Frame(ctk.CTkFrame):
         self.num_components_label = ctk.CTkLabel(self, text="# Comps:", font=configuration.console_font_style)
         self.num_components_label.grid(row=1, column=0, sticky='e', padx=10, pady=5)
 
-        self.num_components_entry = ctk.CTkEntry(self, width=50)
+        self.num_components_entry = ctk.CTkEntry(self, width=50, font=configuration.button_font_style)
         self.num_components_entry.grid(row=1, column=1, sticky='w', padx=10, pady=5)
         self.num_components_entry.insert(0, "3")  # Default value
 
@@ -1154,7 +1171,7 @@ class Bottom_Right_Frame(ctk.CTkFrame):
         self.threshold_multiplier_label = ctk.CTkLabel(self, text="Threshold:", font=configuration.console_font_style)
         self.threshold_multiplier_label.grid(row=2, column=0, sticky='e', padx=10, pady=5)
 
-        self.threshold_multiplier_entry = ctk.CTkEntry(self, width=50)
+        self.threshold_multiplier_entry = ctk.CTkEntry(self, width=50, font=configuration.button_font_style)
         self.threshold_multiplier_entry.grid(row=2, column=1, sticky='w', padx=10, pady=5)
         self.threshold_multiplier_entry.insert(0, "1.0")  # Default value
 
@@ -1165,7 +1182,7 @@ class Bottom_Right_Frame(ctk.CTkFrame):
         self.anomaly_threshold_value_label = ctk.CTkLabel(self, text="Anom Thres:", font=configuration.console_font_style)
         self.anomaly_threshold_value_label.grid(row=3, column=0, sticky='e', padx=10, pady=5)
 
-        self.anomaly_threshold_value_entry = ctk.CTkEntry(self, width=50)
+        self.anomaly_threshold_value_entry = ctk.CTkEntry(self, width=50, font=configuration.button_font_style)
         self.anomaly_threshold_value_entry.grid(row=3, column=1, sticky='w', padx=10, pady=5)
         self.anomaly_threshold_value_entry.insert(0, f'{self.anomaly_threshold_value}')  # Default value
 
@@ -1176,7 +1193,7 @@ class Bottom_Right_Frame(ctk.CTkFrame):
         self.max_anomaly_value_label = ctk.CTkLabel(self, text="Max Anomaly:", font=configuration.console_font_style)
         self.max_anomaly_value_label.grid(row=4, column=0, sticky='e', padx=10, pady=5)
 
-        self.max_anomaly_value_entry = ctk.CTkEntry(self, width=50)
+        self.max_anomaly_value_entry = ctk.CTkEntry(self, width=50, font=configuration.button_font_style)
         self.max_anomaly_value_entry.grid(row=4, column=1, sticky='w', padx=10, pady=5)
         self.max_anomaly_value_entry.insert(0, f'{self.max_anomaly_value}')  # Default value
 

@@ -18,12 +18,17 @@ if __name__ == "__main__":
         from Application.engine.array import array_config_RECT as array_config
     else: from Application.engine.array import array_config_LINE as array_config
 
+    if app_device == 'mac' or app_device == 'other':
+        from Application.gui import configuration as device_config
+    if app_device == 'pi':
+        from Application.gui import configuration_pi as device_config
+
     temp_sensor = Sender_Client(name='macbook')
     audio_realtime = Mic_Array(array_config)
 
     controller = Controller(array_config,app_device)
 
-    gui = Main_Window(controller.handle_event, array_config)
+    gui = Main_Window(controller.handle_event, array_config, device_config)
 
     controller.add_peripherals(temp_sensor, audio_realtime, gui)
 
