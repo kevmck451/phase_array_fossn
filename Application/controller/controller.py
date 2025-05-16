@@ -28,7 +28,8 @@ import os
 
 
 class Controller:
-    def __init__(self, array_config):
+    def __init__(self, array_config, app_device):
+        self.app_device = app_device
         self.app_state = State.IDLE
 
         self.array_config = array_config
@@ -130,7 +131,12 @@ class Controller:
             time.sleep(0.5)
 
     def setup_project_directory(self):
-        self.project_directory_base_path = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/2 FOSSN/Data/Field_Tests'
+        if self.app_device == 'mac':
+            self.project_directory_base_path = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/2 FOSSN/Data/Field_Tests'
+        elif self.app_device == 'pi':
+            self.project_directory_base_path = '/home/pi/Field_Tests'
+        else: self.project_directory_base_path = './Field_Tests'
+
         current_datetime = datetime.now().strftime('%-m-%d-%y %-I.%M%p').lower()
         self.project_directory_path = os.path.join(self.project_directory_base_path,
                                                    f'{current_datetime} {self.array_config.directory_name}')

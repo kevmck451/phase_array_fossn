@@ -12,7 +12,7 @@ from Application.gui.array_selector import get_array_selection
 
 if __name__ == "__main__":
 
-    selection = get_array_selection()
+    selection, app_device = get_array_selection()
 
     if selection == 'RECT':
         from Application.engine.array import array_config_RECT as array_config
@@ -21,7 +21,7 @@ if __name__ == "__main__":
     temp_sensor = Sender_Client(name='macbook')
     audio_realtime = Mic_Array(array_config)
 
-    controller = Controller(array_config)
+    controller = Controller(array_config,app_device)
 
     gui = Main_Window(controller.handle_event, array_config)
 
