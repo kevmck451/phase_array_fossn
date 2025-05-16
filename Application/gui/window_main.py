@@ -245,13 +245,13 @@ class Top_Middle_Frame(ctk.CTkFrame):
         self.project_name.pack()
 
     def load_audio_file(self):
-        if self.parent.parent.device_config == 'mac':
+        if self.parent.parent.device_config.device_type == 'mac':
             try:
                 script = '''
-                set chosenFile to choose file with prompt "Select Audio File" of type {"public.audio"}
-                set filePath to POSIX path of chosenFile
-                return filePath
-                '''
+                        set chosenFile to choose file with prompt "Select Audio File" of type {"public.audio"}
+                        set filePath to POSIX path of chosenFile
+                        return filePath
+                        '''
 
                 result = subprocess.run(
                     ['osascript', '-e', script],
@@ -268,7 +268,7 @@ class Top_Middle_Frame(ctk.CTkFrame):
             except Exception as e:
                 print("File dialog failed:", e)
 
-        elif self.parent.parent.device_config == 'pi':
+        elif self.parent.parent.device_config.device_type == 'pi':
             try:
                 from tkinter import filedialog
                 audio_file_path = filedialog.askopenfilename(
@@ -321,13 +321,14 @@ class Top_Middle_Frame(ctk.CTkFrame):
         self.calibration_time_entry.grid(row=0, column=3, padx=5)
 
     def load_pca_file(self):
-        if self.parent.parent.device_config == 'mac':
+        print(self.parent.parent.device_config)
+        if self.parent.parent.device_config.device_type == 'mac':
             try:
                 script = '''
-                set chosenFolder to choose folder with prompt "Select Folder Containing PCA Calibration Files"
-                set folderPath to POSIX path of chosenFolder
-                return folderPath
-                '''
+                        set chosenFolder to choose folder with prompt "Select Folder Containing PCA Calibration Files"
+                        set folderPath to POSIX path of chosenFolder
+                        return folderPath
+                        '''
 
                 result = subprocess.run(
                     ['osascript', '-e', script],
@@ -348,7 +349,7 @@ class Top_Middle_Frame(ctk.CTkFrame):
             except Exception as e:
                 print("Folder dialog failed:", e)
 
-        elif self.parent.parent.device_config == 'pi':
+        elif self.parent.parent.device_config.device_type == 'pi':
             try:
                 from tkinter import filedialog
                 folder_path = filedialog.askdirectory(
