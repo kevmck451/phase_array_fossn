@@ -10,8 +10,8 @@ window_title = 'University of Memphis Acoustic'
 
 device_type = 'pi'
 
-window_width = 990 # 1400 # 3200 1400
-window_height = 490 # 800  # 1200 800
+window_width = 1010 # 990
+window_height = 510 # 490
 min_window_width = window_width
 min_window_height = window_height
 x_pad_main = 1
