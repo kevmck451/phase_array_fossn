@@ -554,8 +554,6 @@ class Controller:
             self.calibrate_start_time = 0
 
         elif event == Event.SET_TEMP:
-            if self.gui.Bottom_Frame.Left_Frame.temp_value == 'x':
-                self.handle_event(Event.ON_CLOSE)
             self.temperature = int(self.gui.Bottom_Frame.Left_Frame.temp_value)
             self.beamformer.temperature_current = self.temperature
             self.gui.Top_Frame.Right_Frame.insert_text(f'Temp Set Successful: {self.temperature}', 'green')

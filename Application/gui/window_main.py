@@ -57,7 +57,7 @@ class Main_Window(ctk.CTk):
         self.bind("<Escape>", self.on_close)
         self.bind("<Control-c>", self.on_close)
 
-    def on_close(self, event=None):
+    def on_close(self):
         # Perform any cleanup or process termination steps here
         # For example, safely terminate any running threads, save state, release resources, etc.
         # self.matrix_mics.stop_stream()
