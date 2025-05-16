@@ -119,6 +119,10 @@ class Controller:
                 # self.gui.Top_Frame.Left_Frame.fpga_connection = self.temp_sensor.connected
                 self.gui.Top_Frame.Left_Frame.current_temp = '-'
 
+            if self.temp_sensor.connected and not self.temp_sensor.temp_sensor_connected:
+                self.gui.Top_Frame.Right_Frame.insert_text(f'Pi Connected but Temp Sensor is Not', 'red')
+                self.gui.Top_Frame.Left_Frame.current_temp = '-'
+
             if not self.audio_loaded:
                 if self.app_state == State.RUNNING:
                     if self.gui.Top_Frame.Center_Frame.audio_save_checkbox_variable.get():

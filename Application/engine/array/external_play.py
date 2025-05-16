@@ -38,13 +38,18 @@ class External_Player:
 
         while self.running:
             try:
-                chunk = self.mic_streamer.external_audio_queue.get(timeout=0.1).T
+                chunk = self.mic_streamer.external_audio_queue.get(timeout=0.1).T.astype(np.float32)
 
                 # Extract first and last mic channels
                 left = chunk[:, -3]  # Last mic -> Left
                 right = chunk[:, 2]  # First mic -> Right
 
+                # chunk = np.stack((left, right), axis=1)
                 chunk = np.stack((left, right), axis=1)
+
+                max_val = np.max(np.abs(chunk))
+                if max_val > 1.0:
+                    chunk = chunk / max_val  # Prevent clipping
 
                 self.stream.write(chunk)
             except queue.Empty:

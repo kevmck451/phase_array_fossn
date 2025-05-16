@@ -20,6 +20,7 @@ class Sender_Client:
         self.temp_record = []
         self.current_temp = None
         self.temp_sample_time = 2
+        self.temp_sensor_connected = False
 
     def ensure_connection(self):
         print('Attempting to Connect with Temp Server')
@@ -41,7 +42,6 @@ class Sender_Client:
                 # print(f"Error connecting to the server: {e}")
                 time.sleep(1)  # Retry after a delay
         self.cancel_attempt = False
-
 
     def send_data(self, message):
         if self.connected:
@@ -67,21 +67,25 @@ class Sender_Client:
                     try:
                         self.current_temp = int(response)
                         self.temp_record.append(self.current_temp)
-                    except:
-                        print(f'Message: {response}')
+                        self.temp_sensor_connected = True
+                    except ValueError:
+                        self.temp_sensor_connected = False
+                        # print(f'Non-temp message received: {response}')
             except socket.timeout:
                 print("Socket recv timed out. No response received.")
                 self.connected = False
                 self.connect_thread = threading.Thread(target=self.ensure_connection, daemon=True)
                 self.connect_thread.start()
-            except OSError as e:
-                if e.errno == 9:  # Bad file descriptor error
+            except (ConnectionResetError, OSError) as e:
+                if isinstance(e, OSError) and e.errno == 9:
                     print("Socket already closed.")
                 else:
-                    raise  # Re-raise any unexpected errors
+                    print(f"Connection error: {e}")
                 self.connected = False
+                self.temp_sensor_connected = False
                 self.connect_thread = threading.Thread(target=self.ensure_connection, daemon=True)
                 self.connect_thread.start()
+
 
     def request_temp(self):
         while self.connected:
