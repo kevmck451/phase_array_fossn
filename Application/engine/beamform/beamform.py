@@ -34,6 +34,9 @@ class Beamform:
         self.data_list = []
         self.tag_index = 2
 
+        self.send_to_external_audio_stream = False
+        self.external_audio_queue = Queue()
+
     def compile_all_fir_coeffs(self):
         print('Generating FIR Coeffs')
         fir_coeffs_list = []
@@ -85,6 +88,9 @@ class Beamform:
         trimmed_result = beamformed_data_all_channels[:, trim_amount: -trim_amount]
 
         self.queue.put(trimmed_result)
+
+        if self.send_to_external_audio_stream:
+            self.external_audio_queue.put(trimmed_result)
 
     def beamform_channel(self, channel, mapped_audio_data, fir_coeffs):
         num_samples = mapped_audio_data.shape[2]

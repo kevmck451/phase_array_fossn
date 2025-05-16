@@ -20,8 +20,9 @@ class Main_Window(ctk.CTk):
         self.device_config = configuration
 
         # Computer Icon
-        img = Image.open(configuration.main_window_icon)
-        icon = ImageTk.PhotoImage(img)
+        print(configuration.main_window_icon)
+        self.img = Image.open(configuration.main_window_icon)
+        icon = ImageTk.PhotoImage(self.img)
         self.tk.call('wm', 'iconphoto', self._w, icon)
 
         if configuration.device_type == 'pi' and sys.platform != 'darwin':
@@ -463,6 +464,27 @@ class Top_Middle_Right_Frame(ctk.CTkFrame):
                                               command=lambda: self.event_handler(Event.START_EXTERNAL_PLAY),
                                               font=configuration.button_font_style)
             self.play_external_button.pack(pady=5)
+
+            self.stream_location = ctk.CTkSegmentedButton(
+                frame,
+                values=["Raw", "Beam", "Pro"],
+                font=configuration.button_font_style,
+                height=28,
+                command=lambda value: self.event_handler(Event.CHANGE_EXTERNAL_PLAYER)
+            )
+            self.stream_location.set("Raw")
+            self.stream_location.pack(pady=(10, 5))
+
+            self.human_op_mode_button = ctk.CTkButton(frame, text="Human Op Mode",
+                                                      fg_color=configuration.bluelight_fg_color,
+                                                      hover_color=configuration.bluelight_hover_color,
+                                                      command=lambda: self.event_handler(Event.START_HUMAN_OP_MODE),
+                                                      font=configuration.button_font_style)
+            self.human_op_mode_button.pack(pady=5)
+
+
+
+
 
         def toggle_play_external_button(self):
             configuration = self.parent.parent.device_config
@@ -1199,8 +1221,8 @@ class Bottom_Right_Frame(ctk.CTkFrame):
         self.grid_columnconfigure(3, weight=1)
         self.grid_columnconfigure(4, weight=1)
 
-        self.max_anomaly_value = 50
-        self.anomaly_threshold_value = 8
+        self.max_anomaly_value = 100 # 50
+        self.anomaly_threshold_value = 5 # 8
         self.pca_detector_settings_frame()
 
     def pca_detector_settings_frame(self):
@@ -1219,38 +1241,38 @@ class Bottom_Right_Frame(ctk.CTkFrame):
         self.num_components_set_button = ctk.CTkButton(self, text="Set", command=self.set_num_components, font=configuration.button_font_style)
         self.num_components_set_button.grid(row=1, column=2, sticky='w', padx=10, pady=5)
 
-        # Threshold Multiplier Label
-        self.threshold_multiplier_label = ctk.CTkLabel(self, text="Threshold:", font=configuration.console_font_style)
-        self.threshold_multiplier_label.grid(row=2, column=0, sticky='e', padx=10, pady=5)
-
-        self.threshold_multiplier_entry = ctk.CTkEntry(self, width=50, font=configuration.button_font_style)
-        self.threshold_multiplier_entry.grid(row=2, column=1, sticky='w', padx=10, pady=5)
-        self.threshold_multiplier_entry.insert(0, "1.0")  # Default value
-
-        self.threshold_multiplier_set_button = ctk.CTkButton(self, text="Set", command=self.set_threshold_multiplier, font=configuration.button_font_style)
-        self.threshold_multiplier_set_button.grid(row=2, column=2, sticky='w', padx=10, pady=5)
-
         # anomaly threshold value Label
         self.anomaly_threshold_value_label = ctk.CTkLabel(self, text="Anom Thres:", font=configuration.console_font_style)
-        self.anomaly_threshold_value_label.grid(row=3, column=0, sticky='e', padx=10, pady=5)
+        self.anomaly_threshold_value_label.grid(row=2, column=0, sticky='e', padx=10, pady=5)
 
         self.anomaly_threshold_value_entry = ctk.CTkEntry(self, width=50, font=configuration.button_font_style)
-        self.anomaly_threshold_value_entry.grid(row=3, column=1, sticky='w', padx=10, pady=5)
+        self.anomaly_threshold_value_entry.grid(row=2, column=1, sticky='w', padx=10, pady=5)
         self.anomaly_threshold_value_entry.insert(0, f'{self.anomaly_threshold_value}')  # Default value
 
         self.anomaly_threshold_value_set_button = ctk.CTkButton(self, text="Set", command=self.set_anomaly_threshold_value, font=configuration.button_font_style)
-        self.anomaly_threshold_value_set_button.grid(row=3, column=2, sticky='w', padx=10, pady=5)
+        self.anomaly_threshold_value_set_button.grid(row=2, column=2, sticky='w', padx=10, pady=5)
 
         # max_anomaly_value Label
-        self.max_anomaly_value_label = ctk.CTkLabel(self, text="Max Anomaly:", font=configuration.console_font_style)
-        self.max_anomaly_value_label.grid(row=4, column=0, sticky='e', padx=10, pady=5)
+        self.max_anomaly_value_label = ctk.CTkLabel(self, text="Max Anom:", font=configuration.console_font_style)
+        self.max_anomaly_value_label.grid(row=3, column=0, sticky='e', padx=10, pady=5)
 
         self.max_anomaly_value_entry = ctk.CTkEntry(self, width=50, font=configuration.button_font_style)
-        self.max_anomaly_value_entry.grid(row=4, column=1, sticky='w', padx=10, pady=5)
+        self.max_anomaly_value_entry.grid(row=3, column=1, sticky='w', padx=10, pady=5)
         self.max_anomaly_value_entry.insert(0, f'{self.max_anomaly_value}')  # Default value
 
         self.max_anomaly_value_set_button = ctk.CTkButton(self, text="Set", command=self.set_max_anomaly_value, font=configuration.button_font_style)
-        self.max_anomaly_value_set_button.grid(row=4, column=2, sticky='w', padx=10, pady=5)
+        self.max_anomaly_value_set_button.grid(row=3, column=2, sticky='w', padx=10, pady=5)
+
+        # Threshold Multiplier Label
+        self.threshold_multiplier_label = ctk.CTkLabel(self, text="N/A:", font=configuration.console_font_style)
+        self.threshold_multiplier_label.grid(row=4, column=0, sticky='e', padx=10, pady=5)
+
+        self.threshold_multiplier_entry = ctk.CTkEntry(self, width=50, font=configuration.button_font_style)
+        self.threshold_multiplier_entry.grid(row=4, column=1, sticky='w', padx=10, pady=5)
+        self.threshold_multiplier_entry.insert(0, "1.0")  # Default value
+
+        self.threshold_multiplier_set_button = ctk.CTkButton(self, text="Set", command=self.set_threshold_multiplier, font=configuration.button_font_style)
+        self.threshold_multiplier_set_button.grid(row=4, column=2, sticky='w', padx=10, pady=5)
 
     def set_num_components(self):
         num_components = self.num_components_entry.get()

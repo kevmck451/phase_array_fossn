@@ -88,8 +88,8 @@ connected_color = '#2B881A'
 
 # Settings Window
 settings_window_title = 'Experiment Settings'
-settings_window_width = 400
-settings_window_height = 400
+settings_window_width = 1200
+settings_window_height = 800
 settings_min_window_width = 400
 settings_min_window_height = 400
 settings_window_icon_filepath = 'docs/settings window icon.png'

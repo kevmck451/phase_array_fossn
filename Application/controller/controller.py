@@ -4,7 +4,6 @@ from Application.engine.array.AudioStreamSimulator import AudioStreamSimulator
 from Application.engine.array.external_play import External_Player
 from Application.engine.filters.audio import Audio
 from Application.engine.beamform.beamform import Beamform
-
 from Application.engine.filters.processor import Processing
 from Application.engine.detectors.pca_calculator import PCA_Calculator
 from Application.engine.detectors.detector import Detector
@@ -13,9 +12,10 @@ from Application.engine.detectors.heatmap import Heatmap
 from Application.controller.detector_log import Detector_Log
 from Application.controller.heatmap_log import Heatmap_Log
 from Application.controller.temp_log import Temp_Log
-
 from Application.controller.event_states import Event
 from Application.controller.event_states import State
+
+from Application.gui.human_op_mode import Human_Op_Mode_Window
 
 
 from datetime import datetime
@@ -74,6 +74,7 @@ class Controller:
 
         self.external_player = None
         self.use_external_audio = False
+        self.stream_location = None
 
         self.data_logger = None
         self.heatmap_logger = None
@@ -374,7 +375,10 @@ class Controller:
 
         if self.use_external_audio:
             self.audio_streamer.send_to_external_audio_stream = True
-            self.external_player = External_Player(self.audio_streamer, self.array_config)
+            self.beamformer.send_to_external_audio_stream = True
+            self.processor.send_to_external_audio_stream = True
+            self.external_player = External_Player(self.audio_streamer, self.beamformer, self.processor, self.array_config)
+            self.external_player.stream_location = self.gui.Top_Frame.Center_Right_Frame.stream_location.get()
             self.external_player.start()
 
     def stop_all_queues(self):
@@ -613,40 +617,31 @@ class Controller:
 
             if self.app_state == State.RUNNING or self.app_state == State.CALIBRATING:
                 self.audio_streamer.send_to_external_audio_stream = True
-                self.external_player = External_Player(self.audio_streamer, self.array_config)
+                self.beamformer.send_to_external_audio_stream = True
+                self.processor.send_to_external_audio_stream = True
+                self.external_player = External_Player(self.audio_streamer, self.beamformer, self.processor, self.array_config)
+                self.external_player.stream_location = self.gui.Top_Frame.Center_Right_Frame.stream_location.get()
                 self.external_player.start()
-
-            # if self.app_state == State.IDLE:
-            #     self.use_external_audio = True
-            #     self.gui.Top_Frame.Right_Frame.insert_text(f'External Player Activated', 'green')
-            #     self.gui.Top_Frame.Center_Right_Frame.toggle_play_external_button()
-            # elif self.audio_loaded and (self.app_state == State.RUNNING or self.app_state == State.CALIBRATING):
-            #     self.audio_streamer.send_to_external_audio_stream = True
-            #     self.external_player.start()
-            #     self.gui.Top_Frame.Right_Frame.insert_text("External Audio Player Started", self.color_light_blue)
-            #     self.gui.Top_Frame.Center_Right_Frame.toggle_play_external_button()
-            # else:
-            #     print('Remember What State this is and make a condition for it')
 
 
         elif event == Event.STOP_EXTERNAL_PLAY:
             self.use_external_audio = False
             self.audio_streamer.send_to_external_audio_stream = False
+            self.beamformer.send_to_external_audio_stream = False
+            self.processor.send_to_external_audio_stream = False
             self.external_player.stop()
             self.gui.Top_Frame.Center_Right_Frame.toggle_play_external_button()
 
+        elif event == Event.CHANGE_EXTERNAL_PLAYER:
+            self.stream_location = self.gui.Top_Frame.Center_Right_Frame.stream_location.get()
 
+            if self.external_player is not None:
+                self.external_player.stream_location = self.stream_location
 
-            # if self.audio_loaded and (self.app_state == State.RUNNING or self.app_state == State.CALIBRATING):
-            #     self.audio_streamer.send_to_external_audio_stream = False
-            #     self.external_player.stop()
-            #
-            # if self.use_external_audio:
-            # self.gui.Top_Frame.Right_Frame.insert_text("External Audio Player Stopped", self.color_light_blue)
-            # self.gui.Top_Frame.Center_Right_Frame.toggle_play_external_button()
-
-
-
+        elif event == Event.START_HUMAN_OP_MODE:
+            print('Human Operation Mode')
+            self.settings_window = Human_Op_Mode_Window(self.handle_event, self.array_config, self.gui.device_config)
+            self.settings_window.mainloop()
 
         elif event == Event.DUMMY_BUTTON:
             # dummy button

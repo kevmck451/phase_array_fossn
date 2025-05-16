@@ -19,6 +19,8 @@ class Event(Enum):
     LOG_DETECTION = auto()
     START_EXTERNAL_PLAY = auto()
     STOP_EXTERNAL_PLAY = auto()
+    CHANGE_EXTERNAL_PLAYER = auto()
+    START_HUMAN_OP_MODE = auto()
     DUMMY_BUTTON = auto()
 
 
