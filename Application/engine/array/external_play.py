@@ -3,6 +3,7 @@
 
 
 import sounddevice as sd
+import numpy as np
 import threading
 import queue
 
@@ -37,7 +38,14 @@ class External_Player:
 
         while self.running:
             try:
-                chunk = self.mic_streamer.external_audio_queue.get(timeout=0.1)
+                chunk = self.mic_streamer.external_audio_queue.get(timeout=0.1).T
+
+                # Extract first and last mic channels
+                left = chunk[:, -3]  # Last mic -> Left
+                right = chunk[:, 2]  # First mic -> Right
+
+                chunk = np.stack((left, right), axis=1)
+
                 self.stream.write(chunk)
             except queue.Empty:
                 continue
