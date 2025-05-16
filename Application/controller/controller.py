@@ -511,8 +511,6 @@ class Controller:
             if entry_val.isdigit():
                 self.calibration_time = int(entry_val)
 
-            self.gui.Top_Frame.Center_Right_Frame.start_calibration(self.calibration_time)
-
             if not self.mic_array.audio_receiver.running and not self.audio_loaded:
                 self.gui.Top_Frame.Right_Frame.insert_text(f'Array not connected and No Audio is Loaded', 'red')
             else:
@@ -524,6 +522,7 @@ class Controller:
                 self.start_all_queues()
                 self.calibrate_start_time = time.time()
                 Thread(target=self.calibrate_timer, daemon=True).start()
+                self.gui.Top_Frame.Center_Right_Frame.start_calibration(self.calibration_time)
 
         elif event == Event.STOP_PCA_CALIBRATION:
             self.stop_all_queues()
