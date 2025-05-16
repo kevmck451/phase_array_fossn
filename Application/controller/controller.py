@@ -480,8 +480,8 @@ class Controller:
                     self.app_state = State.RUNNING
                     self.gui.Top_Frame.Center_Frame.toggle_play()
                     self.start_all_queues()
-                    if self.realtime:
-                        self.gui.Top_Frame.Center_Right_Frame.start_recording()
+                    # if self.realtime:
+                    self.gui.Top_Frame.Center_Right_Frame.start_recording()
 
         elif event == Event.STOP_RECORDER:
             self.app_state = State.IDLE
