@@ -71,7 +71,7 @@ red_hover_color='#C74343'
 bluelight_fg_color = '#578CD5'
 bluelight_hover_color = '#496FA3'
 
-
+device_type = 'mac'
 
 # Other Colors
 gray_fg_color = '#8F8F8F'

@@ -8,8 +8,10 @@ def base_path(relative_path):
 # Main App Settings
 window_title = 'University of Memphis Acoustic'
 
-window_width = 800 # 1400 # 3200 1400
-window_height = 400 # 800  # 1200 800
+device_type = 'pi'
+
+window_width = 990 # 1400 # 3200 1400
+window_height = 490 # 800  # 1200 800
 min_window_width = window_width
 min_window_height = window_height
 x_pad_main = 1
@@ -24,7 +26,7 @@ main_font_size = 8 #26
 large_font_size = 20
 button_font_size = 8
 
-main_window_icon = base_path('docs/papa_icon.png')
+main_window_icon = base_path('Application/app_logo.png')
 playing_icon_filepath = base_path('docs/playing icon s.png')
 playing_icon_s_filepath = base_path('docs/playing icon ss.png')
 start_icon_filepath = base_path('docs/start icon s.png')
