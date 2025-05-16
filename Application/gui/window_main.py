@@ -57,7 +57,7 @@ class Main_Window(ctk.CTk):
         self.bind("<Escape>", self.on_close)
         self.bind("<Control-c>", self.on_close)
 
-    def on_close(self):
+    def on_close(self, *args):
         # Perform any cleanup or process termination steps here
         # For example, safely terminate any running threads, save state, release resources, etc.
         # self.matrix_mics.stop_stream()
@@ -245,27 +245,47 @@ class Top_Middle_Frame(ctk.CTkFrame):
         self.project_name.pack()
 
     def load_audio_file(self):
-        try:
-            script = '''
-            set chosenFile to choose file with prompt "Select Audio File" of type {"public.audio"}
-            set filePath to POSIX path of chosenFile
-            return filePath
-            '''
+        if self.parent.parent.device_config == 'mac':
+            try:
+                script = '''
+                set chosenFile to choose file with prompt "Select Audio File" of type {"public.audio"}
+                set filePath to POSIX path of chosenFile
+                return filePath
+                '''
 
-            result = subprocess.run(
-                ['osascript', '-e', script],
-                capture_output=True,
-                text=True
-            )
-            audio_file_path = result.stdout.strip()
+                result = subprocess.run(
+                    ['osascript', '-e', script],
+                    capture_output=True,
+                    text=True
+                )
+                audio_file_path = result.stdout.strip()
 
-            if audio_file_path:
-                self.selected_audio_file = audio_file_path
-                print(f"Selected audio file: {self.selected_audio_file}")
-                self.event_handler(Event.LOAD_AUDIO)
+                if audio_file_path:
+                    self.selected_audio_file = audio_file_path
+                    print(f"Selected audio file: {self.selected_audio_file}")
+                    self.event_handler(Event.LOAD_AUDIO)
 
-        except Exception as e:
-            print("File dialog failed:", e)
+            except Exception as e:
+                print("File dialog failed:", e)
+
+        elif self.parent.parent.device_config == 'pi':
+            try:
+                from tkinter import filedialog
+                audio_file_path = filedialog.askopenfilename(
+                    title="Select Audio File",
+                    filetypes=[("Audio Files", "*.wav *.mp3 *.flac *.aac *.ogg *.m4a")]
+                )
+
+                if audio_file_path:
+                    self.selected_audio_file = audio_file_path
+                    print(f"Selected audio file: {self.selected_audio_file}")
+                    self.event_handler(Event.LOAD_AUDIO)
+
+            except Exception as e:
+                print("File dialog failed:", e)
+
+
+
 
     def calibration_frame(self, frame):
         configuration = self.parent.parent.device_config
@@ -301,31 +321,53 @@ class Top_Middle_Frame(ctk.CTkFrame):
         self.calibration_time_entry.grid(row=0, column=3, padx=5)
 
     def load_pca_file(self):
-        try:
-            script = '''
-            set chosenFolder to choose folder with prompt "Select Folder Containing PCA Calibration Files"
-            set folderPath to POSIX path of chosenFolder
-            return folderPath
-            '''
+        if self.parent.parent.device_config == 'mac':
+            try:
+                script = '''
+                set chosenFolder to choose folder with prompt "Select Folder Containing PCA Calibration Files"
+                set folderPath to POSIX path of chosenFolder
+                return folderPath
+                '''
 
-            result = subprocess.run(
-                ['osascript', '-e', script],
-                capture_output=True,
-                text=True
-            )
-            folder_path = result.stdout.strip()
+                result = subprocess.run(
+                    ['osascript', '-e', script],
+                    capture_output=True,
+                    text=True
+                )
+                folder_path = result.stdout.strip()
 
-            if folder_path:
-                self.selected_pca_folder = folder_path
-                print(f"Selected PCA folder: {self.selected_pca_folder}")
+                if folder_path:
+                    self.selected_pca_folder = folder_path
+                    print(f"Selected PCA folder: {self.selected_pca_folder}")
 
-                self.baseline_means_path = f"{self.selected_pca_folder}/baseline_means.npy"
-                self.baseline_stds_path = f"{self.selected_pca_folder}/baseline_stds.npy"
+                    self.baseline_means_path = f"{self.selected_pca_folder}/baseline_means.npy"
+                    self.baseline_stds_path = f"{self.selected_pca_folder}/baseline_stds.npy"
 
-                self.event_handler(Event.LOAD_CALIBRATION)
+                    self.event_handler(Event.LOAD_CALIBRATION)
 
-        except Exception as e:
-            print("Folder dialog failed:", e)
+            except Exception as e:
+                print("Folder dialog failed:", e)
+
+        elif self.parent.parent.device_config == 'pi':
+            try:
+                from tkinter import filedialog
+                folder_path = filedialog.askdirectory(
+                    title="Select Folder Containing PCA Calibration Files"
+                )
+
+                if folder_path:
+                    self.selected_pca_folder = folder_path
+                    print(f"Selected PCA folder: {self.selected_pca_folder}")
+
+                    self.baseline_means_path = f"{folder_path}/baseline_means.npy"
+                    self.baseline_stds_path = f"{folder_path}/baseline_stds.npy"
+
+                    self.event_handler(Event.LOAD_CALIBRATION)
+
+            except Exception as e:
+                print("Folder dialog failed:", e)
+
+
 
     def toggle_play(self):
         configuration = self.parent.parent.device_config
