@@ -24,8 +24,8 @@ class Main_Window(ctk.CTk):
         icon = ImageTk.PhotoImage(img)
         self.tk.call('wm', 'iconphoto', self._w, icon)
 
-        # if configuration.device_type == 'pi' and sys.platform != 'darwin':
-        #     self.attributes('-fullscreen', True)
+        if configuration.device_type == 'pi' and sys.platform != 'darwin':
+            self.attributes('-fullscreen', True)
 
         # Main Setup ------------------------------------------------------------
         self.title(f'{self.device_config.window_title}: {self.array_config.title}')
