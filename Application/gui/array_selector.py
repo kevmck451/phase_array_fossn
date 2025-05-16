@@ -34,8 +34,9 @@ def get_array_selection():
     font_button = ("Helvetica", 14)
 
     tk.Label(root, text="Choose Array Type:", font=font_label).pack(pady=20)
-    tk.Button(root, text="Rectangular Array", font=font_button, width=20, height=2, command=choose_rect).pack(pady=5)
     tk.Button(root, text="Line Array", font=font_button, width=20, height=2, command=choose_line).pack(pady=5)
+    tk.Button(root, text="Rectangular Array", font=font_button, width=20, height=2, command=choose_rect).pack(pady=5)
+
 
     root.mainloop()
 

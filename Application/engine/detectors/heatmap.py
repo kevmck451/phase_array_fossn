@@ -88,11 +88,18 @@ class Heatmap:
         if self.anomaly_matrix is None:
             return None
 
-        if vert_max == int(100):
-            vmax = self.max_value_seen if self.max_value_seen > 0 else 1
+        # vert_max ranges from 1 to 200
+        sensitivity = int(vert_max)
+
+        # prevent divide-by-zero or overflow
+        if self.max_value_seen <= 0:
+            vmax = 1
         else:
-            vmax = self.max_value_seen if self.max_value_seen > 0 else 1
-            vmax = vmax // (int(vert_max)/100)
+            # Higher sensitivity lowers vmax (more sensitive to lower values)
+            # Lower sensitivity raises vmax (darker image, only strong stuff visible)
+            # Map 1–200 to a scale where 100 means normal, <100 is more cutoff, >100 is more exposure
+            scale = 100 / sensitivity
+            vmax = self.max_value_seen * scale
 
         # cubehelix # hot # inferno # gist_heat # bone # gist_earth # gnuplot2  # viridis
         if cmap == "Visual 1": cmap = 'gnuplot2'

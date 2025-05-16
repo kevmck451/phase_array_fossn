@@ -19,6 +19,7 @@ y_pad_1 = 10
 x_pad_2 = 10
 y_pad_2 = 10
 main_font_style = "default_font"
+small_font_size = 9
 main_font_size = 18 #26
 large_font_size = 54
 button_font_size = 14
@@ -39,6 +40,7 @@ reset_icon_filepath = base_path('docs/reset icon s.png')
 console_x_pad = 5
 console_y_pad = 1
 
+console_font_style_small = (main_font_style, small_font_size)
 console_font_style = (main_font_style, main_font_size)
 console_font_style_large = (main_font_style, large_font_size)
 

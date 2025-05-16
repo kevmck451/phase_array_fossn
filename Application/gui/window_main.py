@@ -1009,18 +1009,18 @@ class Bottom_Middle_Center_Frame(ctk.CTkFrame):
         # Slider with value label
         self.value_slider = ctk.CTkSlider(
             self,
-            from_=50,
-            to=150,
-            number_of_steps=100,
+            from_=1,
+            to=200,
+            number_of_steps=200,
             command=self.update_slider_label
         )
         self.value_slider.set(100)
-        self.value_slider.grid(row=2, column=0, columnspan=3, padx=10, pady=(0, 2), sticky="ew")
+        self.value_slider.grid(row=2, column=0, columnspan=5, padx=10, pady=(0, 2), sticky="ew")
 
         # Slider tick labels below
-        self.slider_min_label = ctk.CTkLabel(self, text="1", font=("Arial", 9))
-        self.slider_mid_label = ctk.CTkLabel(self, text="100", font=("Arial", 9))
-        self.slider_max_label = ctk.CTkLabel(self, text="200", font=("Arial", 9))
+        self.slider_min_label = ctk.CTkLabel(self, text="Less Sensitive", font=configuration.console_font_style_small)
+        self.slider_mid_label = ctk.CTkLabel(self, text="|", font=configuration.console_font_style_small)
+        self.slider_max_label = ctk.CTkLabel(self, text="More Sensitive", font=configuration.console_font_style_small)
 
         self.slider_min_label.grid(row=3, column=0, sticky="w", padx=10)
         self.slider_mid_label.grid(row=3, column=1, sticky="n")
