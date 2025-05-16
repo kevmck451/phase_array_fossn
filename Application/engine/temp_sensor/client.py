@@ -6,7 +6,7 @@ import threading
 import time
 
 class Sender_Client:
-    def __init__(self, host='192.168.1.1', port=12345, name='unknown'):
+    def __init__(self, host='192.168.0.1', port=12345, name='unknown'):
         self.host = host #
         self.port = port
         self.name = name

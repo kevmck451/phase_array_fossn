@@ -317,7 +317,9 @@ class Controller:
 
                 current_anomaly_data = self.detector.queue.get()
                 self.heatmap.update(self.thetas, current_anomaly_data)
-                image = self.heatmap.render_heatmap_image()
+                cmap = self.gui.Bottom_Frame.Middle_Center_Frame.visual_selector.get()
+                vert_max = self.gui.Bottom_Frame.Middle_Center_Frame.value_slider.get()
+                image = self.heatmap.render_heatmap_image(cmap, vert_max)
 
                 if self.realtime:
                     # give anomaly data to bar chart
@@ -483,7 +485,9 @@ class Controller:
                     self.gui.Top_Frame.Right_Frame.insert_text('Audio File Saved', 'green')
 
             if self.gui.Top_Frame.Center_Frame.audio_save_checkbox_variable.get():
-                final_image = self.heatmap.render_heatmap_image()
+                cmap = self.gui.Bottom_Frame.Middle_Center_Frame.visual_selector.get()
+                vert_max = self.gui.Bottom_Frame.Middle_Center_Frame.value_slider.get()
+                final_image = self.heatmap.render_heatmap_image(cmap, vert_max)
                 if final_image is not None:
                     self.heatmap_logger.save_heatmap_image(final_image, "final")
             self.stop_all_queues()

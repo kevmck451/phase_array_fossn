@@ -762,19 +762,22 @@ class Bottom_Frame(ctk.CTkFrame):
         self.parent = parent
 
         self.Left_Frame = Bottom_Left_Frame(self, self.event_handler)
+        self.Middle_Center_Frame = Bottom_Middle_Center_Frame(self, self.event_handler)
         self.Center_Frame = Bottom_Middle_Frame(self, self.event_handler)
         self.Right_Frame = Bottom_Right_Frame(self, self.event_handler)
 
         # Grid configuration
         self.rowconfigure(0, weight=1)
-        self.columnconfigure(0, weight=1)  # Left column with x/3 of the space
+        self.columnconfigure(0, weight=0)  # Left column with x/3 of the space
         self.columnconfigure(1, weight=1)  # Right column with x/3 of the space
-        self.columnconfigure(2, weight=1)  # Right column with x/3 of the space
+        self.columnconfigure(2, weight=0)  # Right column with x/3 of the space
+        self.columnconfigure(3, weight=0)  # Right column with x/3 of the space
 
         # Place the frames using grid
         self.Left_Frame.grid(row=0, column=0, sticky='nsew')  # Left frame in column 0
-        self.Center_Frame.grid(row=0, column=1, sticky='nsew')  # Right frame in column 1
-        self.Right_Frame.grid(row=0, column=2, sticky='nsew')  # Right frame in column 1
+        self.Middle_Center_Frame.grid(row=0, column=1, sticky='nsew')  # Right frame in column 1
+        self.Center_Frame.grid(row=0, column=2, sticky='nsew')  # Right frame in column 1
+        self.Right_Frame.grid(row=0, column=3, sticky='nsew')  # Right frame in column 1
 
 
 class Bottom_Left_Frame(ctk.CTkFrame):
@@ -968,6 +971,68 @@ class Bottom_Left_Frame(ctk.CTkFrame):
             self.phi_inc_seg.configure(state="disabled")
 
 
+class Bottom_Middle_Center_Frame(ctk.CTkFrame):
+    def __init__(self, parent, event_handler):
+        super().__init__(parent)
+        self.event_handler = event_handler
+        self.parent = parent
+
+        # Configure the grid layout
+        self.grid_rowconfigure(0, weight=0)  # Label
+        self.grid_rowconfigure(1, weight=0)  # Visual selector
+        self.grid_rowconfigure(2, weight=0)  # Slider
+        self.grid_rowconfigure(3, weight=0)  # Tick labels
+        self.grid_rowconfigure(4, weight=1)  # Empty space below
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_columnconfigure(1, weight=1)
+        self.grid_columnconfigure(2, weight=1)
+
+        self.heatmap_settings_frame()
+
+    def heatmap_settings_frame(self):
+        self.heatmap_settings_label = ctk.CTkLabel(
+            self, text="Heatmap Settings", font=configuration.console_font_style
+        )
+        self.heatmap_settings_label.grid(row=0, column=0, columnspan=3, sticky='nsew', padx=10, pady=(10, 5))
+
+        # Slim visual selector (no vertical stretching)
+        self.visual_selector = ctk.CTkSegmentedButton(
+            self,
+            values=["Visual 1", "Visual 2", "Visual 3", "Visual 4"],
+            # command=self.handle_visual_selection,
+            font=("Arial", 10),
+            height=28  # reduce the button height directly
+        )
+        self.visual_selector.set("Visual 1")
+        self.visual_selector.grid(row=1, column=0, columnspan=3, pady=(0, 10), padx=40, sticky='ew')
+
+        # Slider with value label
+        self.value_slider = ctk.CTkSlider(
+            self,
+            from_=50,
+            to=150,
+            number_of_steps=100,
+            command=self.update_slider_label
+        )
+        self.value_slider.set(100)
+        self.value_slider.grid(row=2, column=0, columnspan=3, padx=10, pady=(0, 2), sticky="ew")
+
+        # Slider tick labels below
+        self.slider_min_label = ctk.CTkLabel(self, text="1", font=("Arial", 9))
+        self.slider_mid_label = ctk.CTkLabel(self, text="100", font=("Arial", 9))
+        self.slider_max_label = ctk.CTkLabel(self, text="200", font=("Arial", 9))
+
+        self.slider_min_label.grid(row=3, column=0, sticky="w", padx=10)
+        self.slider_mid_label.grid(row=3, column=1, sticky="n")
+        self.slider_max_label.grid(row=3, column=2, sticky="e", padx=10)
+
+    def handle_visual_selection(self, value):
+        print(f"Selected: {value}")
+
+    def update_slider_label(self, value):
+        pass  # Or add live value updating if you want an extra label
+
+
 class Bottom_Middle_Frame(ctk.CTkFrame):
     def __init__(self, parent, event_handler):
         super().__init__(parent)
@@ -995,7 +1060,7 @@ class Bottom_Middle_Frame(ctk.CTkFrame):
         self.processing_settings_label.grid(row=0, column=0, columnspan=3, sticky='nsew', padx=10, pady=10)
 
         # NR: STD Threshold
-        self.nr_std_threshold_label = ctk.CTkLabel(self, text="NR: STD Threshold (int): ", font=configuration.console_font_style)
+        self.nr_std_threshold_label = ctk.CTkLabel(self, text="NR (STD): ", font=configuration.console_font_style)
         self.nr_std_threshold_label.grid(row=1, column=0, sticky='e', padx=10, pady=5)
         self.nr_std_threshold_entry = ctk.CTkEntry(self, width=100)
         self.nr_std_threshold_entry.grid(row=1, column=1, sticky='w', padx=10, pady=5)
@@ -1004,7 +1069,7 @@ class Bottom_Middle_Frame(ctk.CTkFrame):
         self.nr_std_threshold_entry.insert(0, f'{self.nr_std_threshold}')  # Default value
 
         # HP: Bottom Cutoff Frequency
-        self.hp_bottom_cutoff_freq_label = ctk.CTkLabel(self, text="HP: Bottom Cutoff Frequency (Hz): ", font=configuration.console_font_style)
+        self.hp_bottom_cutoff_freq_label = ctk.CTkLabel(self, text="HP (Hz): ", font=configuration.console_font_style)
         self.hp_bottom_cutoff_freq_label.grid(row=2, column=0, sticky='e', padx=10, pady=5)
         self.hp_bottom_cutoff_freq_entry = ctk.CTkEntry(self, width=100)
         self.hp_bottom_cutoff_freq_entry.grid(row=2, column=1, sticky='w', padx=10, pady=5)
@@ -1013,7 +1078,7 @@ class Bottom_Middle_Frame(ctk.CTkFrame):
         self.hp_bottom_cutoff_freq_entry.insert(0, f'{self.hp_bottom_cutoff_freq}')  # Default value
 
         # NM: Percentage
-        self.nm_percentage_label = ctk.CTkLabel(self, text="NM: Percentage (%): ", font=configuration.console_font_style)
+        self.nm_percentage_label = ctk.CTkLabel(self, text="NM (%): ", font=configuration.console_font_style)
         self.nm_percentage_label.grid(row=3, column=0, sticky='e', padx=10, pady=5)
         self.nm_percentage_entry = ctk.CTkEntry(self, width=100)
         self.nm_percentage_entry.grid(row=3, column=1, sticky='w', padx=10, pady=5)
@@ -1022,7 +1087,7 @@ class Bottom_Middle_Frame(ctk.CTkFrame):
         self.nm_percentage_entry.insert(0, f'{self.nm_percentage}')  # Default value
 
         # DS: New Sample Rate
-        self.ds_new_sr_label = ctk.CTkLabel(self, text="DS: New Sample Rate (Hz): ", font=configuration.console_font_style)
+        self.ds_new_sr_label = ctk.CTkLabel(self, text="DS (Hz): ", font=configuration.console_font_style)
         self.ds_new_sr_label.grid(row=4, column=0, sticky='e', padx=10, pady=5)
         self.ds_new_sr_entry = ctk.CTkEntry(self, width=100)
         self.ds_new_sr_entry.grid(row=4, column=1, sticky='w', padx=10, pady=5)
@@ -1075,7 +1140,7 @@ class Bottom_Right_Frame(ctk.CTkFrame):
         self.pca_detector_settings_label = ctk.CTkLabel(self, text="PCA Detector Settings", font=configuration.console_font_style)
         self.pca_detector_settings_label.grid(row=0, column=0, columnspan=3, sticky='nsew', padx=10, pady=10)
 
-        self.num_components_label = ctk.CTkLabel(self, text="Number of Components:", font=configuration.console_font_style)
+        self.num_components_label = ctk.CTkLabel(self, text="# Comps:", font=configuration.console_font_style)
         self.num_components_label.grid(row=1, column=0, sticky='e', padx=10, pady=5)
 
         self.num_components_entry = ctk.CTkEntry(self, width=50)
@@ -1086,7 +1151,7 @@ class Bottom_Right_Frame(ctk.CTkFrame):
         self.num_components_set_button.grid(row=1, column=2, sticky='w', padx=10, pady=5)
 
         # Threshold Multiplier Label
-        self.threshold_multiplier_label = ctk.CTkLabel(self, text="Threshold Multiplier:", font=configuration.console_font_style)
+        self.threshold_multiplier_label = ctk.CTkLabel(self, text="Threshold:", font=configuration.console_font_style)
         self.threshold_multiplier_label.grid(row=2, column=0, sticky='e', padx=10, pady=5)
 
         self.threshold_multiplier_entry = ctk.CTkEntry(self, width=50)
@@ -1097,7 +1162,7 @@ class Bottom_Right_Frame(ctk.CTkFrame):
         self.threshold_multiplier_set_button.grid(row=2, column=2, sticky='w', padx=10, pady=5)
 
         # anomaly threshold value Label
-        self.anomaly_threshold_value_label = ctk.CTkLabel(self, text="Anomaly Threshold Value:", font=configuration.console_font_style)
+        self.anomaly_threshold_value_label = ctk.CTkLabel(self, text="Anom Thres:", font=configuration.console_font_style)
         self.anomaly_threshold_value_label.grid(row=3, column=0, sticky='e', padx=10, pady=5)
 
         self.anomaly_threshold_value_entry = ctk.CTkEntry(self, width=50)
@@ -1108,7 +1173,7 @@ class Bottom_Right_Frame(ctk.CTkFrame):
         self.anomaly_threshold_value_set_button.grid(row=3, column=2, sticky='w', padx=10, pady=5)
 
         # max_anomaly_value Label
-        self.max_anomaly_value_label = ctk.CTkLabel(self, text="Max Anomaly Value:", font=configuration.console_font_style)
+        self.max_anomaly_value_label = ctk.CTkLabel(self, text="Max Anomaly:", font=configuration.console_font_style)
         self.max_anomaly_value_label.grid(row=4, column=0, sticky='e', padx=10, pady=5)
 
         self.max_anomaly_value_entry = ctk.CTkEntry(self, width=50)

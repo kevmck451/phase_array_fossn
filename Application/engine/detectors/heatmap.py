@@ -77,7 +77,7 @@ class Heatmap:
 
         self.max_value_seen = max(self.max_value_seen, np.max(new_row))
 
-    def render_heatmap_image(self, width=550, height=345):
+    def render_heatmap_image(self, cmap, vert_max, width=550, height=345):
         if self.anomaly_matrix is None or self.anomaly_matrix.shape[0] == 0:
             return None
 
@@ -88,12 +88,22 @@ class Heatmap:
         if self.anomaly_matrix is None:
             return None
 
-        vmax = self.max_value_seen if self.max_value_seen > 0 else 1
+        if vert_max == int(100):
+            vmax = self.max_value_seen if self.max_value_seen > 0 else 1
+        else:
+            vmax = self.max_value_seen if self.max_value_seen > 0 else 1
+            vmax = vmax // (int(vert_max)/100)
+
+        # cubehelix # hot # inferno # gist_heat # bone # gist_earth # gnuplot2  # viridis
+        if cmap == "Visual 1": cmap = 'gnuplot2'
+        elif cmap == "Visual 2": cmap = 'cubehelix'
+        elif cmap == "Visual 3": cmap = 'inferno'
+        else: cmap = 'hot'
 
         ax.imshow(
             self.anomaly_matrix,
             aspect='auto',
-            cmap='gnuplot2', # cubehelix # hot # inferno # gist_heat # bone # gist_earth # gnuplot2  # viridis
+            cmap=cmap,
             vmin=0,
             vmax=vmax,
             origin='upper',
