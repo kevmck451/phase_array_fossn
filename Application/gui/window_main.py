@@ -321,7 +321,6 @@ class Top_Middle_Frame(ctk.CTkFrame):
         self.calibration_time_entry.grid(row=0, column=3, padx=5)
 
     def load_pca_file(self):
-        print(self.parent.parent.device_config)
         if self.parent.parent.device_config.device_type == 'mac':
             try:
                 script = '''
