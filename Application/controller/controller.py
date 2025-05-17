@@ -437,11 +437,11 @@ class Controller:
             self.external_player.stream_location = self.gui.Top_Frame.Center_Right_Frame.stream_location.get()
             self.external_player.stream_stereo_mono = self.gui.Top_Frame.Center_Right_Frame.stream_stereo_mono.get()
             self.stream_channels = self.gui.Top_Frame.Center_Right_Frame.mic_selector.get()
-            if self.external_player.stream_stereo_mono == 'Raw':
-                labels = [f' {i + 1}' if i + 1 < 10 else str(i + 1) for i in range(self.array_config.rows * self.array_config.cols)]
-                self.gui.Top_Frame.Center_Right_Frame.mic_selector.rebuild_button(labels)
+            if self.stream_location == 'Raw':
+                labels = [f'{i + 1} ' if i + 1 < 10 else f'{i + 1}' for i in range(self.array_config.rows * self.array_config.cols)]
+                self.gui.Top_Frame.Center_Right_Frame.mic_selector.rebuild(labels)
             else:
-                self.gui.Top_Frame.Center_Right_Frame.mic_selector.rebuild_button(self.thetas)
+                self.gui.Top_Frame.Center_Right_Frame.mic_selector.rebuild(self.thetas)
             self.external_player.start()
 
     # ---------------------------------

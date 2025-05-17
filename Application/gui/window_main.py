@@ -43,9 +43,9 @@ class Main_Window(ctk.CTk):
         self.Bottom_Frame = Bottom_Frame(self, self.event_handler)
 
         # Configure grid rows with equal weight
-        self.rowconfigure(0, weight=1)
+        self.rowconfigure(0, weight=0)
         self.rowconfigure(1, weight=2)
-        self.rowconfigure(2, weight=1)
+        self.rowconfigure(2, weight=0)
         self.columnconfigure(0, weight=1)
 
         self.Top_Frame.grid(row=0, column=0, sticky='nsew')
@@ -550,12 +550,12 @@ class Top_Middle_Right_Frame(ctk.CTkFrame):
 
 
 
-            self.human_op_mode_button = ctk.CTkButton(frame, text="Human Op Mode",
-                                                      fg_color=configuration.bluelight_fg_color,
-                                                      hover_color=configuration.bluelight_hover_color,
-                                                      command=lambda: self.event_handler(Event.START_HUMAN_OP_MODE),
-                                                      font=configuration.button_font_style)
-            self.human_op_mode_button.pack(pady=5)
+            # self.human_op_mode_button = ctk.CTkButton(frame, text="Human Op Mode",
+            #                                           fg_color=configuration.bluelight_fg_color,
+            #                                           hover_color=configuration.bluelight_hover_color,
+            #                                           command=lambda: self.event_handler(Event.START_HUMAN_OP_MODE),
+            #                                           font=configuration.button_font_style)
+            # self.human_op_mode_button.pack(pady=5)
 
         def toggle_play_external_button(self):
             configuration = self.parent.parent.device_config
