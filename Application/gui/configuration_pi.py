@@ -26,7 +26,7 @@ main_font_size = 8 #26
 large_font_size = 20
 button_font_size = 8
 
-main_window_icon = base_path('Application/app_logo.png')
+main_window_icon = base_path('Application/docs/app_logo.png')
 playing_icon_filepath = base_path('docs/playing icon s.png')
 playing_icon_s_filepath = base_path('docs/playing icon ss.png')
 start_icon_filepath = base_path('docs/start icon s.png')

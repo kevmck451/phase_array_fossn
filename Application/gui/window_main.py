@@ -753,7 +753,7 @@ class Main_Middle_Frame(ctk.CTkFrame):
         self.detector_label.grid(row=0, column=0, sticky='ew')
 
         self.canvas_left_width = 560
-        self.canvas_left = tk.Canvas(left_frame, bg="#333333", width=self.canvas_left_width, height=385)
+        self.canvas_left = tk.Canvas(left_frame, bg="#333333", width=self.canvas_left_width, height=480)
         self.canvas_left.grid(row=1, column=0, sticky='nsew', padx=0, pady=0)
         self.canvas_left.master.grid_propagate(False)
 
