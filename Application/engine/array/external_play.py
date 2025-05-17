@@ -20,6 +20,8 @@ class External_Player:
         self.thread = None
         self.stream = None
         self.stream_location = None
+        self.stream_stereo_mono = None
+        self.selected_channels = [0]
 
     def start(self):
         if not self.running:
@@ -42,61 +44,125 @@ class External_Player:
         while self.running:
             try:
 
-                if self.stream_location == 'Beam':
-                    chunk = self.beamformer.external_audio_queue.get(timeout=0.1).T.astype(np.float32)
-                    # print(f'Beam Chunk: {chunk.shape}')
-
-                    # Drain others
-                    try:
-                        self.processor.external_audio_queue.get_nowait()
-                    except queue.Empty:
-                        pass
-                    try:
-                        self.mic_streamer.external_audio_queue.get_nowait()
-                    except queue.Empty:
-                        pass
-
-                elif self.stream_location == 'Pro':
-                    raw_chunk = self.processor.external_audio_queue.get(timeout=0.1).T.astype(np.float32)
-                    chunk = resample(raw_chunk, 48000)  # match expected sample rate
-                    # print(f'Pro Chunk: {chunk.shape}')
-
-                    # Drain others
-                    try:
-                        self.beamformer.external_audio_queue.get_nowait()
-                    except queue.Empty:
-                        pass
-                    try:
-                        self.mic_streamer.external_audio_queue.get_nowait()
-                    except queue.Empty:
-                        pass
-
-                else:
-                    chunk = self.mic_streamer.external_audio_queue.get(timeout=0.1).T.astype(np.float32)
-                    # print(f'Raw Chunk: {chunk.shape}')
-
-                    # Drain others
-                    try:
-                        self.beamformer.external_audio_queue.get_nowait()
-                    except queue.Empty:
-                        pass
-                    try:
-                        self.processor.external_audio_queue.get_nowait()
-                    except queue.Empty:
-                        pass
-
-                # Extract first and last mic channels
-                left = chunk[:, -3]  # Last mic -> Left
-                right = chunk[:, 2]  # First mic -> Right
-
-                # chunk = np.stack((left, right), axis=1)
-                chunk = np.stack((left, right), axis=1)
-
-                max_val = np.max(np.abs(chunk))
-                if max_val > 1.0:
-                    chunk = chunk / max_val  # Prevent clipping
+                chunk = self.select_stream_location()
+                chunk = self.select_stereo_mono(chunk)
+                chunk = self.prep_for_stream(chunk)
 
                 self.stream.write(chunk)
 
             except queue.Empty:
                 continue
+
+    def select_stream_location(self):
+        if self.stream_location == 'Beam':
+            chunk = self.beamformer.external_audio_queue.get(timeout=0.1).T.astype(np.float32)
+            # print(f'Beam Chunk: {chunk.shape}')
+
+            # Drain others
+            try:
+                self.processor.external_audio_queue.get_nowait()
+            except queue.Empty:
+                pass
+            try:
+                self.mic_streamer.external_audio_queue.get_nowait()
+            except queue.Empty:
+                pass
+
+        elif self.stream_location == 'Pro':
+            raw_chunk = self.processor.external_audio_queue.get(timeout=0.1).T.astype(np.float32)
+            chunk = resample(raw_chunk, 48000)  # match expected sample rate
+            # print(f'Pro Chunk: {chunk.shape}')
+
+            # Drain others
+            try:
+                self.beamformer.external_audio_queue.get_nowait()
+            except queue.Empty:
+                pass
+            try:
+                self.mic_streamer.external_audio_queue.get_nowait()
+            except queue.Empty:
+                pass
+
+        else:
+            chunk = self.mic_streamer.external_audio_queue.get(timeout=0.1).T.astype(np.float32)
+            # print(f'Raw Chunk: {chunk.shape}')
+
+            # Drain others
+            try:
+                self.beamformer.external_audio_queue.get_nowait()
+            except queue.Empty:
+                pass
+            try:
+                self.processor.external_audio_queue.get_nowait()
+            except queue.Empty:
+                pass
+
+        return chunk
+
+
+    def select_stereo_mono(self, chunk):
+
+        if self.stream_stereo_mono == 'Mono':
+            # Use the same channel for both outputs
+            idx = self.selected_channels[0]
+            left = right = chunk[:, idx]
+
+        else: # Stereo
+            ch = self.selected_channels
+            n = len(ch)
+
+            mid = n // 2
+            if n % 2 == 0:
+                left_idx = ch[:mid]
+                right_idx = ch[mid:]
+            else:
+                left_idx = ch[:mid + 1]  # middle shared to left
+                right_idx = ch[mid:]  # middle shared to right
+
+            left = np.sum(chunk[:, left_idx], axis=1)
+            right = np.sum(chunk[:, right_idx], axis=1)
+
+        chunk = np.stack((left, right), axis=1)
+
+        return chunk
+
+    def prep_for_stream(self, chunk):
+        max_val = np.max(np.abs(chunk))
+        if max_val > 1.0:
+            chunk = chunk / max_val  # Prevent clipping
+
+        return chunk
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -21,6 +21,8 @@ class Event(Enum):
     STOP_EXTERNAL_PLAY = auto()
     CHANGE_EXTERNAL_PLAYER = auto()
     START_HUMAN_OP_MODE = auto()
+    CHANGE_EXTERNAL_PLAYER_STEREO_MONO = auto()
+    CHANGE_EXTERNAL_PLAYER_CHANNELS = auto()
     DUMMY_BUTTON = auto()
 
 

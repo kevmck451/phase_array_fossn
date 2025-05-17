@@ -75,6 +75,8 @@ class Controller:
         self.external_player = None
         self.use_external_audio = False
         self.stream_location = None
+        self.stream_stereo_mono = None
+        self.stream_channels = None
 
         self.data_logger = None
         self.heatmap_logger = None
@@ -372,14 +374,8 @@ class Controller:
         self.pca_calculation_setup()
         self.detector_setup()
         self.bar_chart_updater_setup()
+        self.external_audio()
 
-        if self.use_external_audio:
-            self.audio_streamer.send_to_external_audio_stream = True
-            self.beamformer.send_to_external_audio_stream = True
-            self.processor.send_to_external_audio_stream = True
-            self.external_player = External_Player(self.audio_streamer, self.beamformer, self.processor, self.array_config)
-            self.external_player.stream_location = self.gui.Top_Frame.Center_Right_Frame.stream_location.get()
-            self.external_player.start()
 
     def stop_all_queues(self):
         if self.audio_loaded:
@@ -432,6 +428,21 @@ class Controller:
             if not os.listdir(self.project_directory_path):
                 os.rmdir(self.project_directory_path)
 
+    def external_audio(self):
+        if self.use_external_audio:
+            self.audio_streamer.send_to_external_audio_stream = True
+            self.beamformer.send_to_external_audio_stream = True
+            self.processor.send_to_external_audio_stream = True
+            self.external_player = External_Player(self.audio_streamer, self.beamformer, self.processor, self.array_config)
+            self.external_player.stream_location = self.gui.Top_Frame.Center_Right_Frame.stream_location.get()
+            self.external_player.stream_stereo_mono = self.gui.Top_Frame.Center_Right_Frame.stream_stereo_mono.get()
+            self.stream_channels = self.gui.Top_Frame.Center_Right_Frame.mic_selector.get()
+            if self.external_player.stream_stereo_mono == 'Raw':
+                labels = [f' {i + 1}' if i + 1 < 10 else str(i + 1) for i in range(self.array_config.rows * self.array_config.cols)]
+                self.gui.Top_Frame.Center_Right_Frame.mic_selector.rebuild_button(labels)
+            else:
+                self.gui.Top_Frame.Center_Right_Frame.mic_selector.rebuild_button(self.thetas)
+            self.external_player.start()
 
     # ---------------------------------
     # EVENT HANDLER -------------------
@@ -635,8 +646,28 @@ class Controller:
         elif event == Event.CHANGE_EXTERNAL_PLAYER:
             self.stream_location = self.gui.Top_Frame.Center_Right_Frame.stream_location.get()
 
+            if self.stream_location == 'Raw':
+                labels = [f'{i + 1} ' if i + 1 < 10 else f'{i + 1}' for i in range(self.array_config.rows * self.array_config.cols)]
+                self.gui.Top_Frame.Center_Right_Frame.mic_selector.rebuild(labels)
+            else:
+                self.gui.Top_Frame.Center_Right_Frame.mic_selector.rebuild(self.thetas)
+
             if self.external_player is not None:
                 self.external_player.stream_location = self.stream_location
+
+        elif event == Event.CHANGE_EXTERNAL_PLAYER_STEREO_MONO:
+            self.stream_stereo_mono = self.gui.Top_Frame.Center_Right_Frame.stream_stereo_mono.get()
+
+            if self.external_player is not None:
+                self.external_player.stream_stereo_mono = self.stream_stereo_mono
+
+
+        elif event == Event.CHANGE_EXTERNAL_PLAYER_CHANNELS:
+            self.stream_channels = self.gui.Top_Frame.Center_Right_Frame.mic_selector.get()
+
+            if self.external_player is not None:
+                self.external_player.selected_channels = self.stream_channels
+
 
         elif event == Event.START_HUMAN_OP_MODE:
             print('Human Operation Mode')

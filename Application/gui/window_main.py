@@ -20,7 +20,6 @@ class Main_Window(ctk.CTk):
         self.device_config = configuration
 
         # Computer Icon
-        print(configuration.main_window_icon)
         self.img = Image.open(configuration.main_window_icon)
         icon = ImageTk.PhotoImage(self.img)
         self.tk.call('wm', 'iconphoto', self._w, icon)
@@ -285,9 +284,6 @@ class Top_Middle_Frame(ctk.CTkFrame):
             except Exception as e:
                 print("File dialog failed:", e)
 
-
-
-
     def calibration_frame(self, frame):
         configuration = self.parent.parent.device_config
         self.calibration_label = ctk.CTkLabel(frame, text="Baseline Calibration for Detector", font=configuration.console_font_style)
@@ -368,8 +364,6 @@ class Top_Middle_Frame(ctk.CTkFrame):
             except Exception as e:
                 print("Folder dialog failed:", e)
 
-
-
     def toggle_play(self):
         configuration = self.parent.parent.device_config
         if self.playing:
@@ -401,6 +395,78 @@ class Top_Middle_Frame(ctk.CTkFrame):
                                         command=lambda: self.event_handler(Event.STOP_PCA_CALIBRATION), font=configuration.button_font_style)
             self.calibrating = True
 
+
+
+class MicSelector(ctk.CTkFrame):
+    def __init__(self, parent, shape, callback=None):
+        super().__init__(parent)
+        self.shape = shape  # (rows, cols)
+        self.callback = callback  # Optional function to call on state change
+        self.selected_mics = set()
+        self.buttons = []
+
+        mic_num = 0
+        for r in range(shape[0]):
+            row = []
+            for c in range(shape[1]):
+                text_display = f'{mic_num + 1} ' if mic_num + 1 < 10 else f'{mic_num + 1}'
+                btn = ctk.CTkButton(self, text=text_display, width=5, height=5, corner_radius=2,
+                                    font=("Arial", 9),
+                                    fg_color="#444", hover_color="#888",
+                                    command=lambda n=mic_num: self.toggle(n))
+                btn.grid(row=r, column=c, padx=1, pady=1)
+                row.append(btn)
+                mic_num += 1
+            self.buttons.append(row)
+
+    def toggle(self, mic_index):
+        if mic_index in self.selected_mics:
+            self.selected_mics.remove(mic_index)
+            self.set_color(mic_index, "#444")
+        else:
+            self.selected_mics.add(mic_index)
+            self.set_color(mic_index, "#00aaff")
+        if self.callback:
+            self.callback()
+
+    def set_color(self, mic_index, color):
+        r, c = divmod(mic_index, self.shape[1])
+        self.buttons[r][c].configure(fg_color=color)
+
+    def get(self):
+        return sorted(self.selected_mics)
+
+    def rebuild(self, label_list):
+        # Infer shape (assumes a rectangular matrix)
+        total = len(label_list)
+        rows = self.shape[0]
+        cols = total // rows if total % rows == 0 else (total // rows) + 1
+        new_shape = (rows, cols)
+
+        # Clear old widgets
+        for row in self.buttons:
+            for btn in row:
+                btn.destroy()
+
+        self.buttons = []
+        self.selected_mics = set()
+        self.shape = new_shape
+
+        mic_num = 0
+        for r in range(new_shape[0]):
+            row = []
+            for c in range(new_shape[1]):
+                if mic_num >= len(label_list):
+                    break
+                label = str(label_list[mic_num])
+                btn = ctk.CTkButton(self, text=label, width=5, height=5, corner_radius=2,
+                                    font=("Arial", 9),
+                                    fg_color="#444", hover_color="#888",
+                                    command=lambda n=mic_num: self.toggle(n))
+                btn.grid(row=r, column=c, padx=1, pady=1)
+                row.append(btn)
+                mic_num += 1
+            self.buttons.append(row)
 
 class Top_Middle_Right_Frame(ctk.CTkFrame):
         def __init__(self, parent, event_handler):
@@ -441,12 +507,6 @@ class Top_Middle_Right_Frame(ctk.CTkFrame):
             )
             self.clock_display.pack(pady=5)
 
-            # # Initialize clock state
-            # self.calibration_seconds = 0
-            # self.recording_seconds = 0
-            # self.calibration_running = False
-            # self.recording_running = False
-
             self.real_time_checkbox_variable = ctk.BooleanVar(value=True)
 
             self.real_time_checkbox = ctk.CTkCheckBox(frame, text="Real-Time",
@@ -454,9 +514,6 @@ class Top_Middle_Right_Frame(ctk.CTkFrame):
                                                       fg_color=configuration.bluelight_fg_color,
                                                       hover_color=configuration.bluelight_hover_color, font=configuration.button_font_style)
             self.real_time_checkbox.pack(pady=5)
-
-            # button_frame = ctk.CTkFrame(frame)
-            # button_frame.pack(pady=5)
 
             self.play_external_button = ctk.CTkButton(frame, text="Start External Audio",
                                               fg_color=configuration.purple_fg_color,
@@ -475,16 +532,30 @@ class Top_Middle_Right_Frame(ctk.CTkFrame):
             self.stream_location.set("Raw")
             self.stream_location.pack(pady=(10, 5))
 
+            self.stream_stereo_mono = ctk.CTkSegmentedButton(
+                frame,
+                values=["Mono", "Stereo"],
+                font=configuration.button_font_style,
+                height=28,
+                command=lambda value: self.event_handler(Event.CHANGE_EXTERNAL_PLAYER_STEREO_MONO)
+            )
+            self.stream_stereo_mono.set("Stereo")
+            self.stream_stereo_mono.pack(pady=(10, 5))
+
+
+
+            self.mic_selector = MicSelector(frame, shape=[self.parent.parent.array_config.rows, self.parent.parent.array_config.cols],
+                                            callback=lambda: self.event_handler(Event.CHANGE_EXTERNAL_PLAYER_CHANNELS))
+            self.mic_selector.pack(pady=5)
+
+
+
             self.human_op_mode_button = ctk.CTkButton(frame, text="Human Op Mode",
                                                       fg_color=configuration.bluelight_fg_color,
                                                       hover_color=configuration.bluelight_hover_color,
                                                       command=lambda: self.event_handler(Event.START_HUMAN_OP_MODE),
                                                       font=configuration.button_font_style)
             self.human_op_mode_button.pack(pady=5)
-
-
-
-
 
         def toggle_play_external_button(self):
             configuration = self.parent.parent.device_config
