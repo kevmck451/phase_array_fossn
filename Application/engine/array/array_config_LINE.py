@@ -1,5 +1,8 @@
 # Config file for Array: Line
 
+from dataclasses import dataclass
+from typing import Dict, List, Tuple
+
 sample_rate = 48000
 mic_spacing = 0.08  # meters - based on center freq
 
@@ -44,3 +47,64 @@ default_theta_directions = list(range(Ltheta, Rtheta + 1, increment))
 number_of_taps = 301
 
 ip_address = '192.168.0.3'
+
+
+@dataclass
+class BeamMixConfig:
+    name: str
+    center_frequency: int
+    processing_chain: Dict[str, int]
+    mic_spacing: float
+    mics_to_use: List[int]
+    rows: int
+    cols: int
+    num_mics: int
+    num_taps: int
+
+beam_mix_1 = BeamMixConfig(
+    name="Mix 1",
+    center_frequency=2144,
+    processing_chain={'hp': 1144, 'ds': 6288},
+    mic_spacing=0.08,
+    mics_to_use=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+    rows=1,
+    cols=16,
+    num_mics=16,
+    num_taps = 301
+)
+
+beam_mix_2 = BeamMixConfig(
+    name="Mix 2",
+    center_frequency=1072,
+    processing_chain={'hp': 644, 'ds': 3142},
+    mic_spacing=0.16,
+    mics_to_use=[0, 2, 4, 6, 8, 10, 12, 14],
+    rows=1,
+    cols=8,
+    num_mics=8,
+    num_taps=301
+)
+
+beam_mix_3 = BeamMixConfig(
+    name="Mix 3",
+    center_frequency=715,
+    processing_chain={'hp': 465, 'ds': 1930},
+    mic_spacing=0.24,
+    mics_to_use=[0, 3, 6, 9, 12, 15],
+    rows=1,
+    cols=6,
+    num_mics=6,
+    num_taps=301
+)
+
+beam_mix_4 = BeamMixConfig(
+    name="Mix 4",
+    center_frequency=429,
+    processing_chain={'hp': 179, 'ds': 998},
+    mic_spacing=0.4,
+    mics_to_use=[0, 4, 8, 12],
+    rows=1,
+    cols=4,
+    num_mics=4,
+    num_taps=301
+)

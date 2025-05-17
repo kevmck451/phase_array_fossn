@@ -753,7 +753,7 @@ class Main_Middle_Frame(ctk.CTkFrame):
         self.detector_label.grid(row=0, column=0, sticky='ew')
 
         self.canvas_left_width = 560
-        self.canvas_left = tk.Canvas(left_frame, bg="#333333", width=self.canvas_left_width, height=480)
+        self.canvas_left = tk.Canvas(left_frame, bg="#333333", width=self.canvas_left_width, height=460)
         self.canvas_left.grid(row=1, column=0, sticky='nsew', padx=0, pady=0)
         self.canvas_left.master.grid_propagate(False)
 
@@ -921,7 +921,8 @@ class Bottom_Frame(ctk.CTkFrame):
 
         self.Left_Frame = Bottom_Left_Frame(self, self.event_handler)
         self.Middle_Center_Frame = Bottom_Middle_Center_Frame(self, self.event_handler)
-        self.Center_Frame = Bottom_Middle_Frame(self, self.event_handler)
+        self.Middle_Frame = Bottom_Middle_Frame(self, self.event_handler)
+        # self.Center_Frame = Bottom_Center_Frame(self, self.event_handler)
         self.Right_Frame = Bottom_Right_Frame(self, self.event_handler)
 
         # Grid configuration
@@ -930,11 +931,13 @@ class Bottom_Frame(ctk.CTkFrame):
         self.columnconfigure(1, weight=1)  # Right column with x/3 of the space
         self.columnconfigure(2, weight=0)  # Right column with x/3 of the space
         self.columnconfigure(3, weight=0)  # Right column with x/3 of the space
+        # self.columnconfigure(4, weight=0)  # Right column with x/3 of the space
 
         # Place the frames using grid
         self.Left_Frame.grid(row=0, column=0, sticky='nsew')  # Left frame in column 0
         self.Middle_Center_Frame.grid(row=0, column=1, sticky='nsew')  # Right frame in column 1
-        self.Center_Frame.grid(row=0, column=2, sticky='nsew')  # Right frame in column 1
+        self.Middle_Frame.grid(row=0, column=2, sticky='nsew')  # Right frame in column 1
+        # self.Center_Frame.grid(row=0, column=3, sticky='nsew')  # Right frame in column 1
         self.Right_Frame.grid(row=0, column=3, sticky='nsew')  # Right frame in column 1
 
 
@@ -963,7 +966,7 @@ class Bottom_Left_Frame(ctk.CTkFrame):
 
         # — Thetas container (fills columns 0–2 of the parent) —
         thetas_frame = ctk.CTkFrame(self)
-        thetas_frame.grid(row=1, column=0, columnspan=3, sticky='ew', padx=10, pady=2)
+        thetas_frame.grid(row=1, column=0, columnspan=3, sticky='ew', padx=10, pady=5)
         # inside this frame we make 5 tiny columns
         for c in range(5):
             thetas_frame.grid_columnconfigure(c, weight=0)
@@ -1160,7 +1163,7 @@ class Bottom_Middle_Center_Frame(ctk.CTkFrame):
             self,
             values=["Visual 1", "Visual 2", "Visual 3", "Visual 4"],
             # command=self.handle_visual_selection,
-            font=("Arial", 10),
+            font=configuration.button_font_style,
             height=28  # reduce the button height directly
         )
         self.visual_selector.set("Visual 1")
@@ -1193,7 +1196,112 @@ class Bottom_Middle_Center_Frame(ctk.CTkFrame):
         pass  # Or add live value updating if you want an extra label
 
 
+
 class Bottom_Middle_Frame(ctk.CTkFrame):
+    def __init__(self, parent, event_handler):
+        super().__init__(parent)
+        self.event_handler = event_handler
+        self.parent = parent
+        self.array_config = self.parent.parent.array_config
+
+        # Configure the grid layout
+        self.grid_rowconfigure(0, weight=0)  # Row for the top label
+        self.grid_rowconfigure(1, weight=1)  # Row for the settings
+        self.grid_rowconfigure(2, weight=1)  # Row for the settings
+        self.grid_rowconfigure(3, weight=1)  # Row for the settings
+        self.grid_rowconfigure(4, weight=1)  # Row for the settings
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_columnconfigure(1, weight=1)
+        self.grid_columnconfigure(2, weight=1)
+
+        self.hp_bottom_cutoff_freq = self.array_config.beam_mix_1.processing_chain.get('hp')
+        self.ds_new_sr = self.array_config.beam_mix_1.processing_chain.get('ds')
+        self.center_freq = self.array_config.beam_mix_1.center_frequency
+        self.beam_mix_num_mics = self.array_config.beam_mix_1.num_mics
+        self.beam_mix_spcaing = self.array_config.beam_mix_1.mic_spacing
+        self.current_beam_mix = self.array_config.beam_mix_1
+
+        self.beam_mix_settings_frame()
+
+    def beam_mix_settings_frame(self):
+        configuration = self.parent.parent.device_config
+
+        self.beam_mix_settings_label = ctk.CTkLabel(self, text="Beam Mixture Options", font=configuration.console_font_style)
+        self.beam_mix_settings_label.grid(row=0, column=0, columnspan=3, sticky='nsew', padx=10, pady=10)
+
+        self.beam_mixture_selector = ctk.CTkSegmentedButton(
+            self,
+            values=["Mix 1", "Mix 2", "Mix 3", "Mix 4"],
+            font=configuration.button_font_style,
+            height=28,
+            command=lambda value: self.event_handler(Event.CHANGE_BEAM_MIXTURE)
+        )
+        self.beam_mixture_selector.set("Mix 1")
+        self.beam_mixture_selector.grid(row=1, column=0, columnspan=3, pady=(10, 5), sticky='nsew')
+
+        self.beam_mix_settings_label = ctk.CTkLabel(self,
+                                                    text=f'Center: {self.center_freq}Hz   |   #Mics: {self.beam_mix_num_mics}   |   Sp: {self.beam_mix_spcaing}m',
+                                                    font=configuration.console_font_style)
+        self.beam_mix_settings_label.grid(row=2, column=0, columnspan=3, sticky='nsew', padx=10, pady=10)
+
+        # DS: New Sample Rate
+        self.ds_new_sr_label = ctk.CTkLabel(self, text="DS (Hz): ", font=configuration.console_font_style)
+        self.ds_new_sr_label.grid(row=3, column=0, sticky='e', padx=10, pady=5)
+        self.ds_new_sr_entry = ctk.CTkEntry(self, width=100, font=configuration.button_font_style)
+        self.ds_new_sr_entry.grid(row=3, column=1, sticky='w', padx=10, pady=5)
+        self.ds_new_sr_set_button = ctk.CTkButton(self, text="Set", command=self.set_ds_new_sr, font=configuration.button_font_style)
+        self.ds_new_sr_set_button.grid(row=3, column=2, sticky='w', padx=10, pady=5)
+        self.ds_new_sr_entry.insert(0, f'{self.ds_new_sr}')  # Default value
+
+        # HP: Bottom Cutoff Frequency
+        self.hp_bottom_cutoff_freq_label = ctk.CTkLabel(self, text="HP (Hz): ", font=configuration.console_font_style)
+        self.hp_bottom_cutoff_freq_label.grid(row=4, column=0, sticky='e', padx=10, pady=5)
+        self.hp_bottom_cutoff_freq_entry = ctk.CTkEntry(self, width=100, font=configuration.button_font_style)
+        self.hp_bottom_cutoff_freq_entry.grid(row=4, column=1, sticky='w', padx=10, pady=5)
+        self.hp_bottom_cutoff_freq_set_button = ctk.CTkButton(self, text="Set", command=self.set_hp_bottom_cutoff_freq, font=configuration.button_font_style)
+        self.hp_bottom_cutoff_freq_set_button.grid(row=4, column=2, sticky='w', padx=10, pady=5)
+        self.hp_bottom_cutoff_freq_entry.insert(0, f'{self.hp_bottom_cutoff_freq}')  # Default value
+
+    def update_center_freq_label(self):
+        mix = self.beam_mixture_selector.get()
+        mix_config = {
+            'Mix 1': self.array_config.beam_mix_1,
+            'Mix 2': self.array_config.beam_mix_2,
+            'Mix 3': self.array_config.beam_mix_3,
+            'Mix 4': self.array_config.beam_mix_4,
+        }
+
+        self.current_beam_mix = mix_config.get(mix)
+
+
+        self.center_freq = self.current_beam_mix.center_frequency
+        self.hp_bottom_cutoff_freq = self.current_beam_mix.processing_chain.get('hp')
+        self.ds_new_sr = self.current_beam_mix.processing_chain.get('ds')
+        self.beam_mix_num_mics = self.current_beam_mix.num_mics
+        self.beam_mix_spacing = self.current_beam_mix.mic_spacing
+
+        self.ds_new_sr_entry.delete(0, 'end')
+        self.ds_new_sr_entry.insert(0, f'{self.ds_new_sr}')
+
+        self.hp_bottom_cutoff_freq_entry.delete(0, 'end')
+        self.hp_bottom_cutoff_freq_entry.insert(0, f'{self.hp_bottom_cutoff_freq}')
+
+        self.beam_mix_settings_label.configure(
+            text=f'Center: {self.center_freq}Hz   |   #Mics: {self.beam_mix_num_mics}   |   Sp: {self.beam_mix_spacing}m'
+        )
+
+    def set_hp_bottom_cutoff_freq(self):
+        hp_bottom_cutoff_freq = self.hp_bottom_cutoff_freq_entry.get()
+        if hp_bottom_cutoff_freq:
+            print(f"HP Bottom Cutoff Frequency set to: {hp_bottom_cutoff_freq}")
+
+    def set_ds_new_sr(self):
+        ds_new_sr = self.ds_new_sr_entry.get()
+        if ds_new_sr:
+            print(f"DS New Sample Rate set to: {ds_new_sr}")
+
+
+class Bottom_Center_Frame(ctk.CTkFrame):
     def __init__(self, parent, event_handler):
         super().__init__(parent)
         self.event_handler = event_handler
@@ -1202,79 +1310,17 @@ class Bottom_Middle_Frame(ctk.CTkFrame):
         # Configure the grid layout
         self.grid_rowconfigure(0, weight=0)  # Row for the top label
         self.grid_rowconfigure(1, weight=1)  # Row for the settings
+        self.grid_rowconfigure(2, weight=1)  # Row for the settings
+        self.grid_rowconfigure(3, weight=1)  # Row for the settings
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
         self.grid_columnconfigure(2, weight=1)
 
-        self.nr_std_threshold = 1.5
+
         self.hp_bottom_cutoff_freq = 1144
-        self.nm_percentage = 100
         self.ds_new_sr = 6288
 
 
-
-        self.processing_settings_frame()
-
-    def processing_settings_frame(self):
-        configuration = self.parent.parent.device_config
-        self.processing_settings_label = ctk.CTkLabel(self, text="Processing Settings", font=configuration.console_font_style)
-        self.processing_settings_label.grid(row=0, column=0, columnspan=3, sticky='nsew', padx=10, pady=10)
-
-        # NR: STD Threshold
-        self.nr_std_threshold_label = ctk.CTkLabel(self, text="NR (STD): ", font=configuration.console_font_style)
-        self.nr_std_threshold_label.grid(row=1, column=0, sticky='e', padx=10, pady=5)
-        self.nr_std_threshold_entry = ctk.CTkEntry(self, width=100, font=configuration.button_font_style)
-        self.nr_std_threshold_entry.grid(row=1, column=1, sticky='w', padx=10, pady=5)
-        self.nr_std_threshold_set_button = ctk.CTkButton(self, text="Set", command=self.set_nr_std_threshold, font=configuration.button_font_style)
-        self.nr_std_threshold_set_button.grid(row=1, column=2, sticky='w', padx=10, pady=5)
-        self.nr_std_threshold_entry.insert(0, f'{self.nr_std_threshold}')  # Default value
-
-        # HP: Bottom Cutoff Frequency
-        self.hp_bottom_cutoff_freq_label = ctk.CTkLabel(self, text="HP (Hz): ", font=configuration.console_font_style)
-        self.hp_bottom_cutoff_freq_label.grid(row=2, column=0, sticky='e', padx=10, pady=5)
-        self.hp_bottom_cutoff_freq_entry = ctk.CTkEntry(self, width=100, font=configuration.button_font_style)
-        self.hp_bottom_cutoff_freq_entry.grid(row=2, column=1, sticky='w', padx=10, pady=5)
-        self.hp_bottom_cutoff_freq_set_button = ctk.CTkButton(self, text="Set", command=self.set_hp_bottom_cutoff_freq, font=configuration.button_font_style)
-        self.hp_bottom_cutoff_freq_set_button.grid(row=2, column=2, sticky='w', padx=10, pady=5)
-        self.hp_bottom_cutoff_freq_entry.insert(0, f'{self.hp_bottom_cutoff_freq}')  # Default value
-
-        # NM: Percentage
-        self.nm_percentage_label = ctk.CTkLabel(self, text="NM (%): ", font=configuration.console_font_style)
-        self.nm_percentage_label.grid(row=3, column=0, sticky='e', padx=10, pady=5)
-        self.nm_percentage_entry = ctk.CTkEntry(self, width=100, font=configuration.button_font_style)
-        self.nm_percentage_entry.grid(row=3, column=1, sticky='w', padx=10, pady=5)
-        self.nm_percentage_set_button = ctk.CTkButton(self, text="Set", command=self.set_nm_percentage, font=configuration.button_font_style)
-        self.nm_percentage_set_button.grid(row=3, column=2, sticky='w', padx=10, pady=5)
-        self.nm_percentage_entry.insert(0, f'{self.nm_percentage}')  # Default value
-
-        # DS: New Sample Rate
-        self.ds_new_sr_label = ctk.CTkLabel(self, text="DS (Hz): ", font=configuration.console_font_style)
-        self.ds_new_sr_label.grid(row=4, column=0, sticky='e', padx=10, pady=5)
-        self.ds_new_sr_entry = ctk.CTkEntry(self, width=100, font=configuration.button_font_style)
-        self.ds_new_sr_entry.grid(row=4, column=1, sticky='w', padx=10, pady=5)
-        self.ds_new_sr_set_button = ctk.CTkButton(self, text="Set", command=self.set_ds_new_sr, font=configuration.button_font_style)
-        self.ds_new_sr_set_button.grid(row=4, column=2, sticky='w', padx=10, pady=5)
-        self.ds_new_sr_entry.insert(0, f'{self.ds_new_sr}')  # Default value
-
-    def set_nr_std_threshold(self):
-        nr_std_threshold = self.nr_std_threshold_entry.get()
-        if nr_std_threshold:
-            print(f"NR STD Threshold set to: {nr_std_threshold}")
-
-    def set_hp_bottom_cutoff_freq(self):
-        hp_bottom_cutoff_freq = self.hp_bottom_cutoff_freq_entry.get()
-        if hp_bottom_cutoff_freq:
-            print(f"HP Bottom Cutoff Frequency set to: {hp_bottom_cutoff_freq}")
-
-    def set_nm_percentage(self):
-        nm_percentage = self.nm_percentage_entry.get()
-        if nm_percentage:
-            print(f"NM Percentage set to: {nm_percentage}")
-
-    def set_ds_new_sr(self):
-        ds_new_sr = self.ds_new_sr_entry.get()
-        if ds_new_sr:
-            print(f"DS New Sample Rate set to: {ds_new_sr}")
 
 
 class Bottom_Right_Frame(ctk.CTkFrame):

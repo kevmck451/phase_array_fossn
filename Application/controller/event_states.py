@@ -23,6 +23,7 @@ class Event(Enum):
     START_HUMAN_OP_MODE = auto()
     CHANGE_EXTERNAL_PLAYER_STEREO_MONO = auto()
     CHANGE_EXTERNAL_PLAYER_CHANNELS = auto()
+    CHANGE_BEAM_MIXTURE = auto()
     DUMMY_BUTTON = auto()
 
 

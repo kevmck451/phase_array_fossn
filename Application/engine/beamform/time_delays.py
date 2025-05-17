@@ -1,7 +1,5 @@
 
 
-import Application.engine.beamform.mic_coordinates as mic_coord
-
 import numpy as np
 import math
 
@@ -21,7 +19,7 @@ def calculate_directional_cosines(theta, phi):
     # print(f"Directional cosines: x={wx}, y={wy}, z={wz}")
     return wx, wy, wz
 
-def calculate_time_delays(mic_positions, theta, phi, temperature_F, array_config):
+def calculate_time_delays(mic_positions, theta, phi, temperature_F, array_config, beam_mix):
     """
     Calculate time delays for each microphone.
 
@@ -55,49 +53,9 @@ def calculate_time_delays(mic_positions, theta, phi, temperature_F, array_config
         time_delays[i] = dt * array_config.sample_rate  # convert to sample delay
 
     # reshape to grid
-    time_delays = time_delays.reshape(array_config.rows, array_config.cols)
+    time_delays = time_delays.reshape(beam_mix.rows, beam_mix.cols)
 
     return time_delays
 
 
 
-
-
-
-
-# Example usage
-if __name__ == '__main__':
-    from Application.engine.beamform.mic_coordinates import generate_mic_coordinates
-
-    mic_coordinates = generate_mic_coordinates()
-    theta = 90  # example elevation angle
-    phi = 90  # example azimuth angle
-    temperature_F = 95  # example temperature in Fahrenheit
-    sample_rate = 48000
-
-    time_delays = calculate_time_delays(mic_coordinates, theta, phi, temperature_F, sample_rate)
-    # print(f"Time delays: {time_delays}")
-
-    # Print the coordinates to verify they are correct
-    print("Microphone coordinates in a 4x12 grid:")
-    for row in range(4):
-        for col in range(12):
-            idx = row * 12 + col
-            x, y, z = mic_coordinates[idx]
-            print(f'({x:.3f}, {y:.3f})', end='\t ')
-        print()  # Newline at the end of each row
-
-    # Example angles
-    angles = [(0, 0), (90, 0), (-90, 0), (180, 0), (90, 90), (-90, -90), (45, 0), (-45, 0), (45, 45), (1, 0)]
-    temperature_F = 95  # example temperature in Fahrenheit
-
-    max = 0
-
-    for theta, phi in angles:
-        print(f"\nTheta: {theta}, Phi: {phi}")
-        time_delays = calculate_time_delays(mic_coordinates, theta, phi, temperature_F, sample_rate)
-        max_temp = np.max(np.abs(time_delays))
-        # Print the time delays in a 4x12 array format
-        print("Time delays (in samples):")
-        for row in time_delays:
-            print("\t".join(f"{delay:.6f}" for delay in row))

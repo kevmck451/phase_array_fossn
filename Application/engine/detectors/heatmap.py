@@ -77,7 +77,7 @@ class Heatmap:
 
         self.max_value_seen = max(self.max_value_seen, np.max(new_row))
 
-    def render_heatmap_image(self, cmap, vert_max, width=550, height=450):
+    def render_heatmap_image(self, cmap, vert_max, width=550, height=440):
         if self.anomaly_matrix is None or self.anomaly_matrix.shape[0] == 0:
             return None
 

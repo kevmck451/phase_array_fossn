@@ -49,9 +49,9 @@ class Controller:
         self.calibrate_start_time = 0
         self.thetas = self.array_config.default_theta_directions
         self.phis = [0]  # azimuth angle: neg is below and pos is above
-
         self.temperature = 90
-        self.beamformer = Beamform(self.thetas, self.phis, self.temperature, self.array_config)
+        self.beam_mix_selection = self.array_config.beam_mix_1
+        self.beamformer = Beamform(self.thetas, self.phis, self.temperature, self.array_config, self.beam_mix_selection)
         self.beamforming_thread = None
         self.beamform_running = False
 
@@ -376,7 +376,6 @@ class Controller:
         self.bar_chart_updater_setup()
         self.external_audio()
 
-
     def stop_all_queues(self):
         if self.audio_loaded:
             self.mic_array_simulator.stop_flag = True
@@ -548,7 +547,6 @@ class Controller:
                 Thread(target=self.calibrate_timer, daemon=True).start()
                 self.gui.Top_Frame.Center_Right_Frame.start_calibration(self.calibration_time)
 
-
         elif event == Event.STOP_PCA_CALIBRATION:
             self.stop_all_queues()
             self.detector.baseline_calculated = True
@@ -634,7 +632,6 @@ class Controller:
                 self.external_player.stream_location = self.gui.Top_Frame.Center_Right_Frame.stream_location.get()
                 self.external_player.start()
 
-
         elif event == Event.STOP_EXTERNAL_PLAY:
             self.use_external_audio = False
             self.audio_streamer.send_to_external_audio_stream = False
@@ -661,18 +658,29 @@ class Controller:
             if self.external_player is not None:
                 self.external_player.stream_stereo_mono = self.stream_stereo_mono
 
-
         elif event == Event.CHANGE_EXTERNAL_PLAYER_CHANNELS:
             self.stream_channels = self.gui.Top_Frame.Center_Right_Frame.mic_selector.get()
 
             if self.external_player is not None:
                 self.external_player.selected_channels = self.stream_channels
 
-
         elif event == Event.START_HUMAN_OP_MODE:
             print('Human Operation Mode')
             self.settings_window = Human_Op_Mode_Window(self.handle_event, self.array_config, self.gui.device_config)
             self.settings_window.mainloop()
+
+        elif event == Event.CHANGE_BEAM_MIXTURE:
+            self.gui.Bottom_Frame.Middle_Frame.update_center_freq_label()
+            self.beam_mix_selection = self.gui.Bottom_Frame.Middle_Frame.current_beam_mix
+            self.beamformer.update_parameters(self.beam_mix_selection)
+            self.processor.processing_chain = self.beam_mix_selection.processing_chain
+
+
+
+            # self.beamformer.num_mics
+            # self.beamformer.mic_coordinates
+            # self.beamformer.cols
+
 
         elif event == Event.DUMMY_BUTTON:
             # dummy button
