@@ -436,12 +436,10 @@ class MicSelector(ctk.CTkFrame):
     def get(self):
         return sorted(self.selected_mics)
 
-    def rebuild(self, label_list):
-        # Infer shape (assumes a rectangular matrix)
-        total = len(label_list)
-        rows = self.shape[0]
-        cols = total // rows if total % rows == 0 else (total // rows) + 1
-        new_shape = (rows, cols)
+    def rebuild(self, label_list, shape):
+        # Set new shape
+        self.shape = shape
+        rows, cols = shape
 
         # Clear old widgets
         for row in self.buttons:
@@ -450,15 +448,15 @@ class MicSelector(ctk.CTkFrame):
 
         self.buttons = []
         self.selected_mics = set()
-        self.shape = new_shape
 
         mic_num = 0
-        for r in range(new_shape[0]):
+        for r in range(rows):
             row = []
-            for c in range(new_shape[1]):
-                if mic_num >= len(label_list):
-                    break
-                label = str(label_list[mic_num])
+            for c in range(cols):
+                if mic_num < len(label_list):
+                    label = str(label_list[mic_num])
+                else:
+                    label = ""
                 btn = ctk.CTkButton(self, text=label, width=5, height=5, corner_radius=2,
                                     font=("Arial", 9),
                                     fg_color="#444", hover_color="#888",

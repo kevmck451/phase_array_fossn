@@ -1,14 +1,15 @@
 # Config file for Array: Line
 
-from dataclasses import dataclass
-from typing import Dict, List, Tuple
+from Application.engine.array.BeamMixConfig import BeamMixConfig
 
 sample_rate = 48000
-mic_spacing = 0.08  # meters - based on center freq
 
+# for the actual array
 rows = 1
 cols = 16
 num_mics = rows * cols
+mic_spacing = 0.08  # meters - based on center freq
+
 
 # channel 1 through X in audacity
 # where is its position in the array ((0,0) is reference)
@@ -33,7 +34,7 @@ mic_positions = [
     ]
 
 # amount of data that can be collected with 4GB per .wav file standard in seconds
-chunk_duration = 15 * 60  # 10 minutes in seconds
+chunk_duration = 50 * 60  # 50 minutes in seconds
 
 title = 'Line Array'
 
@@ -49,17 +50,7 @@ number_of_taps = 301
 ip_address = '192.168.0.3'
 
 
-@dataclass
-class BeamMixConfig:
-    name: str
-    center_frequency: int
-    processing_chain: Dict[str, int]
-    mic_spacing: float
-    mics_to_use: List[int]
-    rows: int
-    cols: int
-    num_mics: int
-    num_taps: int
+
 
 beam_mix_1 = BeamMixConfig(
     name="Mix 1",

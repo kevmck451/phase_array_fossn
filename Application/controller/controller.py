@@ -436,11 +436,11 @@ class Controller:
             self.external_player.stream_location = self.gui.Top_Frame.Center_Right_Frame.stream_location.get()
             self.external_player.stream_stereo_mono = self.gui.Top_Frame.Center_Right_Frame.stream_stereo_mono.get()
             self.stream_channels = self.gui.Top_Frame.Center_Right_Frame.mic_selector.get()
-            if self.stream_location == 'Raw':
-                labels = [f'{i + 1} ' if i + 1 < 10 else f'{i + 1}' for i in range(self.array_config.rows * self.array_config.cols)]
-                self.gui.Top_Frame.Center_Right_Frame.mic_selector.rebuild(labels)
-            else:
-                self.gui.Top_Frame.Center_Right_Frame.mic_selector.rebuild(self.thetas)
+            # if self.stream_location == 'Raw':
+            #     labels = [f'{i + 1} ' if i + 1 < 10 else f'{i + 1}' for i in range(self.array_config.rows * self.array_config.cols)]
+            #     self.gui.Top_Frame.Center_Right_Frame.mic_selector.rebuild(labels)
+            # else:
+            #     self.gui.Top_Frame.Center_Right_Frame.mic_selector.rebuild(self.thetas)
             self.external_player.start()
 
     # ---------------------------------
@@ -644,10 +644,11 @@ class Controller:
             self.stream_location = self.gui.Top_Frame.Center_Right_Frame.stream_location.get()
 
             if self.stream_location == 'Raw':
-                labels = [f'{i + 1} ' if i + 1 < 10 else f'{i + 1}' for i in range(self.array_config.rows * self.array_config.cols)]
-                self.gui.Top_Frame.Center_Right_Frame.mic_selector.rebuild(labels)
+                shape = (self.beam_mix_selection.rows, self.beam_mix_selection.cols)
+                labels = [f'{i + 1} ' if i + 1 < 10 else f'{i + 1}' for i in range(shape[0] * shape[1])]
+                self.gui.Top_Frame.Center_Right_Frame.mic_selector.rebuild(labels, shape)
             else:
-                self.gui.Top_Frame.Center_Right_Frame.mic_selector.rebuild(self.thetas)
+                self.gui.Top_Frame.Center_Right_Frame.mic_selector.rebuild(self.thetas, (1, len(self.thetas)))
 
             if self.external_player is not None:
                 self.external_player.stream_location = self.stream_location
