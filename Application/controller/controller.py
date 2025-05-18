@@ -511,7 +511,6 @@ class Controller:
         elif event == Event.STOP_RECORDER:
             self.app_state = State.IDLE
             self.gui.Top_Frame.Center_Frame.toggle_play()
-            time.sleep(0.05)
             if self.gui.Top_Frame.Center_Frame.pca_save_checkbox_variable.get():
                 if not self.audio_loaded:
                     self.mic_array.record_running = False
