@@ -25,14 +25,12 @@ large_font_size = 54
 button_font_size = 14
 
 main_window_icon = base_path('Application/docs/app_logo.png')
-playing_icon_filepath = base_path('docs/playing icon s.png')
-playing_icon_s_filepath = base_path('docs/playing icon ss.png')
-start_icon_filepath = base_path('docs/start icon s.png')
-stop_icon_filepath = base_path('docs/stop icon s.png')
-pause_icon_filepath = base_path('docs/pause icon s.png')
-load_icon_filepath = base_path('docs/load icon s.png')
-settings_icon_filepath = base_path('docs/settings icon s.png')
-reset_icon_filepath = base_path('docs/reset icon s.png')
+car_icon = base_path('Application/docs/car.png')
+drone_icon = base_path('Application/docs/drone.png')
+generator_icon = base_path('Application/docs/generator.png')
+plane_icon = base_path('Application/docs/plane.png')
+tank_icon = base_path('Application/docs/tank.png')
+
 
 
 

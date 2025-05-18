@@ -710,43 +710,31 @@ class Main_Middle_Frame(ctk.CTkFrame):
         super().__init__(parent)
         self.event_handler = event_handler
         self.parent = parent
-        configuration = self.parent.parent.device_config
+        self.configuration = self.parent.parent.device_config
 
-        # Configure three-column layout explicitly
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)  # Left
         self.grid_columnconfigure(1, weight=1)  # Center
-        self.grid_columnconfigure(2, weight=1)  # Right
+        self.grid_columnconfigure(2, weight=0)  # Right
 
-        # Left frame for visual
         left_frame = ctk.CTkFrame(self)
         left_frame.grid(row=0, column=0, padx=10, pady=10, sticky='nsew')
         left_frame.grid_rowconfigure(1, weight=0)
         left_frame.grid_columnconfigure(0, weight=1)
 
-        # Center side
         center_frame = ctk.CTkFrame(self)
         center_frame.grid(row=0, column=1, padx=10, pady=10, sticky='nsew')
         center_frame.rowconfigure(1, weight=1)  # Let row 1 (image) expand
         center_frame.grid_columnconfigure(0, weight=1)
-
 
         right_frame = ctk.CTkFrame(self)
         right_frame.grid(row=0, column=2, padx=10, pady=10, sticky='nsew')
         right_frame.grid_rowconfigure(1, weight=0)
         right_frame.grid_columnconfigure(0, weight=1)
 
-
-        # LEFT FRAME ------------------------------
-
-        self.detector_label = ctk.CTkLabel(left_frame, text="Beamformed PCA Detector Output", font=configuration.console_font_style)
-        self.detector_label.grid(row=0, column=0, sticky='ew')
-
-        self.canvas_left_width = 560
-        self.canvas_left = tk.Canvas(left_frame, bg="#333333", width=self.canvas_left_width, height=460)
-        self.canvas_left.grid(row=1, column=0, sticky='nsew', padx=0, pady=0)
-        self.canvas_left.master.grid_propagate(False)
-
+        self.detector_frame(left_frame)
+        self.heatmap_frame(center_frame)
+        self.classification(right_frame)
 
         self.draw_threshold_lines()
 
@@ -768,24 +756,53 @@ class Main_Middle_Frame(ctk.CTkFrame):
 
         self.next_heatmap_image = None
         self._heatmap_loop_started = False
-
-        # CENTER FRAME ------------------------------
-        self.heatmap_title = ctk.CTkLabel(center_frame, text="Time Series Heatmap of Anomalies", font=configuration.console_font_style)
-        self.heatmap_title.grid(row=0, column=0, sticky='ew')
-
-        # New: Image container
-        self.heatmap_canvas = tk.Label(center_frame, bg="black", width=800, height=600)
-        self.heatmap_canvas.grid(row=1, column=0, sticky='nsew', padx=0, pady=0)
-        self.heatmap_canvas.master.grid_propagate(False)
-
-        # RIGHT FRAME ------------------------------
-        self.classifier_label = ctk.CTkLabel(right_frame, text="Sound Classifier", font=configuration.console_font_style)
-        self.classifier_label.grid(row=0, column=0, sticky='ew')
-
         self.anomaly_data = [0] * len(self.directions)
 
         self.start_heatmap_updates()
         self.start_updates()
+
+
+    def detector_frame(self, frame):
+        self.detector_label = ctk.CTkLabel(frame, text="Beamformed PCA Detector Output", font=self.configuration.console_font_style)
+        self.detector_label.grid(row=0, column=0, sticky='ew')
+
+        self.canvas_left_width = 560
+        self.canvas_left = tk.Canvas(frame, bg="#333333", width=self.canvas_left_width, height=460)
+        self.canvas_left.grid(row=1, column=0, sticky='nsew', padx=0, pady=0)
+        self.canvas_left.master.grid_propagate(False)
+
+
+    def heatmap_frame(self, frame):
+        self.heatmap_title = ctk.CTkLabel(frame, text="Time Series Heatmap of Anomalies", font=self.configuration.console_font_style)
+        self.heatmap_title.grid(row=0, column=0, sticky='ew')
+
+        # New: Image container
+        self.heatmap_canvas = tk.Label(frame, bg="black", width=800, height=600)
+        self.heatmap_canvas.grid(row=1, column=0, sticky='nsew', padx=0, pady=0)
+        self.heatmap_canvas.master.grid_propagate(False)
+
+    def classification(self, frame):
+        self.classifier_label = ctk.CTkLabel(frame, text="Sound Classifier", font=self.configuration.console_font_style)
+        self.classifier_label.grid(row=0, column=0, sticky='ew')
+
+        # Create a subframe to hold the icons
+        icon_frame = ctk.CTkFrame(frame, fg_color="transparent")
+        icon_frame.grid(row=1, column=0)
+
+        size = 40
+
+        self.icons = {
+            'tank': ctk.CTkImage(Image.open(self.configuration.tank_icon), size=(size, size)),
+            'drone': ctk.CTkImage(Image.open(self.configuration.drone_icon), size=(size, size)),
+            'generator': ctk.CTkImage(Image.open(self.configuration.generator_icon), size=(size, size)),
+            'plane': ctk.CTkImage(Image.open(self.configuration.plane_icon), size=(size, size)),
+            'car': ctk.CTkImage(Image.open(self.configuration.car_icon), size=(size, size)),
+        }
+
+        for icon in self.icons.values():
+            label = ctk.CTkLabel(icon_frame, image=icon, text="")
+            label.pack(side="left", padx=29, pady=5)
+
 
     def draw_bar_chart(self):
         font_size = 10
@@ -898,6 +915,8 @@ class Main_Middle_Frame(ctk.CTkFrame):
             self.next_heatmap_image = None
 
         self.after(500, self.update_heatmap_image)
+
+
 
 
 # --------------------------------------------------------------------------------------------------
