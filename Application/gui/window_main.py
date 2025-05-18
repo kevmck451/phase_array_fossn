@@ -1347,8 +1347,8 @@ class Bottom_Right_Frame(ctk.CTkFrame):
         self.grid_columnconfigure(3, weight=1)
         self.grid_columnconfigure(4, weight=1)
 
-        self.max_anomaly_value = 100 # 50
-        self.anomaly_threshold_value = 5 # 8
+        self.max_anomaly_value = 1500 # 50
+        self.anomaly_threshold_value = 3 # 8
         self.pca_detector_settings_frame()
 
     def pca_detector_settings_frame(self):
