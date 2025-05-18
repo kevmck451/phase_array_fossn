@@ -40,9 +40,9 @@ title = 'Line Array'
 
 directory_name = 'Line'
 
-Ltheta = -70
-Rtheta = 70
-increment = 10
+Ltheta = -80
+Rtheta = 80
+increment = 5
 default_theta_directions = list(range(Ltheta, Rtheta + 1, increment))
 
 number_of_taps = 301
