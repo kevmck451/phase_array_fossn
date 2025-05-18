@@ -434,13 +434,7 @@ class Controller:
             self.processor.send_to_external_audio_stream = True
             self.external_player = External_Player(self.audio_streamer, self.beamformer, self.processor, self.array_config)
             self.external_player.stream_location = self.gui.Top_Frame.Center_Right_Frame.stream_location.get()
-            self.external_player.stream_stereo_mono = self.gui.Top_Frame.Center_Right_Frame.stream_stereo_mono.get()
             self.stream_channels = self.gui.Top_Frame.Center_Right_Frame.mic_selector.get()
-            # if self.stream_location == 'Raw':
-            #     labels = [f'{i + 1} ' if i + 1 < 10 else f'{i + 1}' for i in range(self.array_config.rows * self.array_config.cols)]
-            #     self.gui.Top_Frame.Center_Right_Frame.mic_selector.rebuild(labels)
-            # else:
-            #     self.gui.Top_Frame.Center_Right_Frame.mic_selector.rebuild(self.thetas)
             self.external_player.start()
 
     # ---------------------------------
@@ -652,12 +646,8 @@ class Controller:
 
             if self.external_player is not None:
                 self.external_player.stream_location = self.stream_location
+                self.external_player.selected_channels = self.gui.Top_Frame.Center_Right_Frame.mic_selector.get()
 
-        elif event == Event.CHANGE_EXTERNAL_PLAYER_STEREO_MONO:
-            self.stream_stereo_mono = self.gui.Top_Frame.Center_Right_Frame.stream_stereo_mono.get()
-
-            if self.external_player is not None:
-                self.external_player.stream_stereo_mono = self.stream_stereo_mono
 
         elif event == Event.CHANGE_EXTERNAL_PLAYER_CHANNELS:
             self.stream_channels = self.gui.Top_Frame.Center_Right_Frame.mic_selector.get()

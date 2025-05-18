@@ -466,6 +466,9 @@ class MicSelector(ctk.CTkFrame):
                 mic_num += 1
             self.buttons.append(row)
 
+        # if label_list:
+        #     self.toggle(0)
+
 class Top_Middle_Right_Frame(ctk.CTkFrame):
         def __init__(self, parent, event_handler):
             super().__init__(parent)
@@ -529,17 +532,6 @@ class Top_Middle_Right_Frame(ctk.CTkFrame):
             )
             self.stream_location.set("Raw")
             self.stream_location.pack(pady=(10, 5))
-
-            self.stream_stereo_mono = ctk.CTkSegmentedButton(
-                frame,
-                values=["Mono", "Stereo"],
-                font=configuration.button_font_style,
-                height=28,
-                command=lambda value: self.event_handler(Event.CHANGE_EXTERNAL_PLAYER_STEREO_MONO)
-            )
-            self.stream_stereo_mono.set("Stereo")
-            self.stream_stereo_mono.pack(pady=(10, 5))
-
 
 
             self.mic_selector = MicSelector(frame, shape=[self.parent.parent.array_config.rows, self.parent.parent.array_config.cols],

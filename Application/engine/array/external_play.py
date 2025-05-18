@@ -14,13 +14,13 @@ class External_Player:
         self.mic_streamer = mic_streamer
         self.beamformer = beamformer
         self.processor = processor
-        self.sample_rate = array_config.sample_rate
+        self.array_config = array_config
+        self.sample_rate = self.array_config.sample_rate
         self.channels = 2
         self.running = False
         self.thread = None
         self.stream = None
         self.stream_location = None
-        self.stream_stereo_mono = None
         self.selected_channels = [0]
 
     def start(self):
@@ -45,7 +45,7 @@ class External_Player:
             try:
 
                 chunk = self.select_stream_location()
-                chunk = self.select_stereo_mono(chunk)
+                chunk = self.select_stereo(chunk)
                 chunk = self.prep_for_stream(chunk)
 
                 self.stream.write(chunk)
@@ -87,6 +87,15 @@ class External_Player:
             chunk = self.mic_streamer.external_audio_queue.get(timeout=0.1).T.astype(np.float32)
             # print(f'Raw Chunk: {chunk.shape}')
 
+            # Reorder channels so ch 0 is the farthest left (from behind)
+            ordered_indices = [
+                mic_index for _, mic_index in sorted(
+                    zip(self.array_config.mic_positions, self.beamformer.beam_mix.mics_to_use),
+                    key=lambda x: (x[0][1], x[0][0])  # sort by y, then x
+                )
+            ]
+            chunk = chunk[:, ordered_indices]  # reorder columns (channels)
+
             # Drain others
             try:
                 self.beamformer.external_audio_queue.get_nowait()
@@ -99,17 +108,17 @@ class External_Player:
 
         return chunk
 
+    def select_stereo(self, chunk):
 
-    def select_stereo_mono(self, chunk):
+        ch = self.selected_channels
+        n = len(ch)
 
-        if self.stream_stereo_mono == 'Mono':
-            # Use the same channel for both outputs
-            idx = self.selected_channels[0]
+        if n == 0:
+            left = right = chunk[:, 0]
+        elif n == 1:
+            idx = ch[0]
             left = right = chunk[:, idx]
-
         else: # Stereo
-            ch = self.selected_channels
-            n = len(ch)
 
             mid = n // 2
             if n % 2 == 0:
