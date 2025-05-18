@@ -9,7 +9,7 @@ class BeamMixConfig:
     center_frequency: int
     processing_chain: Dict[str, int]
     mic_spacing: float
-    mics_to_use: List[int]
+    mics_to_use: List[Tuple]
     rows: int
     cols: int
     num_mics: int

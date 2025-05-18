@@ -87,14 +87,12 @@ class External_Player:
             chunk = self.mic_streamer.external_audio_queue.get(timeout=0.1).T.astype(np.float32)
             # print(f'Raw Chunk: {chunk.shape}')
 
-            # Reorder channels so ch 0 is the farthest left (from behind)
-            ordered_indices = [
-                mic_index for _, mic_index in sorted(
-                    zip(self.array_config.mic_positions, self.beamformer.beam_mix.mics_to_use),
-                    key=lambda x: (x[0][1], x[0][0])  # sort by y, then x
-                )
-            ]
-            chunk = chunk[:, ordered_indices]  # reorder columns (channels)
+            num_samples = chunk.shape[1]
+            spatial_mapped = np.zeros((self.array_config.rows, self.array_config.cols, num_samples))
+
+            for ch_index, (mic_x, mic_y) in enumerate(self.array_config.mic_positions):
+                spatial_mapped[mic_x, mic_y, :] = chunk[ch_index, :]
+                # print(f'MX{mic_x} | MY{mic_y} <- ch{ch_index + 1}')
 
             # Drain others
             try:

@@ -53,23 +53,3 @@ class AudioStreamSimulator:
         self.stop_flag = False
 
 
-
-if __name__ == '__main__':
-    base_path = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/2 FOSSN/Data'
-    filename = 'cars_drive_by_150m'
-    filepath = f'{base_path}/Tests/17_outdoor_testing/{filename}.wav'
-    audio = Audio(filepath=filepath, num_channels=48)
-    chunk_size_seconds = 1
-
-    stream = AudioStreamSimulator(audio, chunk_size_seconds)
-    stream.start_stream()
-    while stream.running:
-        if not stream.queue.empty():
-            print('PROCESSING----------')
-            print(f'Audio Stream Queue Size: {stream.queue.qsize()}')
-            current_audio_data = stream.queue.get()
-            print(f'Current Data Size: {current_audio_data.shape}')
-            print()
-            print('='*40)
-            print()
-        time.sleep(0.5)

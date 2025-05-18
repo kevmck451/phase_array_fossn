@@ -41,7 +41,6 @@ class Beamform:
         self.generate_mic_coordinates()
         self.compile_all_fir_coeffs()
 
-
     def generate_mic_coordinates(self):
         '''
             these grid coordinate are from the perspective of in front the array with (0,0) at the top left
@@ -67,7 +66,6 @@ class Beamform:
         # print(mic_coords)
         self.mic_coordinates = mic_coords
 
-
     def compile_all_fir_coeffs(self):
         print('Generating FIR Coeffs')
         fir_coeffs_list = []
@@ -83,13 +81,30 @@ class Beamform:
         self.num_coeffs = fir_coeffs_stack.shape[3]
         self.fir_coeffs = fir_coeffs_stack
 
-    def map_channels_to_positions(self, audio_data):
-        num_samples = audio_data.shape[1]
+    def map_channels_to_positions(self, data):
+        num_samples = data.shape[1]
+
+        mapped_data = np.zeros((self.array_config.rows, self.array_config.cols, num_samples))
+
+        for ch_index in range(self.beam_mix.num_mics):
+            mic_x, mic_y = self.array_config.mic_positions[ch_index]
+            mapped_data[mic_x, mic_y, :] = data[ch_index, :]
+            # print(f'MX{mic_x} | MY{mic_y} -> ch{ch_index+1}')
+
+        return mapped_data
+
+    def map_channels_to_beam_mix(self, mapped_array_data):
+        num_samples = mapped_array_data.shape[2]
         mapped_data = np.zeros((self.beam_mix.rows, self.beam_mix.cols, num_samples))
 
-        for i, mic_index in enumerate(self.beam_mix.mics_to_use):
-            mic_x, mic_y = self.array_config.mic_positions[i]
-            mapped_data[mic_x, mic_y, :] = audio_data[mic_index, :]
+        if len(self.beam_mix.mics_to_use) != self.beam_mix.rows * self.beam_mix.cols:
+            raise ValueError("Mismatch between mics_to_use and beam mix shape.")
+
+        for i, (src_x, src_y) in enumerate(self.beam_mix.mics_to_use):
+            dest_x = i // self.beam_mix.cols
+            dest_y = i % self.beam_mix.cols
+            mapped_data[dest_x, dest_y, :] = mapped_array_data[src_x, src_y, :]
+            # print(f'FROM ({src_x}, {src_y}) -> TO ({dest_x}, {dest_y}) [ch {i + 1}]')
 
         return mapped_data
 
@@ -101,6 +116,7 @@ class Beamform:
             self.temperature = self.temperature_current
 
         mapped_audio_data = self.map_channels_to_positions(data)
+        mapped_audio_data = self.map_channels_to_beam_mix(mapped_audio_data)
 
         rows, cols, num_samples = mapped_audio_data.shape
         assert rows * cols == self.fir_coeffs.shape[1] * self.fir_coeffs.shape[2], "Mismatch between audio data and FIR coefficients shape."
@@ -125,6 +141,9 @@ class Beamform:
     def beamform_channel(self, channel, mapped_audio_data, fir_coeffs):
         num_samples = mapped_audio_data.shape[2]
         beamformed_data = np.zeros(num_samples + self.num_coeffs - 1)
+
+        # print(f'Mapped Data Shape: {mapped_audio_data.shape}')
+
         for row_index in range(mapped_audio_data.shape[0]):
             for col_index in range(mapped_audio_data.shape[1]):
                 filtered_signal = convolve(mapped_audio_data[row_index, col_index, :], fir_coeffs[channel, row_index, col_index, :], mode='full')

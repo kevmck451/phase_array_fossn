@@ -792,10 +792,10 @@ class Main_Middle_Frame(ctk.CTkFrame):
         size = 40
 
         self.icons = {
-            'tank': ctk.CTkImage(Image.open(self.configuration.tank_icon), size=(size, size)),
             'drone': ctk.CTkImage(Image.open(self.configuration.drone_icon), size=(size, size)),
-            'generator': ctk.CTkImage(Image.open(self.configuration.generator_icon), size=(size, size)),
             'plane': ctk.CTkImage(Image.open(self.configuration.plane_icon), size=(size, size)),
+            'tank': ctk.CTkImage(Image.open(self.configuration.tank_icon), size=(size, size)),
+            'generator': ctk.CTkImage(Image.open(self.configuration.generator_icon), size=(size, size)),
             'car': ctk.CTkImage(Image.open(self.configuration.car_icon), size=(size, size)),
         }
 
