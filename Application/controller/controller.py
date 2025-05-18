@@ -191,10 +191,20 @@ class Controller:
             self.audio_streamer = self.mic_array_simulator
             self.mic_array_simulator.realtime = self.realtime
             self.mic_array_simulator.stop_flag = False
+            if self.gui.Top_Frame.Center_Frame.pca_save_checkbox_variable.get():
+                if self.app_state == State.CALIBRATING:
+                    self.mic_array_simulator.record_audio = True
+                    self.create_directory('cal')
+                    self.mic_array_simulator.save_path = self.calibration_filepath
+
             self.mic_array_simulator.start_stream()
+
             if self.gui.Top_Frame.Center_Frame.audio_save_checkbox_variable.get():
                 if self.app_state == State.RUNNING:
                     self.create_directory('anomaly')
+
+
+
         else:
             self.audio_streamer = self.mic_array
             if self.gui.Top_Frame.Center_Frame.audio_save_checkbox_variable.get():
@@ -362,8 +372,6 @@ class Controller:
 
                 time.sleep(self.chunk_size_seconds/2)
 
-
-
     # ---------------------------------
     # START / STOP QUEUES ------------
     # ---------------------------------
@@ -379,6 +387,8 @@ class Controller:
     def stop_all_queues(self):
         if self.audio_loaded:
             self.mic_array_simulator.stop_flag = True
+            if self.gui.Top_Frame.Center_Frame.save_checkbox_audio.get():
+                self.mic_array_simulator.save_audio()
         if self.gui.Top_Frame.Center_Frame.audio_save_checkbox_variable.get():
             self.mic_array.record_running = False
         self.beamform_running = False
@@ -500,11 +510,11 @@ class Controller:
 
         elif event == Event.STOP_RECORDER:
             self.app_state = State.IDLE
+            self.gui.Top_Frame.Center_Frame.toggle_play()
             if self.gui.Top_Frame.Center_Frame.pca_save_checkbox_variable.get():
                 if not self.audio_loaded:
                     self.mic_array.record_running = False
                     self.gui.Top_Frame.Right_Frame.insert_text('Audio File Saved', 'green')
-
             if self.gui.Top_Frame.Center_Frame.audio_save_checkbox_variable.get():
                 cmap = self.gui.Bottom_Frame.Middle_Center_Frame.visual_selector.get()
                 vert_max = self.gui.Bottom_Frame.Middle_Center_Frame.value_slider.get()
@@ -516,7 +526,6 @@ class Controller:
             self.remove_directory_if_empty()
             self.setup_project_directory()
             self.gui.Top_Frame.Center_Right_Frame.stop_recording()
-            self.gui.Top_Frame.Center_Frame.toggle_play()
 
             if not self.realtime:
                 self.gui.Top_Frame.Right_Frame.insert_text(f'App is finished analyzing', 'green')
@@ -557,7 +566,14 @@ class Controller:
                 self.detector.queue.get()
 
             if self.gui.Top_Frame.Center_Frame.pca_save_checkbox_variable.get():
-                if not self.audio_loaded:
+                if self.audio_loaded:
+                    if self.app_state == State.CALIBRATING:
+                        self.mic_array_simulator.save_audio()
+                        np.save(f'{self.calibration_filepath}/baseline_means.npy', self.detector.baseline_means)
+                        np.save(f'{self.calibration_filepath}/baseline_stds.npy', self.detector.baseline_stds)
+                        print(f'Baseline stats saved in folder: {self.calibration_filepath}')
+                        self.gui.Top_Frame.Right_Frame.insert_text('Calibration Saved', 'green')
+                else:
                     self.mic_array.record_running = False
                     np.save(f'{self.calibration_filepath}/baseline_means.npy', self.detector.baseline_means)
                     np.save(f'{self.calibration_filepath}/baseline_stds.npy', self.detector.baseline_stds)
@@ -648,7 +664,6 @@ class Controller:
                 self.external_player.stream_location = self.stream_location
                 self.external_player.selected_channels = self.gui.Top_Frame.Center_Right_Frame.mic_selector.get()
 
-
         elif event == Event.CHANGE_EXTERNAL_PLAYER_CHANNELS:
             self.stream_channels = self.gui.Top_Frame.Center_Right_Frame.mic_selector.get()
 
@@ -666,16 +681,36 @@ class Controller:
             self.beamformer.update_parameters(self.beam_mix_selection)
             self.processor.processing_chain = self.beam_mix_selection.processing_chain
 
-
-
-            # self.beamformer.num_mics
-            # self.beamformer.mic_coordinates
-            # self.beamformer.cols
-
-
         elif event == Event.DUMMY_BUTTON:
             # dummy button
             print('BUTTON PRESSED')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

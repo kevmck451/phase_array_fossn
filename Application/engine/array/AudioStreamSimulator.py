@@ -7,6 +7,7 @@ from Application.engine.filters.audio import Audio
 
 from threading import Thread
 from queue import Queue
+import numpy as np
 import time
 
 
@@ -30,6 +31,11 @@ class AudioStreamSimulator:
         self.send_to_external_audio_stream = False
         self.external_audio_queue = Queue()
 
+        self.record_audio = False
+        self.recorded_chunks = []
+
+        self.save_path = None
+
     def start_stream(self):
         if self.running:
             print("Stream already running. Skipping restart.")
@@ -47,9 +53,16 @@ class AudioStreamSimulator:
             self.queue.put(chunk)
             if self.send_to_external_audio_stream:
                 self.external_audio_queue.put(chunk)
+            if self.record_audio:
+                self.recorded_chunks.append(chunk)
             if self.realtime:
                 time.sleep(self.chunk_size_sec)
+
         self.running = False
         self.stop_flag = False
 
-
+    def save_audio(self):
+        full_audio = np.hstack(self.recorded_chunks)
+        from scipy.io.wavfile import write
+        filepath = f"{self.save_path}/{self.audio_object.name}_calibration.wav"
+        write(filepath, self.audio_object.sample_rate, full_audio.T.astype(np.float32))
