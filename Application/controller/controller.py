@@ -8,6 +8,7 @@ from Application.engine.filters.processor import Processing
 from Application.engine.detectors.pca_calculator import PCA_Calculator
 from Application.engine.detectors.detector import Detector
 from Application.engine.detectors.heatmap import Heatmap
+from Application.engine.calibration_parallel import Calibration_All
 
 from Application.controller.detector_log import Detector_Log
 from Application.controller.heatmap_log import Heatmap_Log
@@ -22,6 +23,8 @@ from datetime import datetime
 from threading import Thread
 from pathlib import Path
 import numpy as np
+import filecmp
+import shutil
 import queue
 import time
 import os
@@ -66,6 +69,7 @@ class Controller:
         self.detector = Detector()
         self.detector_thread = None
         self.detector_running = False
+        self.calibration_baselines_all = None
 
         self.heatmap = Heatmap()
 
@@ -202,8 +206,6 @@ class Controller:
             if self.gui.Top_Frame.Center_Frame.audio_save_checkbox_variable.get():
                 if self.app_state == State.RUNNING:
                     self.create_directory('anomaly')
-
-
 
         else:
             self.audio_streamer = self.mic_array
@@ -388,7 +390,8 @@ class Controller:
         if self.audio_loaded:
             self.mic_array_simulator.stop_flag = True
             if self.gui.Top_Frame.Center_Frame.save_checkbox_audio.get():
-                self.mic_array_simulator.save_audio()
+                if self.app_state == State.CALIBRATING:
+                    self.mic_array_simulator.save_audio()
         if self.gui.Top_Frame.Center_Frame.audio_save_checkbox_variable.get():
             self.mic_array.record_running = False
         self.beamform_running = False
@@ -447,6 +450,31 @@ class Controller:
             self.stream_channels = self.gui.Top_Frame.Center_Right_Frame.mic_selector.get()
             self.external_player.start()
 
+    def calibration_baseline_loader(self):
+        mix_key = (
+            self.beam_mix_selection.name
+            if self.beam_mix_selection.name in self.calibration_baselines_all
+            else "Mix 1")
+
+        mix_data = self.calibration_baselines_all[mix_key]
+        means = mix_data["means"]
+        stds = mix_data["stds"]
+        thetas_1 = list(range(-90, 91, 2))
+        thetas_2 = list(range(-90, 91, 5))
+        orig_thetas = sorted(set(thetas_1 + thetas_2))
+
+        # Create mapping from angle to row index
+        theta_to_idx = {theta: i for i, theta in enumerate(orig_thetas)}
+
+        # Extract only the rows that match thetas in self.thetas
+        indices = [theta_to_idx[theta] for theta in self.thetas]
+        self.detector.baseline_means = means[indices]
+        self.detector.baseline_stds = stds[indices]
+
+        self.gui.Top_Frame.Right_Frame.insert_text(
+            'Baseline calibration loaded successfully', 'green'
+        )
+
     # ---------------------------------
     # EVENT HANDLER -------------------
     # ---------------------------------
@@ -471,15 +499,52 @@ class Controller:
 
         elif event == Event.LOAD_CALIBRATION:
             self.detector.baseline_calculated = True
-            filepath_mean = self.gui.Top_Frame.Center_Frame.baseline_means_path
-            filepath_stds = self.gui.Top_Frame.Center_Frame.baseline_stds_path
 
+            # check to determine to load the one just run inside project
+            # self.create_directory('cal')
+            # or that its from a filepath
+            # source = the folder you just picked in the GUI
+            src = self.gui.Top_Frame.Center_Frame.selected_pca_folder
+
+            # no guard/return here—assume src is valid
+            folder_name = os.path.basename(os.path.normpath(src))
+
+            # build dst under your project base
+            dst_root = self.project_directory_path
+            os.makedirs(dst_root, exist_ok=True)
+
+            # this is where the entire folder will live
+            dst = os.path.join(dst_root, folder_name)
+            os.makedirs(dst, exist_ok=True)
+
+            # copy _all_ files from src → dst
+            for fname in os.listdir(src):
+                s = os.path.join(src, fname)
+                d = os.path.join(dst, fname)
+                # only overwrite if missing or changed
+                if not os.path.exists(d) or not filecmp.cmp(s, d, shallow=False):
+                    shutil.copy2(s, d)
+
+            print(f"Copied calibration folder '{folder_name}' into:\n    {dst}")
+
+            # now load just the .npy files out of that new subfolder
             try:
-                self.detector.baseline_means = np.load(filepath_mean)
-                self.detector.baseline_stds = np.load(filepath_stds)
-                self.gui.Top_Frame.Right_Frame.insert_text(f'Baseline calibration loaded successfully', 'green')
-            except FileNotFoundError:
-                self.gui.Top_Frame.Right_Frame.insert_text(f'Files Not Found. Try Again', 'red')
+                baselines = {}
+                for fname in os.listdir(dst):
+                    if not fname.lower().endswith('.npy'):
+                        continue
+                    mix = fname.split('_')[0]
+                    param = fname.split('_')[-1].split('.')[0]  # 'means' or 'stds'
+                    baselines.setdefault(mix, {})[param] = np.load(os.path.join(dst, fname))
+
+                self.calibration_baselines_all = baselines
+                # print(self.calibration_baselines_all)
+                self.calibration_baseline_loader()
+
+            except Exception as e:
+                self.gui.Top_Frame.Right_Frame.insert_text(
+                    f'Error loading calibration: {e}', 'red'
+                )
 
         elif event == Event.START_RECORDER:
             self.realtime = self.gui.Top_Frame.Center_Right_Frame.real_time_checkbox_variable.get()
@@ -546,6 +611,12 @@ class Controller:
                 self.gui.Top_Frame.Right_Frame.insert_text('Detector Calibration Started', self.color_light_blue)
                 self.gui.Top_Frame.Right_Frame.insert_text(f'Press Stop to End Early: {self.calibration_time}s calibration started', self.color_light_blue)
                 self.start_all_queues()
+                # i think now, only the streamer needs to be started really.
+                # only current config is in memory, if real time settings changed, another config will need to be loaded in to match new shape
+                # having the real time calibration is just doing an unnecessary process since it's already being calculated
+                # self.audio_setup()
+                self.Calibration_Class = Calibration_All(self.audio_streamer, self.temperature, self.array_config, self.calibration_filepath)
+
                 self.calibrate_start_time = time.time()
                 Thread(target=self.calibrate_timer, daemon=True).start()
                 self.gui.Top_Frame.Center_Right_Frame.start_calibration(self.calibration_time)
@@ -566,19 +637,23 @@ class Controller:
                 self.detector.queue.get()
 
             if self.gui.Top_Frame.Center_Frame.pca_save_checkbox_variable.get():
-                if self.audio_loaded:
-                    if self.app_state == State.CALIBRATING:
-                        self.mic_array_simulator.save_audio()
-                        np.save(f'{self.calibration_filepath}/baseline_means.npy', self.detector.baseline_means)
-                        np.save(f'{self.calibration_filepath}/baseline_stds.npy', self.detector.baseline_stds)
-                        print(f'Baseline stats saved in folder: {self.calibration_filepath}')
-                        self.gui.Top_Frame.Right_Frame.insert_text('Calibration Saved', 'green')
-                else:
-                    self.mic_array.record_running = False
-                    np.save(f'{self.calibration_filepath}/baseline_means.npy', self.detector.baseline_means)
-                    np.save(f'{self.calibration_filepath}/baseline_stds.npy', self.detector.baseline_stds)
-                    print(f'Baseline stats saved in folder: {self.calibration_filepath}')
-                    self.gui.Top_Frame.Right_Frame.insert_text('Calibration Saved', 'green')
+                self.Calibration_Class.stop_everything()
+                self.handle_event(Event.LOAD_CALIBRATION)
+                self.gui.Top_Frame.Right_Frame.insert_text('Calibration Saved', 'green')
+
+                # if self.audio_loaded:
+                #     if self.app_state == State.CALIBRATING:
+                #         self.mic_array_simulator.save_audio()
+                #         np.save(f'{self.calibration_filepath}/baseline_means.npy', self.detector.baseline_means)
+                #         np.save(f'{self.calibration_filepath}/baseline_stds.npy', self.detector.baseline_stds)
+                #         print(f'Baseline stats saved in folder: {self.calibration_filepath}')
+                #         self.gui.Top_Frame.Right_Frame.insert_text('Calibration Saved', 'green')
+                # else:
+                #     self.mic_array.record_running = False
+                #     np.save(f'{self.calibration_filepath}/baseline_means.npy', self.detector.baseline_means)
+                #     np.save(f'{self.calibration_filepath}/baseline_stds.npy', self.detector.baseline_stds)
+                #     print(f'Baseline stats saved in folder: {self.calibration_filepath}')
+                #     self.gui.Top_Frame.Right_Frame.insert_text('Calibration Saved', 'green')
 
             self.app_state = State.IDLE
             self.gui.Top_Frame.Center_Frame.toggle_calibrate()
@@ -617,16 +692,19 @@ class Controller:
                 Ltheta = int(self.gui.Bottom_Frame.Left_Frame.ltheta_entry.get())
                 Rtheta = int(self.gui.Bottom_Frame.Left_Frame.rtheta_entry.get())
                 increment = int(self.gui.Bottom_Frame.Left_Frame.theta_inc_var.get())
-                theta_list = list(range(Ltheta, Rtheta + 1, increment))
                 phi = int(self.gui.Bottom_Frame.Left_Frame.lphi_entry.get())
+                theta_list = list(range(Ltheta, Rtheta + 1, increment))
 
                 self.phis = [phi]
                 self.beamformer.phis = [phi]
                 self.thetas = theta_list
-                self.beamformer.thetas = theta_list
-                self.beamformer.compile_all_fir_coeffs()
-                self.gui.Middle_Frame.Center_Frame.directions = theta_list
-                self.gui.Middle_Frame.Center_Frame.anomaly_data = [0] * len(theta_list)
+                self.beamformer.thetas = self.thetas
+                self.beamformer.update_parameters(self.beam_mix_selection)
+                self.processor.processing_chain = self.beam_mix_selection.processing_chain
+                self.calibration_baseline_loader()
+
+                self.gui.Middle_Frame.Center_Frame.directions = self.thetas
+                self.gui.Middle_Frame.Center_Frame.anomaly_data = [0] * len(self.thetas)
                 self.gui.Top_Frame.Right_Frame.insert_text(f'Theta: ({Ltheta}, {Rtheta}, {increment}) | Phi: {phi}', self.color_pink)
 
         elif event == Event.START_EXTERNAL_PLAY:
@@ -680,6 +758,7 @@ class Controller:
             self.beam_mix_selection = self.gui.Bottom_Frame.Middle_Frame.current_beam_mix
             self.beamformer.update_parameters(self.beam_mix_selection)
             self.processor.processing_chain = self.beam_mix_selection.processing_chain
+            self.calibration_baseline_loader()
 
         elif event == Event.DUMMY_BUTTON:
             # dummy button

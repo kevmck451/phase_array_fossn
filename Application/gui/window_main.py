@@ -125,7 +125,6 @@ class Top_Left_Frame(ctk.CTkFrame):
 
         self.check_for_state_changes()
 
-
     # FRAMES ---------------------------------------------
     def fpga_connection_frame(self, frame):
         configuration = self.parent.parent.device_config
@@ -203,7 +202,6 @@ class Top_Middle_Frame(ctk.CTkFrame):
 
         self.start_frame(top_frame)
         self.calibration_frame(bottom_frame)
-
 
     # FRAMES ---------------------------------------------
     def start_frame(self, frame):
@@ -336,10 +334,6 @@ class Top_Middle_Frame(ctk.CTkFrame):
                 if folder_path:
                     self.selected_pca_folder = folder_path
                     print(f"Selected PCA folder: {self.selected_pca_folder}")
-
-                    self.baseline_means_path = f"{self.selected_pca_folder}/baseline_means.npy"
-                    self.baseline_stds_path = f"{self.selected_pca_folder}/baseline_stds.npy"
-
                     self.event_handler(Event.LOAD_CALIBRATION)
 
             except Exception as e:
@@ -355,9 +349,6 @@ class Top_Middle_Frame(ctk.CTkFrame):
                 if folder_path:
                     self.selected_pca_folder = folder_path
                     print(f"Selected PCA folder: {self.selected_pca_folder}")
-
-                    self.baseline_means_path = f"{folder_path}/baseline_means.npy"
-                    self.baseline_stds_path = f"{folder_path}/baseline_stds.npy"
 
                     self.event_handler(Event.LOAD_CALIBRATION)
 
@@ -470,138 +461,138 @@ class MicSelector(ctk.CTkFrame):
         #     self.toggle(0)
 
 class Top_Middle_Right_Frame(ctk.CTkFrame):
-        def __init__(self, parent, event_handler):
-            super().__init__(parent)
-            self.event_handler = event_handler
-            self.parent = parent
-            configuration = self.parent.parent.device_config
+    def __init__(self, parent, event_handler):
+        super().__init__(parent)
+        self.event_handler = event_handler
+        self.parent = parent
+        configuration = self.parent.parent.device_config
 
-            # Top Frame
-            top_frame = ctk.CTkFrame(self)
-            top_frame.grid(row=0, column=0, padx=configuration.x_pad_main, pady=configuration.y_pad_main, sticky='nsew')
-            top_frame.grid_rowconfigure(0, weight=0, uniform='row')
+        # Top Frame
+        top_frame = ctk.CTkFrame(self)
+        top_frame.grid(row=0, column=0, padx=configuration.x_pad_main, pady=configuration.y_pad_main, sticky='nsew')
+        top_frame.grid_rowconfigure(0, weight=0, uniform='row')
 
-            # Bottom Frame
-            bottom_frame = ctk.CTkFrame(self)
-            # bottom_frame.grid(row=1, column=0, padx=configuration.x_pad_main, pady=configuration.y_pad_main, sticky='nsew')
-            bottom_frame.grid_rowconfigure(0, weight=0)
+        # Bottom Frame
+        bottom_frame = ctk.CTkFrame(self)
+        # bottom_frame.grid(row=1, column=0, padx=configuration.x_pad_main, pady=configuration.y_pad_main, sticky='nsew')
+        bottom_frame.grid_rowconfigure(0, weight=0)
 
-            # Configure the grid rows and column for self
-            self.grid_rowconfigure(0, weight=1)
-            self.grid_rowconfigure(1, weight=0)
+        # Configure the grid rows and column for self
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_rowconfigure(1, weight=0)
 
-            self.grid_columnconfigure(0, weight=1, uniform='col')
+        self.grid_columnconfigure(0, weight=1, uniform='col')
 
-            self.clock_frame(top_frame)
+        self.clock_frame(top_frame)
 
-            self.calibration_seconds = 0
-            self.recording_seconds = 0
-            self.calibration_running = False
-            self.recording_running = False
+        self.calibration_seconds = 0
+        self.recording_seconds = 0
+        self.calibration_running = False
+        self.recording_running = False
+        self.external_playing = False
+
+    # FRAMES ---------------------------------------------
+    def clock_frame(self, frame):
+        configuration = self.parent.parent.device_config
+        self.clock_display = ctk.CTkLabel(
+            frame, text="00:00", font=configuration.console_font_style_large
+        )
+        self.clock_display.pack(pady=5)
+
+        self.real_time_checkbox_variable = ctk.BooleanVar(value=True)
+
+        self.real_time_checkbox = ctk.CTkCheckBox(frame, text="Real-Time",
+                                                  variable=self.real_time_checkbox_variable,
+                                                  fg_color=configuration.bluelight_fg_color,
+                                                  hover_color=configuration.bluelight_hover_color, font=configuration.button_font_style)
+        self.real_time_checkbox.pack(pady=5)
+
+        self.play_external_button = ctk.CTkButton(frame, text="Start External Audio",
+                                          fg_color=configuration.purple_fg_color,
+                                          hover_color=configuration.purple_hover_color,
+                                          command=lambda: self.event_handler(Event.START_EXTERNAL_PLAY),
+                                          font=configuration.button_font_style)
+        self.play_external_button.pack(pady=5)
+
+        self.stream_location = ctk.CTkSegmentedButton(
+            frame,
+            values=["Raw", "Beam", "Pro"],
+            font=configuration.button_font_style,
+            height=28,
+            command=lambda value: self.event_handler(Event.CHANGE_EXTERNAL_PLAYER)
+        )
+        self.stream_location.set("Raw")
+        self.stream_location.pack(pady=(10, 5))
+
+
+        self.mic_selector = MicSelector(frame, shape=[self.parent.parent.array_config.rows, self.parent.parent.array_config.cols],
+                                        callback=lambda: self.event_handler(Event.CHANGE_EXTERNAL_PLAYER_CHANNELS))
+        self.mic_selector.pack(pady=5)
+
+
+
+        # self.human_op_mode_button = ctk.CTkButton(frame, text="Human Op Mode",
+        #                                           fg_color=configuration.bluelight_fg_color,
+        #                                           hover_color=configuration.bluelight_hover_color,
+        #                                           command=lambda: self.event_handler(Event.START_HUMAN_OP_MODE),
+        #                                           font=configuration.button_font_style)
+        # self.human_op_mode_button.pack(pady=5)
+
+    def toggle_play_external_button(self):
+        configuration = self.parent.parent.device_config
+        if self.external_playing:
+            self.play_external_button.configure(text="Activate External Audio",
+                                        fg_color=configuration.purple_fg_color,
+                                        hover_color=configuration.purple_hover_color,
+                                        command=lambda: self.event_handler(Event.START_EXTERNAL_PLAY), font=configuration.button_font_style)
             self.external_playing = False
+            # Placeholder for stopping audio
+        else:
+            self.play_external_button.configure(text="Stop External Audio",
+                                        fg_color=configuration.darkgray_fg_color,
+                                        hover_color=configuration.darkgray_hover_color,
+                                        command=lambda: self.event_handler(Event.STOP_EXTERNAL_PLAY), font=configuration.button_font_style)
+            self.external_playing = True
 
-        # FRAMES ---------------------------------------------
-        def clock_frame(self, frame):
-            configuration = self.parent.parent.device_config
-            self.clock_display = ctk.CTkLabel(
-                frame, text="00:00", font=configuration.console_font_style_large
-            )
-            self.clock_display.pack(pady=5)
+    def start_calibration(self, seconds):
+        self.calibration_seconds = seconds
+        self.calibration_running = True
+        self.update_calibration_timer()
 
-            self.real_time_checkbox_variable = ctk.BooleanVar(value=True)
-
-            self.real_time_checkbox = ctk.CTkCheckBox(frame, text="Real-Time",
-                                                      variable=self.real_time_checkbox_variable,
-                                                      fg_color=configuration.bluelight_fg_color,
-                                                      hover_color=configuration.bluelight_hover_color, font=configuration.button_font_style)
-            self.real_time_checkbox.pack(pady=5)
-
-            self.play_external_button = ctk.CTkButton(frame, text="Start External Audio",
-                                              fg_color=configuration.purple_fg_color,
-                                              hover_color=configuration.purple_hover_color,
-                                              command=lambda: self.event_handler(Event.START_EXTERNAL_PLAY),
-                                              font=configuration.button_font_style)
-            self.play_external_button.pack(pady=5)
-
-            self.stream_location = ctk.CTkSegmentedButton(
-                frame,
-                values=["Raw", "Beam", "Pro"],
-                font=configuration.button_font_style,
-                height=28,
-                command=lambda value: self.event_handler(Event.CHANGE_EXTERNAL_PLAYER)
-            )
-            self.stream_location.set("Raw")
-            self.stream_location.pack(pady=(10, 5))
-
-
-            self.mic_selector = MicSelector(frame, shape=[self.parent.parent.array_config.rows, self.parent.parent.array_config.cols],
-                                            callback=lambda: self.event_handler(Event.CHANGE_EXTERNAL_PLAYER_CHANNELS))
-            self.mic_selector.pack(pady=5)
-
-
-
-            # self.human_op_mode_button = ctk.CTkButton(frame, text="Human Op Mode",
-            #                                           fg_color=configuration.bluelight_fg_color,
-            #                                           hover_color=configuration.bluelight_hover_color,
-            #                                           command=lambda: self.event_handler(Event.START_HUMAN_OP_MODE),
-            #                                           font=configuration.button_font_style)
-            # self.human_op_mode_button.pack(pady=5)
-
-        def toggle_play_external_button(self):
-            configuration = self.parent.parent.device_config
-            if self.external_playing:
-                self.play_external_button.configure(text="Activate External Audio",
-                                            fg_color=configuration.purple_fg_color,
-                                            hover_color=configuration.purple_hover_color,
-                                            command=lambda: self.event_handler(Event.START_EXTERNAL_PLAY), font=configuration.button_font_style)
-                self.external_playing = False
-                # Placeholder for stopping audio
-            else:
-                self.play_external_button.configure(text="Stop External Audio",
-                                            fg_color=configuration.darkgray_fg_color,
-                                            hover_color=configuration.darkgray_hover_color,
-                                            command=lambda: self.event_handler(Event.STOP_EXTERNAL_PLAY), font=configuration.button_font_style)
-                self.external_playing = True
-
-        def start_calibration(self, seconds):
-            self.calibration_seconds = seconds
-            self.calibration_running = True
-            self.update_calibration_timer()
-
-        def update_calibration_timer(self):
-            if self.calibration_running and self.calibration_seconds > 0:
-                self.calibration_seconds -= 1
-                self.update_clock_display(self.calibration_seconds)
-                self.after(1000, self.update_calibration_timer)
-            else:
-                self.calibration_running = False
-
-        def start_recording(self):
-            self.recording_seconds = 0
-            self.recording_running = True
-            self.update_recording_timer()
-
-        def update_recording_timer(self):
-            if self.recording_running:
-                self.recording_seconds += 1
-                self.update_clock_display(self.recording_seconds)
-                self.after(1000, self.update_recording_timer)
-
-        def stop_recording(self):
-            self.recording_running = False
-
-        def reset_clock(self):
+    def update_calibration_timer(self):
+        if self.calibration_running and self.calibration_seconds > 0:
+            self.calibration_seconds -= 1
+            self.update_clock_display(self.calibration_seconds)
+            self.after(1000, self.update_calibration_timer)
+        else:
             self.calibration_running = False
-            self.recording_running = False
-            self.calibration_seconds = 0
-            self.recording_seconds = 0
-            self.update_clock_display(0)
 
-        def update_clock_display(self, seconds):
-            mins = seconds // 60
-            secs = seconds % 60
-            prefix = "-" if self.calibration_running else ""
-            self.clock_display.configure(text=f"{prefix}{mins:02}:{secs:02}")
+    def start_recording(self):
+        self.recording_seconds = 0
+        self.recording_running = True
+        self.update_recording_timer()
+
+    def update_recording_timer(self):
+        if self.recording_running:
+            self.recording_seconds += 1
+            self.update_clock_display(self.recording_seconds)
+            self.after(1000, self.update_recording_timer)
+
+    def stop_recording(self):
+        self.recording_running = False
+
+    def reset_clock(self):
+        self.calibration_running = False
+        self.recording_running = False
+        self.calibration_seconds = 0
+        self.recording_seconds = 0
+        self.update_clock_display(0)
+
+    def update_clock_display(self, seconds):
+        mins = seconds // 60
+        secs = seconds % 60
+        prefix = "-" if self.calibration_running else ""
+        self.clock_display.configure(text=f"{prefix}{mins:02}:{secs:02}")
 
 
 class Top_Right_Frame(ctk.CTkFrame):
@@ -761,7 +752,6 @@ class Main_Middle_Frame(ctk.CTkFrame):
         self.start_heatmap_updates()
         self.start_updates()
 
-
     def detector_frame(self, frame):
         self.detector_label = ctk.CTkLabel(frame, text="Beamformed PCA Detector Output", font=self.configuration.console_font_style)
         self.detector_label.grid(row=0, column=0, sticky='ew')
@@ -770,7 +760,6 @@ class Main_Middle_Frame(ctk.CTkFrame):
         self.canvas_left = tk.Canvas(frame, bg="#333333", width=self.canvas_left_width, height=460)
         self.canvas_left.grid(row=1, column=0, sticky='nsew', padx=0, pady=0)
         self.canvas_left.master.grid_propagate(False)
-
 
     def heatmap_frame(self, frame):
         self.heatmap_title = ctk.CTkLabel(frame, text="Time Series Heatmap of Anomalies", font=self.configuration.console_font_style)
@@ -803,9 +792,8 @@ class Main_Middle_Frame(ctk.CTkFrame):
             label = ctk.CTkLabel(icon_frame, image=icon, text="")
             label.pack(side="left", padx=29, pady=5)
 
-
     def draw_bar_chart(self):
-        font_size = 10
+        font_size = 9
 
         num_channels = len(self.anomaly_data)
 
@@ -1094,17 +1082,18 @@ class Bottom_Left_Frame(ctk.CTkFrame):
             self.event_handler(Event.SET_TEMP)
 
     def toggle_thetas(self):
+        config = self.parent.parent.array_config
         if self.enable_thetas.get():
             # reset back to your θ‑defaults
             self.ltheta_entry.configure(state="normal")
             self.ltheta_entry.delete(0, tk.END)
-            self.ltheta_entry.insert(0, "-70")
+            self.ltheta_entry.insert(0, str(config.Ltheta))
 
             self.rtheta_entry.configure(state="normal")
             self.rtheta_entry.delete(0, tk.END)
-            self.rtheta_entry.insert(0, "70")
+            self.rtheta_entry.insert(0, str(config.Rtheta))
 
-            self.theta_inc_var.set("10")
+            self.theta_inc_var.set(str(config.increment))
             self.theta_inc_seg.configure(state="normal")
         else:
             # disable and set to 0
@@ -1118,17 +1107,18 @@ class Bottom_Left_Frame(ctk.CTkFrame):
             self.theta_inc_seg.configure(state="disabled")
 
     def toggle_phis(self):
+        config = self.parent.parent.array_config
         if self.enable_phis.get():
             # reset back to your φ‑defaults (here both 0)
             self.lphi_entry.configure(state="normal")
             self.lphi_entry.delete(0, tk.END)
-            self.lphi_entry.insert(0, "0")
+            self.lphi_entry.insert(0, str(config.Lphi))
 
             self.rphi_entry.configure(state="normal")
             self.rphi_entry.delete(0, tk.END)
-            self.rphi_entry.insert(0, "0")
+            self.rphi_entry.insert(0, str(config.Rphi))
 
-            self.phi_inc_var.set("10")
+            self.phi_inc_var.set(str(config.phi_increment))
             self.phi_inc_seg.configure(state="normal")
         else:
             # disable and set to 0
@@ -1328,7 +1318,6 @@ class Bottom_Center_Frame(ctk.CTkFrame):
 
         self.hp_bottom_cutoff_freq = 1144
         self.ds_new_sr = 6288
-
 
 
 
