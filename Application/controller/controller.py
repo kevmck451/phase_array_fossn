@@ -50,6 +50,8 @@ class Controller:
 
         self.calibration_time = 60
         self.calibrate_start_time = 0
+        self.use_external_calibration = False
+
         self.thetas = self.array_config.default_theta_directions
         self.phis = [0]  # azimuth angle: neg is below and pos is above
         self.temperature = 90
@@ -499,33 +501,34 @@ class Controller:
 
         elif event == Event.LOAD_CALIBRATION:
             self.detector.baseline_calculated = True
-
+            self.use_external_calibration = True
             # check to determine to load the one just run inside project
             # self.create_directory('cal')
             # or that its from a filepath
             # source = the folder you just picked in the GUI
-            src = self.gui.Top_Frame.Center_Frame.selected_pca_folder
+            if self.use_external_calibration:
+                src = self.gui.Top_Frame.Center_Frame.selected_pca_folder
 
-            # no guard/return here—assume src is valid
-            folder_name = os.path.basename(os.path.normpath(src))
+                # no guard/return here—assume src is valid
+                folder_name = os.path.basename(os.path.normpath(src))
 
-            # build dst under your project base
-            dst_root = self.project_directory_path
-            os.makedirs(dst_root, exist_ok=True)
+                # build dst under your project base
+                dst_root = self.project_directory_path
+                os.makedirs(dst_root, exist_ok=True)
 
-            # this is where the entire folder will live
-            dst = os.path.join(dst_root, folder_name)
-            os.makedirs(dst, exist_ok=True)
+                # this is where the entire folder will live
+                dst = os.path.join(dst_root, folder_name)
+                os.makedirs(dst, exist_ok=True)
 
-            # copy _all_ files from src → dst
-            for fname in os.listdir(src):
-                s = os.path.join(src, fname)
-                d = os.path.join(dst, fname)
-                # only overwrite if missing or changed
-                if not os.path.exists(d) or not filecmp.cmp(s, d, shallow=False):
-                    shutil.copy2(s, d)
+                # copy _all_ files from src → dst
+                for fname in os.listdir(src):
+                    s = os.path.join(src, fname)
+                    d = os.path.join(dst, fname)
+                    # only overwrite if missing or changed
+                    if not os.path.exists(d) or not filecmp.cmp(s, d, shallow=False):
+                        shutil.copy2(s, d)
 
-            print(f"Copied calibration folder '{folder_name}' into:\n    {dst}")
+                print(f"Copied calibration folder '{folder_name}' into:\n    {dst}")
 
             # now load just the .npy files out of that new subfolder
             try:
@@ -636,7 +639,7 @@ class Controller:
             while not self.detector.queue.empty():
                 self.detector.queue.get()
 
-            if self.gui.Top_Frame.Center_Frame.pca_save_checkbox_variable.get():
+            if self.gui.Top_Frame.Center_Frame.pca_save_checkbox_variable.get(): # todo what if not checked, it wont stop
                 self.Calibration_Class.stop_everything()
                 self.handle_event(Event.LOAD_CALIBRATION)
                 self.gui.Top_Frame.Right_Frame.insert_text('Calibration Saved', 'green')
