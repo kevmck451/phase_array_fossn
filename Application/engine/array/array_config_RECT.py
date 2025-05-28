@@ -37,6 +37,7 @@ number_of_taps = 201
 
 ip_address = '192.168.0.2'
 
+server_port = 21197
 
 # for beamforming
 beam_mix_1 = BeamMixConfig(

@@ -49,7 +49,7 @@ number_of_taps = 301
 
 ip_address = '192.168.0.3'
 
-
+server_port = 32492
 
 
 beam_mix_1 = BeamMixConfig(

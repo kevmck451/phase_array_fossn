@@ -32,9 +32,7 @@ if __name__ == "__main__":
 
     gui = Main_Window(controller.handle_event, array_config, device_config)
 
-
-
-    server = Server()
+    server = Server(port=array_config.server_port)
     server.controller = controller
     server.start()
 

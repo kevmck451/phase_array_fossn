@@ -143,6 +143,14 @@ class Controller:
                             self.gui.Top_Frame.Right_Frame.insert_text(f'Network Disconnected', 'red')
                             self.handle_event(Event.STOP_RECORDER)
 
+            if self.server:
+                with self.server.shared_data_lock:
+                    if 'temp' in self.server.request_flags:
+                        if not self.temp_sensor.connected:
+                            self.server.shared_data['temp'] = str(self.temperature)
+                            # print(f'TEMP: {str(self.temperature)}')
+                        else:
+                            self.server.shared_data['temp'] = str(self.temp_sensor.current_temp)
 
             time.sleep(0.5)
 
@@ -269,6 +277,12 @@ class Controller:
                 # print(f'Audio Data Size: {current_audio_data.shape}')
                 self.beamformer.beamform_data(current_audio_data)
 
+                if self.server:
+                    with self.server.shared_data_lock:
+                        if 'audio_raw' in self.server.request_flags:
+                            print(f'Audio Raw Controller: {current_audio_data.shape}')
+                            self.server.shared_data['audio_raw'] = f"{current_audio_data.shape}|", current_audio_data.tobytes()
+
             if self.realtime:
                 time.sleep(self.queue_check_time)
 
@@ -361,7 +375,6 @@ class Controller:
                     # give anomaly data to bar chart
                     self.gui.Middle_Frame.Center_Frame.anomaly_data = current_anomaly_data
                     # give anomaly data to heatmap
-
                     self.gui.Middle_Frame.Center_Frame.next_heatmap_image = image
 
                 # save data if box checked
@@ -371,6 +384,12 @@ class Controller:
                     if self.heatmap_logger and self.heatmap.should_log:
                         self.heatmap_logger.save_heatmap_image(image, "rolling")
                         self.heatmap.should_log = False
+
+                if self.server:
+                    with self.server.shared_data_lock:
+                        if 'anomaly' in self.server.request_flags:
+                            # print("Sending anomaly to client:", str([current_anomaly_data.tolist(), self.thetas])
+                            self.server.shared_data['anomaly'] = str([current_anomaly_data.tolist(), self.thetas])
 
             if not self.realtime and self.app_state is State.CALIBRATING:
                 self.calibrate_timer_iterator += 1
