@@ -47,7 +47,7 @@ def get_array_selection():
 
     tk.Radiobutton(frame, text="Mac", variable=app_device, value="mac", font=font_button).pack(side=tk.LEFT, padx=10)
     tk.Radiobutton(frame, text="Pi", variable=app_device, value="pi", font=font_button).pack(side=tk.LEFT, padx=10)
-    tk.Radiobutton(frame, text="Other", variable=app_device, value="other", font=font_button).pack(side=tk.LEFT, padx=10)
+    tk.Radiobutton(frame, text="Demo", variable=app_device, value="demo", font=font_button).pack(side=tk.LEFT, padx=10)
 
     root.mainloop()
 

@@ -11,6 +11,7 @@ class Heatmap:
     def __init__(self, max_time_steps=120):
         self.max_time_steps = max_time_steps
         self.anomaly_matrix = None
+        self.max_value_seen_global = 0
         self.max_value_seen = 0
         self.current_thetas = []
         self.smoothing_window = 3
@@ -19,7 +20,7 @@ class Heatmap:
         self.matrix_filled_once = False
         self.raw_input_buffer = []
 
-    def update(self, thetas, values):
+    def update(self, thetas, values, max_value_seen_setting='global'):
         if len(thetas) != len(values):
             raise ValueError("Length of thetas and values must match")
 
@@ -75,9 +76,13 @@ class Heatmap:
         else:
             self.should_log = False
 
-        self.max_value_seen = max(self.max_value_seen, np.max(new_row))
+        self.max_value_seen_global = max(self.max_value_seen, np.max(new_row))
+        if max_value_seen_setting == 'global':
+            self.max_value_seen = self.max_value_seen_global
+        elif max_value_seen_setting == 'local':
+            self.max_value_seen = np.max(self.anomaly_matrix)
 
-    def render_heatmap_image(self, cmap, vert_max, width=550, height=440):
+    def render_heatmap_image(self, cmap, vert_max, scale_factor=1, width=550, height=440):
         if self.anomaly_matrix is None or self.anomaly_matrix.shape[0] == 0:
             return None
 
@@ -98,7 +103,7 @@ class Heatmap:
             # Higher sensitivity lowers vmax (more sensitive to lower values)
             # Lower sensitivity raises vmax (darker image, only strong stuff visible)
             # Map 1–200 to a scale where 100 means normal, <100 is more cutoff, >100 is more exposure
-            scale = 100 / sensitivity
+            scale = (100 / sensitivity) ** scale_factor
             vmax = self.max_value_seen * scale
 
         # cubehelix # hot # inferno # gist_heat # bone # gist_earth # gnuplot2  # viridis

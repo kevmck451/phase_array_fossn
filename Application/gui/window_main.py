@@ -1144,6 +1144,7 @@ class Bottom_Middle_Center_Frame(ctk.CTkFrame):
         self.grid_rowconfigure(2, weight=0)  # Slider
         self.grid_rowconfigure(3, weight=0)  # Tick labels
         self.grid_rowconfigure(4, weight=1)  # Empty space below
+        self.grid_rowconfigure(5, weight=1)  # Empty space below
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
         self.grid_columnconfigure(2, weight=1)
@@ -1187,6 +1188,32 @@ class Bottom_Middle_Center_Frame(ctk.CTkFrame):
         self.slider_min_label.grid(row=3, column=0, sticky="w", padx=10)
         self.slider_mid_label.grid(row=3, column=1, sticky="n")
         self.slider_max_label.grid(row=3, column=2, sticky="e", padx=10)
+
+        self.heatmap_anom_settings_label = ctk.CTkLabel(
+            self, text="Anomaly Max/Sensitivity Settings", font=configuration.button_font_style
+        )
+        self.heatmap_anom_settings_label.grid(row=4, column=0, columnspan=3, sticky='nsew', padx=10, pady=(10, 5))
+
+        # Slim visual selector (no vertical stretching)
+        self.hp_max_selector = ctk.CTkSegmentedButton(
+            self,
+            values=["global", "local"],
+            # command=self.handle_visual_selection,
+            font=configuration.button_font_style,
+            height=28  # reduce the button height directly
+        )
+        self.hp_max_selector.set("global")
+        self.hp_max_selector.grid(row=5, column=0, pady=(0, 10), padx=40, sticky='ew')
+
+        self.hp_max_options = ctk.CTkSegmentedButton(
+            self,
+            values=["1", "2", "3", "4", "5"],
+            font=configuration.button_font_style,
+            height=28
+        )
+        self.hp_max_options.set("2")
+        self.hp_max_options.grid(row=5, column=2, pady=(0, 10), padx=(5, 40), sticky='ew')
+
 
     def handle_visual_selection(self, value):
         print(f"Selected: {value}")
@@ -1336,8 +1363,8 @@ class Bottom_Right_Frame(ctk.CTkFrame):
         self.grid_columnconfigure(3, weight=1)
         self.grid_columnconfigure(4, weight=1)
 
-        self.max_anomaly_value = 1500 # 50
-        self.anomaly_threshold_value = 3 # 8
+        self.max_anomaly_value = 2500 # 1500 # 50
+        self.anomaly_threshold_value = 2 # 3 # 8
         self.pca_detector_settings_frame()
 
     def pca_detector_settings_frame(self):

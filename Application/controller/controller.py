@@ -103,10 +103,13 @@ class Controller:
         self.temp_filepath = None
         self.setup_project_directory()
 
-    def add_peripherals(self, temp_sensor, mic_array, gui):
+        self.server = None
+
+    def add_peripherals(self, temp_sensor, mic_array, gui, server):
         self.temp_sensor = temp_sensor
         self.mic_array = mic_array
         self.gui = gui
+        self.server = server
 
         if self.mic_array.audio_receiver.connected:
             self.gui.Top_Frame.Left_Frame.fpga_connected()
@@ -257,12 +260,18 @@ class Controller:
         while self.beamform_running:
             if not self.audio_streamer.queue.empty():
                 # print('BEAMFORMING------------------')
+
+                if self.gui.Top_Frame.Center_Frame.audio_save_checkbox_variable.get():
+                    if not self.audio_loaded:
+                        self.temp_logger.log_data(self.temp_sensor.current_temp)
+
                 current_audio_data = self.audio_streamer.queue.get()
                 # print(f'Audio Data Size: {current_audio_data.shape}')
                 self.beamformer.beamform_data(current_audio_data)
 
             if self.realtime:
                 time.sleep(self.queue_check_time)
+
 
     # ---------------------------------
     # PROCESSING ----------------------
@@ -341,10 +350,12 @@ class Controller:
                 # print('GUI BAR CHART UPDATING----------')
 
                 current_anomaly_data = self.detector.queue.get()
-                self.heatmap.update(self.thetas, current_anomaly_data)
+                self.heatmap.update(self.thetas, current_anomaly_data,
+                                    self.gui.Bottom_Frame.Middle_Center_Frame.hp_max_selector.get())
                 cmap = self.gui.Bottom_Frame.Middle_Center_Frame.visual_selector.get()
                 vert_max = self.gui.Bottom_Frame.Middle_Center_Frame.value_slider.get()
-                image = self.heatmap.render_heatmap_image(cmap, vert_max)
+                image = self.heatmap.render_heatmap_image(cmap, vert_max,
+                                    int(self.gui.Bottom_Frame.Middle_Center_Frame.hp_max_options.get()))
 
                 if self.realtime:
                     # give anomaly data to bar chart
@@ -360,10 +371,6 @@ class Controller:
                     if self.heatmap_logger and self.heatmap.should_log:
                         self.heatmap_logger.save_heatmap_image(image, "rolling")
                         self.heatmap.should_log = False
-
-                    if not self.audio_loaded:
-                        self.temp_logger.log_data(self.temp_sensor.current_temp)
-
 
             if not self.realtime and self.app_state is State.CALIBRATING:
                 self.calibrate_timer_iterator += 1
@@ -458,6 +465,9 @@ class Controller:
             if self.beam_mix_selection.name in self.calibration_baselines_all
             else "Mix 1")
 
+        print("Available calibration keys:", self.calibration_baselines_all.keys())
+        print("Requested mix key:", mix_key)
+
         mix_data = self.calibration_baselines_all[mix_key]
         means = mix_data["means"]
         stds = mix_data["stds"]
@@ -502,52 +512,55 @@ class Controller:
         elif event == Event.LOAD_CALIBRATION:
             self.detector.baseline_calculated = True
             self.use_external_calibration = True
-            # check to determine to load the one just run inside project
-            # self.create_directory('cal')
-            # or that its from a filepath
-            # source = the folder you just picked in the GUI
+
             if self.use_external_calibration:
                 src = self.gui.Top_Frame.Center_Frame.selected_pca_folder
-
-                # no guard/return here—assume src is valid
                 folder_name = os.path.basename(os.path.normpath(src))
-
-                # build dst under your project base
                 dst_root = self.project_directory_path
-                os.makedirs(dst_root, exist_ok=True)
-
-                # this is where the entire folder will live
                 dst = os.path.join(dst_root, folder_name)
-                os.makedirs(dst, exist_ok=True)
 
-                # copy _all_ files from src → dst
-                for fname in os.listdir(src):
-                    s = os.path.join(src, fname)
-                    d = os.path.join(dst, fname)
-                    # only overwrite if missing or changed
-                    if not os.path.exists(d) or not filecmp.cmp(s, d, shallow=False):
-                        shutil.copy2(s, d)
+                try:
+                    baselines = {}
+                    for fname in os.listdir(src):
+                        if not fname.lower().endswith('.npy'):
+                            continue
+                        mix = fname.split('_')[0]
+                        param = fname.split('_')[-1].split('.')[0]
+                        baselines.setdefault(mix, {})[param] = np.load(os.path.join(src, fname))
 
-                print(f"Copied calibration folder '{folder_name}' into:\n    {dst}")
+                    self.calibration_baselines_all = baselines
+                    self.calibration_baseline_loader()
 
-            # now load just the .npy files out of that new subfolder
-            try:
-                baselines = {}
-                for fname in os.listdir(dst):
-                    if not fname.lower().endswith('.npy'):
-                        continue
-                    mix = fname.split('_')[0]
-                    param = fname.split('_')[-1].split('.')[0]  # 'means' or 'stds'
-                    baselines.setdefault(mix, {})[param] = np.load(os.path.join(dst, fname))
+                    # Only copy contents after successful load
+                    os.makedirs(dst, exist_ok=True)
+                    for fname in os.listdir(src):
+                        s = os.path.join(src, fname)
+                        d = os.path.join(dst, fname)
+                        if not os.path.exists(d) or not filecmp.cmp(s, d, shallow=False):
+                            shutil.copy2(s, d)
+                    print(f"Copied calibration folder '{folder_name}' into:\n    {dst}")
 
-                self.calibration_baselines_all = baselines
-                # print(self.calibration_baselines_all)
-                self.calibration_baseline_loader()
+                except Exception as e:
+                    # Fallback: look for a .wav and trigger PCA calibration
+                    wav_found = False
+                    wav_file = None
+                    for fname in os.listdir(src):
+                        if fname.lower().endswith('.wav'):
+                            wav_found = True
+                            wav_file = fname
 
-            except Exception as e:
-                self.gui.Top_Frame.Right_Frame.insert_text(
-                    f'Error loading calibration: {e}', 'red'
-                )
+                    if wav_found:
+                        print("WAV file found, triggering PCA calibration.")
+                        self.audio_loaded = True
+                        filepath = os.path.join(src, wav_file)
+                        self.audio_simulation(filepath)
+                        self.gui.Top_Frame.Right_Frame.insert_text(f'Calibration Wav File Loaded: {Path(filepath).stem}.wav', 'green')
+                        self.gui.Top_Frame.Right_Frame.insert_text(f'Triggering PCA Calibration', 'green')
+                        self.handle_event(Event.PCA_CALIBRATION)
+                    else:
+                        self.gui.Top_Frame.Right_Frame.insert_text(
+                            f'Error loading calibration and no WAV file found: {e}', 'red'
+                        )
 
         elif event == Event.START_RECORDER:
             self.realtime = self.gui.Top_Frame.Center_Right_Frame.real_time_checkbox_variable.get()
@@ -586,12 +599,13 @@ class Controller:
             if self.gui.Top_Frame.Center_Frame.audio_save_checkbox_variable.get():
                 cmap = self.gui.Bottom_Frame.Middle_Center_Frame.visual_selector.get()
                 vert_max = self.gui.Bottom_Frame.Middle_Center_Frame.value_slider.get()
-                final_image = self.heatmap.render_heatmap_image(cmap, vert_max)
+                final_image = self.heatmap.render_heatmap_image(cmap, vert_max,
+                                    int(self.gui.Bottom_Frame.Middle_Center_Frame.hp_max_options.get()))
                 if final_image is not None:
                     self.heatmap_logger.save_heatmap_image(final_image, "final")
             self.stop_all_queues()
             self.gui.Middle_Frame.Center_Frame.stop_updates()
-            self.remove_directory_if_empty()
+            # self.remove_directory_if_empty()
             self.setup_project_directory()
             self.gui.Top_Frame.Center_Right_Frame.stop_recording()
 
@@ -639,24 +653,8 @@ class Controller:
             while not self.detector.queue.empty():
                 self.detector.queue.get()
 
-            if self.gui.Top_Frame.Center_Frame.pca_save_checkbox_variable.get(): # todo what if not checked, it wont stop
-                self.Calibration_Class.stop_everything()
-                self.handle_event(Event.LOAD_CALIBRATION)
-                self.gui.Top_Frame.Right_Frame.insert_text('Calibration Saved', 'green')
-
-                # if self.audio_loaded:
-                #     if self.app_state == State.CALIBRATING:
-                #         self.mic_array_simulator.save_audio()
-                #         np.save(f'{self.calibration_filepath}/baseline_means.npy', self.detector.baseline_means)
-                #         np.save(f'{self.calibration_filepath}/baseline_stds.npy', self.detector.baseline_stds)
-                #         print(f'Baseline stats saved in folder: {self.calibration_filepath}')
-                #         self.gui.Top_Frame.Right_Frame.insert_text('Calibration Saved', 'green')
-                # else:
-                #     self.mic_array.record_running = False
-                #     np.save(f'{self.calibration_filepath}/baseline_means.npy', self.detector.baseline_means)
-                #     np.save(f'{self.calibration_filepath}/baseline_stds.npy', self.detector.baseline_stds)
-                #     print(f'Baseline stats saved in folder: {self.calibration_filepath}')
-                #     self.gui.Top_Frame.Right_Frame.insert_text('Calibration Saved', 'green')
+            self.Calibration_Class.stop_everything()
+            self.gui.Top_Frame.Right_Frame.insert_text('Calibration Saved', 'green')
 
             self.app_state = State.IDLE
             self.gui.Top_Frame.Center_Frame.toggle_calibrate()
@@ -664,6 +662,9 @@ class Controller:
             self.calibrate_start_time = 0
 
             if self.use_external_audio: self.external_player.stop()
+
+            if self.use_external_calibration:
+                self.audio_loaded = False
 
         elif event == Event.SET_TEMP:
             self.temperature = int(self.gui.Bottom_Frame.Left_Frame.temp_value)
@@ -759,6 +760,7 @@ class Controller:
         elif event == Event.CHANGE_BEAM_MIXTURE:
             self.gui.Bottom_Frame.Middle_Frame.update_center_freq_label()
             self.beam_mix_selection = self.gui.Bottom_Frame.Middle_Frame.current_beam_mix
+            print(self.beam_mix_selection)
             self.beamformer.update_parameters(self.beam_mix_selection)
             self.processor.processing_chain = self.beam_mix_selection.processing_chain
             self.calibration_baseline_loader()
