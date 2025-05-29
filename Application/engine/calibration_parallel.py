@@ -23,7 +23,8 @@ class Calibration_All:
         print(self.array_config.title)
 
         if self.array_config.title == 'Rectangular Array':
-            self.beam_mix_list = [self.array_config.beam_mix_1]
+            self.beam_mix_list = [self.array_config.beam_mix_1,
+                                  self.array_config.beam_mix_2,]
         else:
             self.beam_mix_list = [
                 self.array_config.beam_mix_1,
