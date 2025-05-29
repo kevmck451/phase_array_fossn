@@ -8,21 +8,21 @@ def base_path(relative_path):
 # Main App Settings
 window_title = 'University of Memphis Acoustic'
 
-window_width = 1680 # 1400 # 3200 1400
-window_height = 960 # 800  # 1200 800
+window_width = 2400 # 1400 # 3200 1400
+window_height = 1200 # 800  # 1200 800
 min_window_width = window_width
 min_window_height = window_height
-x_pad_main = 2
-y_pad_main = 2
-x_pad_1 = 10
-y_pad_1 = 10
-x_pad_2 = 10
-y_pad_2 = 10
+x_pad_main = 4
+y_pad_main = 4
+x_pad_1 = 20
+y_pad_1 = 20
+x_pad_2 = 20
+y_pad_2 = 20
 main_font_style = "default_font"
-small_font_size = 9
-main_font_size = 18 #26
-large_font_size = 54
-button_font_size = 14
+small_font_size = 12
+main_font_size = 21 #26
+large_font_size = 57
+button_font_size = 17
 
 main_window_icon = base_path('Application/docs/app_logo.png')
 car_icon = base_path('Application/docs/car.png')
@@ -31,16 +31,18 @@ generator_icon = base_path('Application/docs/generator.png')
 plane_icon = base_path('Application/docs/plane.png')
 tank_icon = base_path('Application/docs/tank.png')
 
-detector_canvas_width = 560
-detector_canvas_height = 460
-heatmap_canvas_width = 800
-heatmap_canvas_height = 600
+detector_canvas_width = int(560*1.6)
+detector_canvas_height = int(460*1.6)
+heatmap_canvas_width = int(800*1.6)
+heatmap_canvas_height = int(600*1.6)
+heatmap_image_width = int(550*1.6)
+heatmap_image_height = int(440*1.6)
 classification_horizontal_pad = 29
 
 
 # Console Settings
-console_x_pad = 5
-console_y_pad = 1
+console_x_pad = 8
+console_y_pad = 4
 
 console_font_style_small = (main_font_style, small_font_size)
 console_font_style = (main_font_style, main_font_size)

@@ -233,7 +233,7 @@ class Top_Middle_Frame(ctk.CTkFrame):
                                              hover_color=configuration.bluelight_hover_color, font=configuration.button_font_style)
         self.save_checkbox_audio.grid(row=0, column=2, padx=5)
 
-        self.chunk_time_entry = ctk.CTkEntry(button_frame, width=40, placeholder_text="1.0s", font=configuration.button_font_style)
+        self.chunk_time_entry = ctk.CTkEntry(button_frame, width=40, placeholder_text="1.0s", font=configuration.console_font_style_small)
         self.chunk_time_entry.grid(row=0, column=3, padx=5)
 
         entry_frame = ctk.CTkFrame(frame)
@@ -312,7 +312,7 @@ class Top_Middle_Frame(ctk.CTkFrame):
                                              hover_color=configuration.bluelight_hover_color, font=configuration.button_font_style)
         self.save_checkbox_pca.grid(row=0, column=2, padx=5)
 
-        self.calibration_time_entry = ctk.CTkEntry(button_frame, width=40, placeholder_text="60s", font=configuration.button_font_style)
+        self.calibration_time_entry = ctk.CTkEntry(button_frame, width=40, placeholder_text="60s", font=configuration.console_font_style_small)
         self.calibration_time_entry.grid(row=0, column=3, padx=5)
 
     def load_pca_file(self):
@@ -768,7 +768,9 @@ class Main_Middle_Frame(ctk.CTkFrame):
         self.heatmap_title.grid(row=0, column=0, sticky='ew')
 
         # New: Image container
-        self.heatmap_canvas = tk.Label(frame, bg="black", width=800, height=600)
+        self.heatmap_canvas = tk.Label(frame, bg="black",
+                                       width=self.configuration.heatmap_canvas_width,
+                                       height=self.configuration.heatmap_canvas_height)
         self.heatmap_canvas.grid(row=1, column=0, sticky='nsew', padx=0, pady=0)
         self.heatmap_canvas.master.grid_propagate(False)
 
@@ -927,10 +929,10 @@ class Bottom_Frame(ctk.CTkFrame):
 
         # Grid configuration
         self.rowconfigure(0, weight=1)
-        self.columnconfigure(0, weight=0)  # Left column with x/3 of the space
+        self.columnconfigure(0, weight=1)  # Left column with x/3 of the space
         self.columnconfigure(1, weight=1)  # Right column with x/3 of the space
-        self.columnconfigure(2, weight=0)  # Right column with x/3 of the space
-        self.columnconfigure(3, weight=0)  # Right column with x/3 of the space
+        self.columnconfigure(2, weight=1)  # Right column with x/3 of the space
+        self.columnconfigure(3, weight=1)  # Right column with x/3 of the space
         # self.columnconfigure(4, weight=0)  # Right column with x/3 of the space
 
         # Place the frames using grid

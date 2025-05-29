@@ -36,7 +36,13 @@ load_icon_filepath = base_path('docs/load icon s.png')
 settings_icon_filepath = base_path('docs/settings icon s.png')
 reset_icon_filepath = base_path('docs/reset icon s.png')
 
-
+detector_canvas_width = 560
+detector_canvas_height = 460
+heatmap_canvas_width = 800
+heatmap_canvas_height = 600
+heatmap_image_width = 550
+heatmap_image_height = 440
+classification_horizontal_pad = 5
 
 # Console Settings
 console_x_pad = 3

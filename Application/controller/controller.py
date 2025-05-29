@@ -369,7 +369,9 @@ class Controller:
                 cmap = self.gui.Bottom_Frame.Middle_Center_Frame.visual_selector.get()
                 vert_max = self.gui.Bottom_Frame.Middle_Center_Frame.value_slider.get()
                 image = self.heatmap.render_heatmap_image(cmap, vert_max,
-                                    int(self.gui.Bottom_Frame.Middle_Center_Frame.hp_max_options.get()))
+                                    int(self.gui.Bottom_Frame.Middle_Center_Frame.hp_max_options.get()),
+                                    self.app_device.heatmap_image_width,
+                                    self.app_device.heatmap_image_height)
 
                 if self.realtime:
                     # give anomaly data to bar chart
