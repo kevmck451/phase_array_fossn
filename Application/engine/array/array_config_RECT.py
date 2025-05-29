@@ -49,5 +49,41 @@ beam_mix_1 = BeamMixConfig(
     rows=4,
     cols=12,
     num_mics=48,
-    num_taps = 301
+    num_taps = number_of_taps
+)
+
+beam_mix_2 = BeamMixConfig(
+    name="Mix 2",
+    center_frequency=2144,
+    processing_chain={'hp': 1144, 'ds': 6288},
+    mic_spacing=0.08,
+    mics_to_use = mic_positions,
+    rows=4,
+    cols=12,
+    num_mics=48,
+    num_taps = number_of_taps
+)
+
+beam_mix_3 = BeamMixConfig(
+    name="Mix 3",
+    center_frequency=2144,
+    processing_chain={'hp': 1144, 'ds': 6288},
+    mic_spacing=0.08,
+    mics_to_use = mic_positions,
+    rows=4,
+    cols=12,
+    num_mics=48,
+    num_taps = number_of_taps
+)
+
+beam_mix_4 = BeamMixConfig(
+    name="Mix 4",
+    center_frequency=2144,
+    processing_chain={'hp': 1144, 'ds': 6288},
+    mic_spacing=0.08,
+    mics_to_use = mic_positions,
+    rows=4,
+    cols=12,
+    num_mics=48,
+    num_taps = number_of_taps
 )

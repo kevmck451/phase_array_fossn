@@ -116,8 +116,7 @@ class Beamform:
                 raise ValueError("Mismatch between mics_to_use and beam mix shape.")
 
             for i, (src_x, src_y) in enumerate(self.beam_mix.mics_to_use):
-                dest_x = i // self.beam_mix.cols
-                dest_y = i % self.beam_mix.cols
+                dest_x, dest_y = self.beam_mix.mics_to_use[i]
                 mapped_data[dest_x, dest_y, :] = mapped_array_data[src_x, src_y, :]
                 # print(f'FROM ({src_x}, {src_y}) -> TO ({dest_x}, {dest_y}) [ch {i + 1}]')
 

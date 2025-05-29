@@ -61,7 +61,7 @@ beam_mix_1 = BeamMixConfig(
     rows=1,
     cols=16,
     num_mics=16,
-    num_taps = 301
+    num_taps = number_of_taps
 )
 
 beam_mix_2 = BeamMixConfig(
@@ -81,7 +81,7 @@ beam_mix_2 = BeamMixConfig(
     rows=1,
     cols=8,
     num_mics=8,
-    num_taps=301
+    num_taps=number_of_taps
 )
 
 beam_mix_3 = BeamMixConfig(
@@ -99,7 +99,7 @@ beam_mix_3 = BeamMixConfig(
     rows=1,
     cols=6,
     num_mics=6,
-    num_taps=301
+    num_taps=number_of_taps
 )
 
 beam_mix_4 = BeamMixConfig(
@@ -115,5 +115,5 @@ beam_mix_4 = BeamMixConfig(
     rows=1,
     cols=4,
     num_mics=4,
-    num_taps=301
+    num_taps=number_of_taps
 )

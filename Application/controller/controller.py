@@ -484,8 +484,8 @@ class Controller:
             if self.beam_mix_selection.name in self.calibration_baselines_all
             else "Mix 1")
 
-        print("Available calibration keys:", self.calibration_baselines_all.keys())
-        print("Requested mix key:", mix_key)
+        # print("Available calibration keys:", self.calibration_baselines_all.keys())
+        # print("Requested mix key:", mix_key)
 
         mix_data = self.calibration_baselines_all[mix_key]
         means = mix_data["means"]
@@ -779,7 +779,7 @@ class Controller:
         elif event == Event.CHANGE_BEAM_MIXTURE:
             self.gui.Bottom_Frame.Middle_Frame.update_center_freq_label()
             self.beam_mix_selection = self.gui.Bottom_Frame.Middle_Frame.current_beam_mix
-            print(self.beam_mix_selection)
+            # print(self.beam_mix_selection)
             self.beamformer.update_parameters(self.beam_mix_selection)
             self.processor.processing_chain = self.beam_mix_selection.processing_chain
             self.calibration_baseline_loader()
