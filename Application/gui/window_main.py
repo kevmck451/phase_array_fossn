@@ -756,8 +756,10 @@ class Main_Middle_Frame(ctk.CTkFrame):
         self.detector_label = ctk.CTkLabel(frame, text="Beamformed PCA Detector Output", font=self.configuration.console_font_style)
         self.detector_label.grid(row=0, column=0, sticky='ew')
 
-        self.canvas_left_width = 560
-        self.canvas_left = tk.Canvas(frame, bg="#333333", width=self.canvas_left_width, height=460)
+        self.canvas_left_width = self.configuration.detector_canvas_width
+        self.canvas_left = tk.Canvas(frame, bg="#333333",
+                                     width=self.canvas_left_width,
+                                     height=self.configuration.detector_canvas_height)
         self.canvas_left.grid(row=1, column=0, sticky='nsew', padx=0, pady=0)
         self.canvas_left.master.grid_propagate(False)
 
@@ -779,6 +781,7 @@ class Main_Middle_Frame(ctk.CTkFrame):
         icon_frame.grid(row=1, column=0)
 
         size = 40
+        horizontal_pad = self.configuration.classification_horizontal_pad
 
         self.icons = {
             'drone': ctk.CTkImage(Image.open(self.configuration.drone_icon), size=(size, size)),
@@ -790,7 +793,7 @@ class Main_Middle_Frame(ctk.CTkFrame):
 
         for icon in self.icons.values():
             label = ctk.CTkLabel(icon_frame, image=icon, text="")
-            label.pack(side="left", padx=29, pady=5)
+            label.pack(side="left", padx=horizontal_pad, pady=5)
 
     def draw_bar_chart(self):
         font_size = 9

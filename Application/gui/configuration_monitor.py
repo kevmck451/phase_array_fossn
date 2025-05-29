@@ -31,7 +31,11 @@ generator_icon = base_path('Application/docs/generator.png')
 plane_icon = base_path('Application/docs/plane.png')
 tank_icon = base_path('Application/docs/tank.png')
 
-
+detector_canvas_width = 560
+detector_canvas_height = 460
+heatmap_canvas_width = 800
+heatmap_canvas_height = 600
+classification_horizontal_pad = 29
 
 
 # Console Settings

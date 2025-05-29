@@ -519,7 +519,6 @@ class Controller:
             self.temp_sensor.close_connection()
             self.mic_array.audio_receiver.close_connection()
             self.app_state = State.IDLE
-
             self.remove_directory_if_empty()
 
         elif event == Event.LOAD_AUDIO:

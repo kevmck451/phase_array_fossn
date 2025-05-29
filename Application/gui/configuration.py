@@ -8,8 +8,8 @@ def base_path(relative_path):
 # Main App Settings
 window_title = 'University of Memphis Acoustic'
 
-window_width = 1680 # 1400 # 3200 1400
-window_height = 960 # 800  # 1200 800
+window_width = 1460 # 1400 # 3200 1400
+window_height = 910 # 800  # 1200 800
 min_window_width = window_width
 min_window_height = window_height
 x_pad_main = 2
@@ -31,8 +31,11 @@ generator_icon = base_path('Application/docs/generator.png')
 plane_icon = base_path('Application/docs/plane.png')
 tank_icon = base_path('Application/docs/tank.png')
 
-
-
+detector_canvas_width = 560
+detector_canvas_height = 460
+heatmap_canvas_width = 800
+heatmap_canvas_height = 600
+classification_horizontal_pad = 5
 
 # Console Settings
 console_x_pad = 5
