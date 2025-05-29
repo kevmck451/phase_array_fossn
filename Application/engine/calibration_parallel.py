@@ -20,7 +20,9 @@ class Calibration_All:
         print(self.thetas)
         self.phis   = [0]
 
-        if self.array_config.title == 'Rect':
+        print(self.array_config.title)
+
+        if self.array_config.title == 'Rectangular Array':
             self.beam_mix_list = [self.array_config.beam_mix_1]
         else:
             self.beam_mix_list = [

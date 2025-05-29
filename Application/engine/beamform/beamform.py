@@ -94,17 +94,33 @@ class Beamform:
         return mapped_data
 
     def map_channels_to_beam_mix(self, mapped_array_data):
-        num_samples = mapped_array_data.shape[2]
-        mapped_data = np.zeros((self.beam_mix.rows, self.beam_mix.cols, num_samples))
 
-        if len(self.beam_mix.mics_to_use) != self.beam_mix.rows * self.beam_mix.cols:
-            raise ValueError("Mismatch between mics_to_use and beam mix shape.")
+        if self.array_config.title == 'Line Array':
+            num_samples = mapped_array_data.shape[2]
+            mapped_data = np.zeros((self.beam_mix.rows, self.beam_mix.cols, num_samples))
 
-        for i, (src_x, src_y) in enumerate(self.beam_mix.mics_to_use):
-            dest_x = i // self.beam_mix.cols
-            dest_y = i % self.beam_mix.cols
-            mapped_data[dest_x, dest_y, :] = mapped_array_data[src_x, src_y, :]
-            # print(f'FROM ({src_x}, {src_y}) -> TO ({dest_x}, {dest_y}) [ch {i + 1}]')
+            if len(self.beam_mix.mics_to_use) != self.beam_mix.rows * self.beam_mix.cols:
+                raise ValueError("Mismatch between mics_to_use and beam mix shape.")
+
+            for i, (src_x, src_y) in enumerate(self.beam_mix.mics_to_use):
+                dest_x = i // self.beam_mix.cols
+                dest_y = i % self.beam_mix.cols
+                mapped_data[dest_x, dest_y, :] = mapped_array_data[src_x, src_y, :]
+                # print(f'FROM ({src_x}, {src_y}) -> TO ({dest_x}, {dest_y}) [ch {i + 1}]')
+
+        else:
+            num_samples = mapped_array_data.shape[2]
+            mapped_data = np.zeros((self.beam_mix.rows, self.beam_mix.cols, num_samples))
+
+            if len(self.beam_mix.mics_to_use) != self.beam_mix.rows * self.beam_mix.cols:
+                raise ValueError("Mismatch between mics_to_use and beam mix shape.")
+
+            for i, (src_x, src_y) in enumerate(self.beam_mix.mics_to_use):
+                dest_x = i // self.beam_mix.cols
+                dest_y = i % self.beam_mix.cols
+                mapped_data[dest_x, dest_y, :] = mapped_array_data[src_x, src_y, :]
+                # print(f'FROM ({src_x}, {src_y}) -> TO ({dest_x}, {dest_y}) [ch {i + 1}]')
+
 
         return mapped_data
 

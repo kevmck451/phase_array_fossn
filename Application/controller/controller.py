@@ -280,7 +280,7 @@ class Controller:
                 if self.server:
                     with self.server.shared_data_lock:
                         if 'audio_raw' in self.server.request_flags:
-                            print(f'Audio Raw Controller: {current_audio_data.shape}')
+                            # print(f'Audio Raw Controller: {current_audio_data.shape}')
                             self.server.shared_data['audio_raw'] = f"{current_audio_data.shape}|", current_audio_data.tobytes()
 
             if self.realtime:
@@ -389,7 +389,7 @@ class Controller:
                     with self.server.shared_data_lock:
                         if 'anomaly' in self.server.request_flags:
                             # print("Sending anomaly to client:", str([current_anomaly_data.tolist(), self.thetas])
-                            self.server.shared_data['anomaly'] = str([current_anomaly_data.tolist(), self.thetas])
+                            self.server.shared_data['anomaly'] = str([np.array(current_anomaly_data).tolist(), self.thetas])
 
             if not self.realtime and self.app_state is State.CALIBRATING:
                 self.calibrate_timer_iterator += 1
