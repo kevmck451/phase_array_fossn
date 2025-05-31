@@ -6,7 +6,10 @@ from datetime import datetime
 from threading import Thread
 from queue import Queue
 import numpy as np
+import traceback
+import tempfile
 import time
+import os
 
 
 
@@ -31,6 +34,8 @@ class Mic_Array:
         self.send_to_external_audio_stream = False
         self.external_audio_queue = Queue()
         self.chunk_size = int(self.chunk_size_sec * array_config.sample_rate)
+
+        self.save_successful = False
 
     def start_recording(self, filepath):
         self.record_running = True
@@ -85,8 +90,49 @@ class Mic_Array:
         # Save any remaining data
         if self.collected_data: self.save_data(filepath)
 
-
     def save_data(self, filepath):
-        all_data = np.vstack(self.collected_data)
-        filename = f"{filepath}/{self.chunk_start_time}_chunk_{self.chunk_index}"
-        save_to_wav(all_data, self.audio_receiver.sample_rate, self.audio_receiver.chan_count, filename)
+        # all_data = np.vstack(self.collected_data)
+        # filename = f"{filepath}/{self.chunk_start_time}_chunk_{self.chunk_index}"
+        # save_to_wav(all_data, self.audio_receiver.sample_rate, self.audio_receiver.chan_count, filename)
+
+        self.save_successful = False  # default to False at the top
+        all_data = None
+
+        try:
+            # Ensure target directory exists
+            os.makedirs(filepath, exist_ok=True)
+
+            # Stack collected data into a 2D array
+            all_data = np.vstack(self.collected_data)
+
+            # Build output filename
+            filename = f"{filepath}/{self.chunk_start_time}_chunk_{self.chunk_index}"
+
+            # Save to WAV
+            save_to_wav(all_data, self.audio_receiver.sample_rate, self.audio_receiver.chan_count, filename)
+
+            # Mark success
+            self.save_successful = True
+
+        except Exception as e:
+            print(f"[ERROR] Failed to save to {filepath}. Stashing to fallback. Reason: {e}")
+
+            # Fallback to temp location
+            fallback_dir = os.path.join(tempfile.gettempdir(), "failsafe_audio_dumps")
+            os.makedirs(fallback_dir, exist_ok=True)
+
+            # Create fallback filename with timestamp and chunk index
+            fallback_file = f"{fallback_dir}/{self.chunk_start_time}_chunk_{self.chunk_index}.npy"
+
+            # Save raw data for recovery
+            try:
+                np.save(fallback_file, all_data)
+            except Exception as inner_e:
+                print(f"[CRITICAL] Could not save fallback file either: {inner_e}")
+
+            # Optionally log traceback to help with debugging (remove if not needed)
+            try:
+                with open(fallback_file + ".log", "w") as f:
+                    f.write(traceback.format_exc())
+            except:
+                pass  # silently ignore logging failures
