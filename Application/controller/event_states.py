@@ -13,7 +13,7 @@ class Event(Enum):
     LOAD_CALIBRATION = auto()
     STOP_PCA_CALIBRATION = auto()
     SET_TEMP = auto()
-    SET_MAX_ANOMALY_VALUE = auto()
+    SET_NUM_COMPS = auto()
     ANOMALY_DETECTED = auto()
     SET_ANOMALY_THRESHOLD_VALUE = auto()
     LOG_DETECTION = auto()
@@ -24,6 +24,7 @@ class Event(Enum):
     CHANGE_EXTERNAL_PLAYER_STEREO_MONO = auto()
     CHANGE_EXTERNAL_PLAYER_CHANNELS = auto()
     CHANGE_BEAM_MIXTURE = auto()
+    UPDATE_ANOMALY_SETTINGS = auto()
     DUMMY_BUTTON = auto()
 
 

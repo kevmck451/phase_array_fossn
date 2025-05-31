@@ -2,12 +2,9 @@
 
 
 
-from datetime import datetime
 from queue import Queue
 import numpy as np
 import random
-import time
-import os
 
 
 class Detector:
@@ -18,7 +15,7 @@ class Detector:
         self.counter = 0 # for simulation
 
         self.max_value = 25 # this is what sets the bar graphs. This number is 100%
-        self.anomaly_threshold = 8
+        self.anomaly_threshold = 1
 
         self.num_channels = None
         self.num_pca_components = None
@@ -87,7 +84,6 @@ class Detector:
             assert len(anomalies_list) == self.num_channels
 
             # Add the anomaly results to the queue for further processing
-
             self.queue.put(anomalies_list)
 
     def detect_anomalies_simulation(self, pca_data):

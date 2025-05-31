@@ -1349,7 +1349,7 @@ class Bottom_Center_Frame(ctk.CTkFrame):
         self.grid_columnconfigure(3, weight=1)  # for the buttons
 
         # Wind bias defaults
-        self.default_scale_factor = "0.6"
+        self.default_scale_factor = "0.9"
         self.default_margin_bias = "0.5"
         self.default_theta_ratio = "0.7"
 
@@ -1364,7 +1364,7 @@ class Bottom_Center_Frame(ctk.CTkFrame):
         configuration = self.parent.parent.device_config
 
         self.settings_label = ctk.CTkLabel(
-            self, text="Heatmap Filtering Settings", font=configuration.console_font_style
+            self, text="Anomaly Filtering Settings", font=configuration.console_font_style
         )
         self.settings_label.grid(row=0, column=0, columnspan=4, sticky='nsew', padx=10, pady=10)
 
@@ -1393,7 +1393,9 @@ class Bottom_Center_Frame(ctk.CTkFrame):
         self.theta_ratio_entry.insert(0, self.default_theta_ratio)
         self.theta_ratio_entry.grid(row=2, column=2, padx=5, pady=5, sticky='ew')
 
-        self.set_bias_button = ctk.CTkButton(self, text="Set Bias", command=lambda: self.event_handler.handle_event(), font=configuration.button_font_style)
+        self.set_bias_button = ctk.CTkButton(self, text="Set Bias",
+                                             command=lambda: self.event_handler(Event.UPDATE_ANOMALY_SETTINGS),
+                                             font=configuration.button_font_style)
         self.set_bias_button.grid(row=2, column=3, padx=5, pady=5, sticky='ew')
 
         # Row 3: Labels for edge suppression inputs + section label at end
@@ -1414,7 +1416,9 @@ class Bottom_Center_Frame(ctk.CTkFrame):
         self.suppression_factor_entry.insert(0, self.default_suppression_factor)
         self.suppression_factor_entry.grid(row=4, column=2, padx=5, pady=5, sticky='ew')
 
-        self.set_edge_button = ctk.CTkButton(self, text="Set Edge", command=lambda: self.event_handler.handle_event(), font=configuration.button_font_style)
+        self.set_edge_button = ctk.CTkButton(self, text="Set Edge",
+                                             command=lambda: self.event_handler(Event.UPDATE_ANOMALY_SETTINGS),
+                                             font=configuration.button_font_style)
         self.set_edge_button.grid(row=4, column=3, padx=5, pady=5, sticky='ew')
 
 
@@ -1454,6 +1458,7 @@ class Bottom_Right_Frame(ctk.CTkFrame):
         self.num_components_selector = ctk.CTkSegmentedButton(
             self,
             values=["3", "4", "5", "6"],
+            command=self.set_num_components,
             font=configuration.button_font_style,
             height=28
         )
@@ -1469,45 +1474,56 @@ class Bottom_Right_Frame(ctk.CTkFrame):
         self.anomaly_threshold_selector = ctk.CTkSegmentedButton(
             self,
             values=["1", "2", "3", "4", "5", "6", "7", "8"],
+            command = self.set_anomaly_threshold_value,
             font=configuration.button_font_style,
             height=28
         )
         self.anomaly_threshold_selector.set("1")
         self.anomaly_threshold_selector.grid(row=2, column=1, columnspan=2, padx=(5, 10), pady=5, sticky='ew')
 
-        # max_anomaly_value Label
-        self.max_anomaly_value_label = ctk.CTkLabel(self, text="Max Anom:", font=configuration.console_font_style)
-        self.max_anomaly_value_label.grid(row=3, column=0, sticky='e', padx=10, pady=5)
+        self.max_anomaly_value_label = ctk.CTkLabel(
+            self, text="Max Anom:", font=configuration.console_font_style
+        )
+        self.max_anomaly_value_label.grid(row=3, column=0, sticky='e', padx=(10, 5), pady=5)
 
-        self.max_anomaly_value_entry = ctk.CTkEntry(self, width=self.box_width, font=configuration.button_font_style)
-        self.max_anomaly_value_entry.grid(row=3, column=1, sticky='w', padx=10, pady=5)
-        self.max_anomaly_value_entry.insert(0, f'{self.max_anomaly_value}')  # Default value
+        self.max_anomaly_value_slider = ctk.CTkSlider(
+            self,
+            from_=50,
+            to=3500,
+            number_of_steps=(3500 - 50) // 10,  # step size of 10
+            orientation="horizontal",
+            width=200
+        )
+        self.max_anomaly_value_slider.set(2800)
+        self.max_anomaly_value_slider.grid(row=3, column=1, padx=(5, 10), pady=5, sticky='ew')
 
-        self.max_anomaly_value_set_button = ctk.CTkButton(self, text="Set", command=self.set_max_anomaly_value, font=configuration.button_font_style)
-        self.max_anomaly_value_set_button.grid(row=3, column=2, sticky='w', padx=10, pady=5)
+        self.max_anomaly_value_display = ctk.CTkLabel(
+            self,
+            text="2800",
+            font=configuration.button_font_style,
+            width=50,
+            anchor="w"
+        )
+        self.max_anomaly_value_display.grid(row=3, column=2, padx=(5, 10), pady=5, sticky='w')
+
+        def update_max_anomaly_label(value):
+            rounded = int(round(value / 10) * 10)
+            self.max_anomaly_value_display.configure(text=str(rounded).rjust(4))
+
+        self.max_anomaly_value_slider.configure(command=update_max_anomaly_label)
 
         self.normalization_checkbox = ctk.CTkCheckBox(self, text="Normalization", font=configuration.button_font_style)
         self.normalization_checkbox.deselect()
         self.normalization_checkbox.grid(row=5, column=0, columnspan=4, pady=10)
 
-    def set_num_components(self):
-        num_components = self.num_components_entry.get()
+    def set_num_components(self, value):
+        num_components = self.num_components_selector.get()
         if num_components:
             print(f"Number of components set to: {num_components}")
+            self.event_handler(Event.SET_NUM_COMPS)
 
-    def set_threshold_multiplier(self):
-        threshold_multiplier = self.threshold_multiplier_entry.get()
-        if threshold_multiplier:
-            print(f"Threshold multiplier set to: {threshold_multiplier}")
-
-    def set_anomaly_threshold_value(self):
-        self.anomaly_threshold_value = self.anomaly_threshold_value_entry.get()
+    def set_anomaly_threshold_value(self, value):
+        self.anomaly_threshold_value = self.anomaly_threshold_selector.get()
         if self.anomaly_threshold_value:
             print(f"Max Anomaly Value set to: {self.anomaly_threshold_value}")
             self.event_handler(Event.SET_ANOMALY_THRESHOLD_VALUE)
-
-    def set_max_anomaly_value(self):
-        self.max_anomaly_value = self.max_anomaly_value_entry.get()
-        if self.max_anomaly_value:
-            print(f"Max Anomaly Value set to: {self.max_anomaly_value}")
-            self.event_handler(Event.SET_MAX_ANOMALY_VALUE)

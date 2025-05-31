@@ -1,4 +1,6 @@
 
+from Application.engine.detectors.anomaly_filter import Anomaly_Filter
+
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
 from PIL import Image
@@ -22,25 +24,13 @@ class Heatmap:
         self.matrix_filled_once = False
         self.raw_input_buffer = []
 
-        self.bias_scale_factor = 0.99
-        self.bias_margin = 0.5
-        self.bias_theta_ratio = 0.7
-
-        self.edge_width = 4
-        self.suppression_factor = 0.5
-
     def update(self, thetas, values, max_value_seen_setting='global'):
         if len(thetas) != len(values):
             raise ValueError("Length of thetas and values must match")
 
-        # Remove Bias like Wind
-        new_row = self.remove_bias(values)
-        # Suppress Edges which activate easily
-        new_row = self.suppress_edges(new_row)
-
         self.current_thetas = list(thetas)
         num_bins = len(thetas)
-        new_row = np.array(new_row)
+        new_row = np.array(values)
 
         # Initialize all tracking on first run or dimension change
         if (
@@ -165,37 +155,6 @@ class Heatmap:
 
         return image
 
-    def remove_bias(self, anomalies):
-        # print('removing bias like wind')
-
-        mean_val = sum(anomalies) / len(anomalies)
-        if mean_val == 0:
-            return anomalies  # avoid division by zero
-
-        threshold = self.bias_margin * abs(mean_val)
-
-        # Count how many values are within mean ± threshold
-        count_within_margin = sum(abs(a - mean_val) <= threshold for a in anomalies)
-        ratio_within = count_within_margin / len(anomalies)
-
-        if ratio_within >= self.bias_theta_ratio:
-            bias = mean_val * self.bias_scale_factor
-            # print(f"Mean: {mean_val:.2f}, Threshold: {threshold:.2f}, Within Margin: {count_within_margin}/{len(anomalies)}, Bias: {bias:.2f}")
-            anomalies = [max(0, int(round(a - bias))) for a in anomalies]
-
-        return anomalies
-
-    def suppress_edges(self, anomalies):
-        length = len(anomalies)
-        new_anomalies = anomalies[:]
-
-        for i in range(self.edge_width):
-            scale = self.suppression_factor + (1 - self.suppression_factor) * (i / (self.edge_width - 1))
-            new_anomalies[i] = int(round(new_anomalies[i] * scale))
-            new_anomalies[length - 1 - i] = int(round(new_anomalies[length - 1 - i] * scale))
-
-        return new_anomalies
-
 
 def generate_full_heatmap(folder_path, cmap, vert_max, scale_factor):
     csv_files = glob.glob(os.path.join(folder_path, "*.csv"))
@@ -204,18 +163,23 @@ def generate_full_heatmap(folder_path, cmap, vert_max, scale_factor):
 
     csv_path = csv_files[0]
     df = pd.read_csv(csv_path)
+
+    timestamp_col = None
     if 'Timestamp' in df.columns:
+        timestamp_col = df['Timestamp']
         df = df.drop(columns=['Timestamp'])
+
     thetas = list(df.columns)
     values = df.to_numpy()
+    base, _ = os.path.splitext(csv_path)
 
-    heatmap = Heatmap(max_time_steps=len(df))
-
+    # --- Unfiltered heatmap ---
+    heatmap_raw = Heatmap(max_time_steps=len(df))
     for row in values:
-        heatmap.update(thetas, row.tolist(), max_value_seen_setting='global')
+        heatmap_raw.update(thetas, row.tolist(), max_value_seen_setting='global')
 
     height = int((len(df) / 120) * 440)
-    image = heatmap.render_heatmap_image(
+    image_raw = heatmap_raw.render_heatmap_image(
         cmap=cmap,
         vert_max=vert_max,
         scale_factor=scale_factor,
@@ -223,7 +187,31 @@ def generate_full_heatmap(folder_path, cmap, vert_max, scale_factor):
         height=height
     )
 
-    if image:
-        base, _ = os.path.splitext(csv_path)
-        output_path = base + "_heatmap.png"
-        image.save(output_path)
+    if image_raw:
+        image_raw.save(base + "_raw_heatmap.png")
+
+
+    # --- Filtered heatmap ---
+    anomaly_filter = Anomaly_Filter()
+    heatmap_filtered = Heatmap(max_time_steps=len(df))
+
+    for row in values:
+        anomaly_list = anomaly_filter.process(row.tolist())
+        heatmap_filtered.update(thetas, anomaly_list, max_value_seen_setting='global')
+
+    image_filtered = heatmap_filtered.render_heatmap_image(
+        cmap=cmap,
+        vert_max=vert_max,
+        scale_factor=scale_factor,
+        width=550,
+        height=height
+    )
+
+    if image_filtered:
+        image_filtered.save(base + "_filtered_heatmap.png")
+
+    if heatmap_filtered.anomaly_matrix is not None:
+        df_filtered = pd.DataFrame(heatmap_filtered.anomaly_matrix.astype(int), columns=thetas)
+        if timestamp_col is not None:
+            df_filtered.insert(0, 'Timestamp', timestamp_col)
+        df_filtered.to_csv(base + "_filtered.csv", index=False)

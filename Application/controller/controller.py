@@ -7,6 +7,7 @@ from Application.engine.beamform.beamform import Beamform
 from Application.engine.filters.processor import Processing
 from Application.engine.detectors.pca_calculator import PCA_Calculator
 from Application.engine.detectors.detector import Detector
+from Application.engine.detectors.anomaly_filter import Anomaly_Filter
 from Application.engine.detectors.heatmap import Heatmap
 from Application.engine.detectors.heatmap import generate_full_heatmap
 from Application.engine.calibration_parallel import Calibration_All
@@ -74,6 +75,7 @@ class Controller:
         self.detector_running = False
         self.calibration_baselines_all = None
 
+        self.anomaly_filter = Anomaly_Filter()
         self.heatmap = Heatmap()
 
         self.bar_chart_updater_thread = None
@@ -323,6 +325,7 @@ class Controller:
                 # print('PCA CALCULATING ----------')
                 current_data = self.processor.queue.get()
                 # print(f'Processor Data Size: {current_data.shape}')
+
                 self.pca_calculator.process_chunk(current_data)
 
             if self.realtime:
@@ -333,6 +336,13 @@ class Controller:
     # ---------------------------------
     def detector_setup(self):
         self.detector.queue = queue.Queue()
+        self.detector.anomaly_threshold = int(self.gui.Bottom_Frame.Right_Frame.anomaly_threshold_selector.get())
+        self.anomaly_filter.bias_scale_factor = float(self.gui.Bottom_Frame.Center_Frame.scale_factor_entry.get())
+        self.anomaly_filter.bias_margin = float(self.gui.Bottom_Frame.Center_Frame.margin_bias_entry.get())
+        self.anomaly_filter.bias_theta_ratio = float(self.gui.Bottom_Frame.Center_Frame.theta_ratio_entry.get())
+        self.anomaly_filter.edge_width = int(self.gui.Bottom_Frame.Center_Frame.edge_width_entry.get())
+        self.anomaly_filter.suppression_factor = float(self.gui.Bottom_Frame.Center_Frame.suppression_factor_entry.get())
+
         self.detector_running = True
         self.detector_thread = Thread(target=self.detector_start, daemon=True)
         self.detector_thread.start()
@@ -363,8 +373,16 @@ class Controller:
         while self.bar_chart_updater_running:
             if not self.detector.queue.empty():
                 # print('GUI BAR CHART UPDATING----------')
-
                 current_anomaly_data = self.detector.queue.get()
+
+                # save data if box checked
+                if self.gui.Top_Frame.Center_Frame.audio_save_checkbox_variable.get():
+                    self.data_logger.log_data(current_anomaly_data)
+
+                # filter anomalies
+                current_anomaly_data = self.anomaly_filter.process(current_anomaly_data)
+
+                # generate heatmap
                 self.heatmap.update(self.thetas, current_anomaly_data,
                                     self.gui.Bottom_Frame.Middle_Center_Frame.hp_max_selector.get())
                 cmap = self.gui.Bottom_Frame.Middle_Center_Frame.visual_selector.get()
@@ -374,15 +392,15 @@ class Controller:
                                     self.app_device.heatmap_image_width,
                                     self.app_device.heatmap_image_height)
 
+                # get current slider value to update bar chart
+                self.detector.max_value = int(self.gui.Bottom_Frame.Right_Frame.max_anomaly_value_slider.get())
+                self.gui.Middle_Frame.Center_Frame.max_anomalies = self.detector.max_value
+
                 if self.realtime:
                     # give anomaly data to bar chart
                     self.gui.Middle_Frame.Center_Frame.anomaly_data = current_anomaly_data
                     # give anomaly data to heatmap
                     self.gui.Middle_Frame.Center_Frame.next_heatmap_image = image
-
-                # save data if box checked
-                if self.gui.Top_Frame.Center_Frame.audio_save_checkbox_variable.get():
-                    self.data_logger.log_data(current_anomaly_data)
 
                     if self.heatmap_logger and self.heatmap.should_log:
                         self.heatmap_logger.save_heatmap_image(image, "rolling")
@@ -669,7 +687,6 @@ class Controller:
             # self.remove_directory_if_empty()
             self.setup_project_directory()
 
-
         elif event == Event.PCA_CALIBRATION:
             entry_val = self.gui.Top_Frame.Center_Frame.calibration_time_entry.get()
             if entry_val.isdigit():
@@ -729,14 +746,22 @@ class Controller:
             self.beamformer.temperature_current = self.temperature
             self.gui.Top_Frame.Right_Frame.insert_text(f'Temp Set Successful: {self.temperature}', 'green')
 
-        elif event == Event.SET_MAX_ANOMALY_VALUE:
-            self.detector.max_value = int(self.gui.Bottom_Frame.Right_Frame.max_anomaly_value)
-            self.gui.Middle_Frame.Center_Frame.max_anomalies = self.detector.max_value
-            self.gui.Top_Frame.Right_Frame.insert_text(f'Max Anomaly Value Set Successful: {self.detector.max_value}', 'green')
+        elif event == Event.SET_NUM_COMPS:
+            self.pca_calculator.num_components = int(self.gui.Bottom_Frame.Right_Frame.num_components_selector.get())
+            self.detector.num_pca_components = self.pca_calculator.num_components
+            self.gui.Top_Frame.Right_Frame.insert_text(
+                f'Number of PCA Comps Set Successful: {self.gui.Bottom_Frame.Right_Frame.num_components_selector.get()}', 'green')
 
         elif event == Event.SET_ANOMALY_THRESHOLD_VALUE:
+            # new_thresh = int(self.gui.Bottom_Frame.Right_Frame.anomaly_threshold_value)
+            # if new_thresh < self.detector.anomaly_threshold:
+            #     # print('Anom Thres Lowered')
+            #     self.detector.max_value = 25
+            #     self.gui.Middle_Frame.Center_Frame.max_anomalies = 150
+
             self.detector.anomaly_threshold = int(self.gui.Bottom_Frame.Right_Frame.anomaly_threshold_value)
-            self.gui.Top_Frame.Right_Frame.insert_text(f'Max Anomaly Value Set Successful: {self.detector.anomaly_threshold}', 'green')
+            self.gui.Top_Frame.Right_Frame.insert_text(
+                f'Max Anomaly Value Set Successful: {self.detector.anomaly_threshold}', 'green')
 
         elif event == Event.ANOMALY_DETECTED:
             current_time_stamp = datetime.now().strftime("%I:%M:%S %p")
@@ -822,6 +847,14 @@ class Controller:
             self.beamformer.update_parameters(self.beam_mix_selection)
             self.processor.processing_chain = self.beam_mix_selection.processing_chain
             self.calibration_baseline_loader()
+
+        elif event == Event.UPDATE_ANOMALY_SETTINGS:
+            self.anomaly_filter.bias_scale_factor = float(self.gui.Bottom_Frame.Center_Frame.scale_factor_entry.get())
+            self.anomaly_filter.bias_margin = float(self.gui.Bottom_Frame.Center_Frame.margin_bias_entry.get())
+            self.anomaly_filter.bias_theta_ratio = float(self.gui.Bottom_Frame.Center_Frame.theta_ratio_entry.get())
+            self.anomaly_filter.edge_width = int(self.gui.Bottom_Frame.Center_Frame.edge_width_entry.get())
+            self.anomaly_filter.suppression_factor = float(self.gui.Bottom_Frame.Center_Frame.suppression_factor_entry.get())
+            self.gui.Top_Frame.Right_Frame.insert_text(f'Anomaly Settings Updated', 'green')
 
         elif event == Event.DUMMY_BUTTON:
             # dummy button

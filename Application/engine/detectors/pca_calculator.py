@@ -8,17 +8,12 @@ import numpy as np
 import warnings
 
 class PCA_Calculator:
-    def __init__(self,
-                 nperseg=4096,
-                 num_components=3,
-                 threshold_multiplier=1):
+    def __init__(self, nperseg=4096, num_components=3):
         self.nperseg = nperseg
         self.num_components = num_components
-        self.threshold_multiplier = threshold_multiplier
         self.queue = Queue()
 
     def process_chunk(self, chunk):
-
 
         data = []
 
