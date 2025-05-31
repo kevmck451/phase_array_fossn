@@ -1,9 +1,11 @@
 
-
-import numpy as np
-from matplotlib.figure import Figure
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+from matplotlib.figure import Figure
 from PIL import Image
+import pandas as pd
+import numpy as np
+import glob
+import os
 import io
 
 
@@ -151,3 +153,34 @@ class Heatmap:
 
         return image
 
+
+def generate_full_heatmap(folder_path, cmap, vert_max, scale_factor):
+    csv_files = glob.glob(os.path.join(folder_path, "*.csv"))
+    if len(csv_files) != 1:
+        raise ValueError("Expected exactly one CSV file in the folder.")
+
+    csv_path = csv_files[0]
+    df = pd.read_csv(csv_path)
+    if 'Timestamp' in df.columns:
+        df = df.drop(columns=['Timestamp'])
+    thetas = list(df.columns)
+    values = df.to_numpy()
+
+    heatmap = Heatmap(max_time_steps=len(df))
+
+    for row in values:
+        heatmap.update(thetas, row.tolist(), max_value_seen_setting='global')
+
+    height = int((len(df) / 120) * 440)
+    image = heatmap.render_heatmap_image(
+        cmap=cmap,
+        vert_max=vert_max,
+        scale_factor=scale_factor,
+        width=550,
+        height=height
+    )
+
+    if image:
+        base, _ = os.path.splitext(csv_path)
+        output_path = base + "_heatmap.png"
+        image.save(output_path)
