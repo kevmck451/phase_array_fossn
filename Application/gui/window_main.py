@@ -1219,7 +1219,6 @@ class Bottom_Middle_Center_Frame(ctk.CTkFrame):
         self.hp_max_options.set("2")
         self.hp_max_options.grid(row=5, column=2, pady=(0, 10), padx=(5, 40), sticky='ew')
 
-
     def handle_visual_selection(self, value):
         print(f"Selected: {value}")
 
@@ -1350,7 +1349,7 @@ class Bottom_Center_Frame(ctk.CTkFrame):
         self.grid_columnconfigure(3, weight=1)  # for the buttons
 
         # Wind bias defaults
-        self.default_scale_factor = "0.99"
+        self.default_scale_factor = "0.6"
         self.default_margin_bias = "0.5"
         self.default_theta_ratio = "0.7"
 
@@ -1401,7 +1400,7 @@ class Bottom_Center_Frame(ctk.CTkFrame):
         self.edge_width_label = ctk.CTkLabel(self, text="Edge Width", font=configuration.console_font_style_small)
         self.edge_width_label.grid(row=3, column=1, padx=5, pady=2, sticky='ew')
 
-        self.suppression_factor_label = ctk.CTkLabel(self, text="Suppression Factor", font=configuration.console_font_style_small)
+        self.suppression_factor_label = ctk.CTkLabel(self, text="Sup. Factor", font=configuration.console_font_style_small)
         self.suppression_factor_label.grid(row=3, column=2, padx=5, pady=2, sticky='ew')
 
         self.edge_suppression_label = ctk.CTkLabel(self, text="Edge Suppression", font=configuration.console_font_style_small)
@@ -1443,31 +1442,38 @@ class Bottom_Right_Frame(ctk.CTkFrame):
     def pca_detector_settings_frame(self):
         configuration = self.parent.parent.device_config
 
-
         # Number of Components Label
         self.pca_detector_settings_label = ctk.CTkLabel(self, text="PCA Detector Settings", font=configuration.console_font_style)
         self.pca_detector_settings_label.grid(row=0, column=0, columnspan=3, sticky='nsew', padx=10, pady=10)
 
-        self.num_components_label = ctk.CTkLabel(self, text="# Comps:", font=configuration.console_font_style)
-        self.num_components_label.grid(row=1, column=0, sticky='e', padx=10, pady=5)
+        self.num_components_label = ctk.CTkLabel(
+            self, text="# Comps:", font=configuration.console_font_style
+        )
+        self.num_components_label.grid(row=1, column=0, sticky='e', padx=(10, 5), pady=5)
 
-        self.num_components_entry = ctk.CTkEntry(self, width=self.box_width, font=configuration.button_font_style)
-        self.num_components_entry.grid(row=1, column=1, sticky='w', padx=10, pady=5)
-        self.num_components_entry.insert(0, "3")  # Default value
-
-        self.num_components_set_button = ctk.CTkButton(self, text="Set", command=self.set_num_components, font=configuration.button_font_style)
-        self.num_components_set_button.grid(row=1, column=2, sticky='w', padx=10, pady=5)
+        self.num_components_selector = ctk.CTkSegmentedButton(
+            self,
+            values=["3", "4", "5", "6"],
+            font=configuration.button_font_style,
+            height=28
+        )
+        self.num_components_selector.set("3")
+        self.num_components_selector.grid(row=1, column=1, columnspan=2, padx=(5, 10), pady=5, sticky='ew')
 
         # anomaly threshold value Label
-        self.anomaly_threshold_value_label = ctk.CTkLabel(self, text="Anom Thres:", font=configuration.console_font_style)
-        self.anomaly_threshold_value_label.grid(row=2, column=0, sticky='e', padx=10, pady=5)
+        self.anomaly_threshold_value_label = ctk.CTkLabel(
+            self, text="Anom Thres:", font=configuration.console_font_style
+        )
+        self.anomaly_threshold_value_label.grid(row=2, column=0, sticky='e', padx=(10, 5), pady=5)
 
-        self.anomaly_threshold_value_entry = ctk.CTkEntry(self, width=self.box_width, font=configuration.button_font_style)
-        self.anomaly_threshold_value_entry.grid(row=2, column=1, sticky='w', padx=10, pady=5)
-        self.anomaly_threshold_value_entry.insert(0, f'{self.anomaly_threshold_value}')  # Default value
-
-        self.anomaly_threshold_value_set_button = ctk.CTkButton(self, text="Set", command=self.set_anomaly_threshold_value, font=configuration.button_font_style)
-        self.anomaly_threshold_value_set_button.grid(row=2, column=2, sticky='w', padx=10, pady=5)
+        self.anomaly_threshold_selector = ctk.CTkSegmentedButton(
+            self,
+            values=["1", "2", "3", "4", "5", "6", "7", "8"],
+            font=configuration.button_font_style,
+            height=28
+        )
+        self.anomaly_threshold_selector.set("1")
+        self.anomaly_threshold_selector.grid(row=2, column=1, columnspan=2, padx=(5, 10), pady=5, sticky='ew')
 
         # max_anomaly_value Label
         self.max_anomaly_value_label = ctk.CTkLabel(self, text="Max Anom:", font=configuration.console_font_style)
