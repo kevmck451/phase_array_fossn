@@ -306,6 +306,12 @@ class Controller:
                 # print('PROCESSING------------------')
                 current_data = self.beamformer.queue.get()
                 # print(f'Beamform Data Size: {current_data.shape}')
+
+                if bool(self.gui.Bottom_Frame.Right_Frame.normalization_checkbox.get()):
+                    # print('Normalize On')
+                    self.processor.processing_chain = dict(list(self.processor.processing_chain.items()) + [('nm', 100)])
+                else:self.processor.processing_chain.pop('nm', None)
+
                 self.processor.process_data(current_data)
 
             if self.realtime:

@@ -43,7 +43,6 @@ class Processing:
         self.send_to_external_audio_stream = False
         self.external_audio_queue = Queue()
 
-
     def process_data(self, data):
 
         # print(f'Raw Max: {np.max(data)}')
