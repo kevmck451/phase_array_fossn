@@ -24,10 +24,14 @@ class Anomaly_Filter:
 
         if ratio_within >= self.bias_theta_ratio:
             bias = mean_val * self.bias_scale_factor
-            anomalies = [
-                max(0, int(round(a - bias))) if abs(a - mean_val) <= threshold else a
-                for a in anomalies
-            ]
+
+            # subtract only values in the margin
+            # anomalies = [
+            #     max(0, int(round(a - bias))) if abs(a - mean_val) <= threshold else a
+            #     for a in anomalies]
+
+            # subtract the mean from everything
+            anomalies = [max(0, int(round(a - bias))) for a in anomalies]
 
         return anomalies
 
@@ -41,7 +45,6 @@ class Anomaly_Filter:
             new_anomalies[length - 1 - i] = int(round(new_anomalies[length - 1 - i] * scale))
 
         return new_anomalies
-
 
     def process(self, anomalies):
         anomalies = self.remove_bias(anomalies)

@@ -193,7 +193,8 @@ class Controller:
             filepath = self.anom_filepath + current_time
             self.anom_filepath = filepath
             os.makedirs(filepath, exist_ok=True)
-            self.data_logger = Detector_Log(self.anom_filepath, self.thetas)
+            anomaly_threshold_value_list = self.gui.Bottom_Frame.Right_Frame.anomaly_threshold_value_list
+            self.data_logger = Detector_Log(self.anom_filepath, self.thetas, anomaly_threshold_value_list)
             self.heatmap_logger = Heatmap_Log(self.anom_filepath)
         elif option == 'temp':
             self.temp_filepath = f'{self.project_directory_path}/Temp_'
@@ -377,7 +378,11 @@ class Controller:
 
                 # save data if box checked
                 if self.gui.Top_Frame.Center_Frame.audio_save_checkbox_variable.get():
+                    # print(f'Anomaly Matrices: {self.detector.std_matrices}')
                     self.data_logger.log_data(current_anomaly_data)
+
+                # takeoff the anomalies needed for GUI and Server
+                current_anomaly_data = current_anomaly_data[int(self.detector.anomaly_threshold) - 1]
 
                 # filter anomalies
                 current_anomaly_data = self.anomaly_filter.process(current_anomaly_data)
@@ -548,9 +553,12 @@ class Controller:
             self.audio_simulation(filepath)
             self.gui.Top_Frame.Right_Frame.insert_text(f'Audio File Loaded: {Path(filepath).stem}.wav', 'green')
 
+        elif event == Event.EXTERNAL_CALIBRATION_LOADED:
+            self.use_external_calibration = True
+            # print('External Calibration Loaded')
+
         elif event == Event.LOAD_CALIBRATION:
             self.detector.baseline_calculated = True
-            self.use_external_calibration = True
 
             if self.use_external_calibration:
                 src = self.gui.Top_Frame.Center_Frame.selected_pca_folder
@@ -578,6 +586,7 @@ class Controller:
                         if not os.path.exists(d) or not filecmp.cmp(s, d, shallow=False):
                             shutil.copy2(s, d)
                     # print(f"Copied calibration folder '{folder_name}' into:\n    {dst}")
+                    self.gui.Top_Frame.Right_Frame.insert_text(f'Calibration Files Loaded', 'green')
 
                 except Exception as e:
                     # Fallback: look for a .wav and trigger PCA calibration
@@ -688,6 +697,7 @@ class Controller:
             self.setup_project_directory()
 
         elif event == Event.PCA_CALIBRATION:
+            self.use_external_calibration = False
             entry_val = self.gui.Top_Frame.Center_Frame.calibration_time_entry.get()
             if entry_val.isdigit():
                 self.calibration_time = int(entry_val)
@@ -747,18 +757,13 @@ class Controller:
             self.gui.Top_Frame.Right_Frame.insert_text(f'Temp Set Successful: {self.temperature}', 'green')
 
         elif event == Event.SET_NUM_COMPS:
-            self.pca_calculator.num_components = int(self.gui.Bottom_Frame.Right_Frame.num_components_selector.get())
-            self.detector.num_pca_components = self.pca_calculator.num_components
-            self.gui.Top_Frame.Right_Frame.insert_text(
-                f'Number of PCA Comps Set Successful: {self.gui.Bottom_Frame.Right_Frame.num_components_selector.get()}', 'green')
+            if self.app_state == State.IDLE:
+                self.pca_calculator.num_components = int(self.gui.Bottom_Frame.Right_Frame.num_components_selector.get())
+                self.detector.num_pca_components = self.pca_calculator.num_components
+                self.gui.Top_Frame.Right_Frame.insert_text(
+                    f'Number of PCA Comps Set Successful: {self.gui.Bottom_Frame.Right_Frame.num_components_selector.get()}', 'green')
 
         elif event == Event.SET_ANOMALY_THRESHOLD_VALUE:
-            # new_thresh = int(self.gui.Bottom_Frame.Right_Frame.anomaly_threshold_value)
-            # if new_thresh < self.detector.anomaly_threshold:
-            #     # print('Anom Thres Lowered')
-            #     self.detector.max_value = 25
-            #     self.gui.Middle_Frame.Center_Frame.max_anomalies = 150
-
             self.detector.anomaly_threshold = int(self.gui.Bottom_Frame.Right_Frame.anomaly_threshold_value)
             self.gui.Top_Frame.Right_Frame.insert_text(
                 f'Max Anomaly Value Set Successful: {self.detector.anomaly_threshold}', 'green')

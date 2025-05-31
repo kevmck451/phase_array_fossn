@@ -24,6 +24,8 @@ class Detector:
         self.baseline_means = None
         self.baseline_stds = None
 
+        self.std_list = [1, 2, 3, 4, 5, 6, 7, 8]
+
     def calculate_baseline(self, pca_data):
         '''
         pca_data is a numpy array where the first axis is direction from most negative to positive
@@ -48,6 +50,7 @@ class Detector:
 
     def detect_anomalies(self, pca_data):
         self.num_channels, self.num_pca_components, self.num_samples = pca_data.shape
+        # print(f'PCA Shape: {pca_data.shape})')
 
         if self.baseline_means is None or self.baseline_stds is None:
             self.calculate_baseline(pca_data)
@@ -58,33 +61,37 @@ class Detector:
             return
 
         else:
-            anomalies_list = []
+            std_matrices = []
+            for std_val in self.std_list:
+                anomalies_list = []
 
-            # Loop through each channel and detect anomalies based on PCA data
-            for ch in range(self.num_channels):
-                # Get current PCA data for the channel
-                channel_data = pca_data[ch]
-                # Ensure the baseline mean and std are correctly shaped
-                baseline_mean = self.baseline_means[ch].reshape(self.num_pca_components, 1)
-                baseline_std = self.baseline_stds[ch].reshape(self.num_pca_components, 1)
+                # Loop through each channel and detect anomalies based on PCA data
+                for ch in range(self.num_channels):
+                    # Get current PCA data for the channel
+                    channel_data = pca_data[ch]
+                    # Ensure the baseline mean and std are correctly shaped
+                    baseline_mean = self.baseline_means[ch].reshape(self.num_pca_components, 1)
+                    baseline_std = self.baseline_stds[ch].reshape(self.num_pca_components, 1)
 
-                # Compute the deviation from the baseline
-                deviations = np.abs(channel_data - baseline_mean) > (baseline_std * self.anomaly_threshold)
+                    # Compute the deviation from the baseline
+                    deviations = np.abs(channel_data - baseline_mean) > (baseline_std * std_val)
 
-                # Count the number of anomalies (deviations exceeding threshold)
-                num_anomalies = np.sum(deviations)
+                    # Count the number of anomalies (deviations exceeding threshold)
+                    num_anomalies = np.sum(deviations)
 
-                # Append the result to the anomalies list
-                anomalies_list.append(num_anomalies)
+                    # Append the result to the anomalies list
+                    anomalies_list.append(num_anomalies)
 
-            # Convert to numpy array for consistency
-            anomalies_list = np.array(anomalies_list)
+                # Convert to numpy array for consistency
+                anomalies_list = np.array(anomalies_list)
 
-            # Ensure the list has the correct number of channels
-            assert len(anomalies_list) == self.num_channels
+                # Ensure the list has the correct number of channels
+                assert len(anomalies_list) == self.num_channels
+
+                std_matrices.append(anomalies_list)
 
             # Add the anomaly results to the queue for further processing
-            self.queue.put(anomalies_list)
+            self.queue.put(std_matrices)
 
     def detect_anomalies_simulation(self, pca_data):
 

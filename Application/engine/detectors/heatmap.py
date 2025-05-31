@@ -157,61 +157,65 @@ class Heatmap:
 
 
 def generate_full_heatmap(folder_path, cmap, vert_max, scale_factor):
+
     csv_files = glob.glob(os.path.join(folder_path, "*.csv"))
-    if len(csv_files) != 1:
-        raise ValueError("Expected exactly one CSV file in the folder.")
 
-    csv_path = csv_files[0]
-    df = pd.read_csv(csv_path)
+    for csv_path in csv_files:
+        df = pd.read_csv(csv_path)
 
-    timestamp_col = None
-    if 'Timestamp' in df.columns:
-        timestamp_col = df['Timestamp']
-        df = df.drop(columns=['Timestamp'])
+        timestamp_col = None
+        if 'Timestamp' in df.columns:
+            timestamp_col = df['Timestamp']
+            df = df.drop(columns=['Timestamp'])
 
-    thetas = list(df.columns)
-    values = df.to_numpy()
-    base, _ = os.path.splitext(csv_path)
+        thetas = list(df.columns)
+        values = df.to_numpy()
 
-    # --- Unfiltered heatmap ---
-    heatmap_raw = Heatmap(max_time_steps=len(df))
-    for row in values:
-        heatmap_raw.update(thetas, row.tolist(), max_value_seen_setting='global')
+        base, _ = os.path.splitext(csv_path)
+        filename = os.path.basename(csv_path)
+        name_only, _ = os.path.splitext(filename)
+        base_raw = os.path.join(folder_path, f"heatmap_raw_{name_only}")
+        base_filtered = os.path.join(folder_path, f"heatmap_filtered_{name_only}")
 
-    height = int((len(df) / 120) * 440)
-    image_raw = heatmap_raw.render_heatmap_image(
-        cmap=cmap,
-        vert_max=vert_max,
-        scale_factor=scale_factor,
-        width=550,
-        height=height
-    )
+        # --- Unfiltered heatmap ---
+        heatmap_raw = Heatmap(max_time_steps=len(df))
+        for row in values:
+            heatmap_raw.update(thetas, row.tolist(), max_value_seen_setting='global')
 
-    if image_raw:
-        image_raw.save(base + "_raw_heatmap.png")
+        height = int((len(df) / 120) * 440)
+        image_raw = heatmap_raw.render_heatmap_image(
+            cmap=cmap,
+            vert_max=vert_max,
+            scale_factor=scale_factor,
+            width=550,
+            height=height
+        )
+
+        if image_raw:
+            image_raw.save(base_raw + ".png")
 
 
-    # --- Filtered heatmap ---
-    anomaly_filter = Anomaly_Filter()
-    heatmap_filtered = Heatmap(max_time_steps=len(df))
+        # --- Filtered heatmap ---
+        anomaly_filter = Anomaly_Filter()
+        heatmap_filtered = Heatmap(max_time_steps=len(df))
 
-    for row in values:
-        anomaly_list = anomaly_filter.process(row.tolist())
-        heatmap_filtered.update(thetas, anomaly_list, max_value_seen_setting='global')
+        for row in values:
+            anomaly_list = anomaly_filter.process(row.tolist())
+            heatmap_filtered.update(thetas, anomaly_list, max_value_seen_setting='global')
 
-    image_filtered = heatmap_filtered.render_heatmap_image(
-        cmap=cmap,
-        vert_max=vert_max,
-        scale_factor=scale_factor,
-        width=550,
-        height=height
-    )
+        image_filtered = heatmap_filtered.render_heatmap_image(
+            cmap=cmap,
+            vert_max=vert_max,
+            scale_factor=scale_factor,
+            width=550,
+            height=height
+        )
 
-    if image_filtered:
-        image_filtered.save(base + "_filtered_heatmap.png")
+        if image_filtered:
+            image_filtered.save(base_filtered + ".png")
 
-    if heatmap_filtered.anomaly_matrix is not None:
-        df_filtered = pd.DataFrame(heatmap_filtered.anomaly_matrix.astype(int), columns=thetas)
-        if timestamp_col is not None:
-            df_filtered.insert(0, 'Timestamp', timestamp_col)
-        df_filtered.to_csv(base + "_filtered.csv", index=False)
+        if heatmap_filtered.anomaly_matrix is not None:
+            df_filtered = pd.DataFrame(heatmap_filtered.anomaly_matrix.astype(int), columns=thetas)
+            if timestamp_col is not None:
+                df_filtered.insert(0, 'Timestamp', timestamp_col)
+            df_filtered.to_csv(base + "_filtered.csv", index=False)

@@ -8,6 +8,7 @@ class Event(Enum):
     UPDATE_BEAM_DIRECTIONS = auto()
     START_RECORDER = auto()
     STOP_RECORDER = auto()
+    EXTERNAL_CALIBRATION_LOADED = auto()
     LOAD_AUDIO = auto()
     PCA_CALIBRATION = auto()
     LOAD_CALIBRATION = auto()

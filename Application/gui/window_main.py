@@ -334,6 +334,7 @@ class Top_Middle_Frame(ctk.CTkFrame):
                 if folder_path:
                     self.selected_pca_folder = folder_path
                     print(f"Selected PCA folder: {self.selected_pca_folder}")
+                    self.event_handler(Event.EXTERNAL_CALIBRATION_LOADED)
                     self.event_handler(Event.LOAD_CALIBRATION)
 
             except Exception as e:
@@ -349,7 +350,7 @@ class Top_Middle_Frame(ctk.CTkFrame):
                 if folder_path:
                     self.selected_pca_folder = folder_path
                     print(f"Selected PCA folder: {self.selected_pca_folder}")
-
+                    self.event_handler(Event.EXTERNAL_CALIBRATION_LOADED)
                     self.event_handler(Event.LOAD_CALIBRATION)
 
             except Exception as e:
@@ -1349,7 +1350,7 @@ class Bottom_Center_Frame(ctk.CTkFrame):
         self.grid_columnconfigure(3, weight=1)  # for the buttons
 
         # Wind bias defaults
-        self.default_scale_factor = "0.9"
+        self.default_scale_factor = "0.99"
         self.default_margin_bias = "0.5"
         self.default_theta_ratio = "0.7"
 
@@ -1440,6 +1441,7 @@ class Bottom_Right_Frame(ctk.CTkFrame):
         self.max_anomaly_value = 2500 # 1500 # 50
         self.anomaly_threshold_value = 2 # 3 # 8
         self.box_width = 60
+        self.anomaly_threshold_value_list = ["1", "2", "3", "4", "5", "6", "7", "8"]
 
         self.pca_detector_settings_frame()
 
@@ -1473,7 +1475,7 @@ class Bottom_Right_Frame(ctk.CTkFrame):
 
         self.anomaly_threshold_selector = ctk.CTkSegmentedButton(
             self,
-            values=["1", "2", "3", "4", "5", "6", "7", "8"],
+            values=self.anomaly_threshold_value_list,
             command = self.set_anomaly_threshold_value,
             font=configuration.button_font_style,
             height=28
