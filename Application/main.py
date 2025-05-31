@@ -28,7 +28,7 @@ if __name__ == "__main__":
     temp_sensor = Sender_Client(name='macbook')
     audio_realtime = Mic_Array(array_config)
 
-    controller = Controller(array_config, app_device)
+    controller = Controller(array_config, device_config)
 
     gui = Main_Window(controller.handle_event, array_config, device_config)
 
