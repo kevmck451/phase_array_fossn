@@ -33,7 +33,7 @@ def get_array_selection():
     font_label = ("Helvetica", 16, "bold")
     font_button = ("Helvetica", 14)
 
-    app_device = tk.StringVar(root, value='mac')
+    app_device = tk.StringVar(root, value='demo')
 
     tk.Label(root, text="Choose Array Type:", font=font_label).pack(pady=20)
     tk.Button(root, text="Line Array", font=font_button, width=20, height=2, command=choose_line).pack(pady=5)
@@ -45,9 +45,9 @@ def get_array_selection():
     frame = tk.Frame(root)
     frame.pack()
 
+    tk.Radiobutton(frame, text="Demo", variable=app_device, value="demo", font=font_button).pack(side=tk.LEFT, padx=10)
     tk.Radiobutton(frame, text="Mac", variable=app_device, value="mac", font=font_button).pack(side=tk.LEFT, padx=10)
     tk.Radiobutton(frame, text="Pi", variable=app_device, value="pi", font=font_button).pack(side=tk.LEFT, padx=10)
-    tk.Radiobutton(frame, text="Demo", variable=app_device, value="demo", font=font_button).pack(side=tk.LEFT, padx=10)
 
     root.mainloop()
 
