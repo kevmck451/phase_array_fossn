@@ -27,13 +27,6 @@ class Detector:
         self.baseline_means = None
         self.baseline_stds = None
 
-        self.bias_scale_factor = 0.99
-        self.bias_margin = 0.5
-        self.bias_theta_ratio = 0.7
-
-        self.edge_width = 4
-        self.suppression_factor = 0.5
-
     def calculate_baseline(self, pca_data):
         '''
         pca_data is a numpy array where the first axis is direction from most negative to positive
@@ -95,43 +88,7 @@ class Detector:
 
             # Add the anomaly results to the queue for further processing
 
-            # Remove Bias like Wind
-            anomalies_list = self.remove_bias(anomalies_list)
-            # Suppress Edges which activate easily
-            anomalies_list = self.suppress_edges(anomalies_list)
-
             self.queue.put(anomalies_list)
-
-    def remove_bias(self, anomalies):
-        # print('removing bias like wind')
-
-        mean_val = sum(anomalies) / len(anomalies)
-        if mean_val == 0:
-            return anomalies  # avoid division by zero
-
-        threshold = self.bias_margin * abs(mean_val)
-
-        # Count how many values are within mean ± threshold
-        count_within_margin = sum(abs(a - mean_val) <= threshold for a in anomalies)
-        ratio_within = count_within_margin / len(anomalies)
-
-        if ratio_within >= self.bias_theta_ratio:
-            bias = mean_val * self.bias_scale_factor
-            # print(f"Mean: {mean_val:.2f}, Threshold: {threshold:.2f}, Within Margin: {count_within_margin}/{len(anomalies)}, Bias: {bias:.2f}")
-            anomalies = [max(0, int(round(a - bias))) for a in anomalies]
-
-        return anomalies
-
-    def suppress_edges(self, anomalies):
-        length = len(anomalies)
-        new_anomalies = anomalies[:]
-
-        for i in range(self.edge_width):
-            scale = self.suppression_factor + (1 - self.suppression_factor) * (i / (self.edge_width - 1))
-            new_anomalies[i] = int(round(new_anomalies[i] * scale))
-            new_anomalies[length - 1 - i] = int(round(new_anomalies[length - 1 - i] * scale))
-
-        return new_anomalies
 
     def detect_anomalies_simulation(self, pca_data):
 
