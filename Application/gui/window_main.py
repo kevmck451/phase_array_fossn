@@ -922,9 +922,9 @@ class Bottom_Frame(ctk.CTkFrame):
         self.parent = parent
 
         self.Left_Frame = Bottom_Left_Frame(self, self.event_handler)
+        self.Center_Frame = Bottom_Center_Frame(self, self.event_handler)
         self.Middle_Center_Frame = Bottom_Middle_Center_Frame(self, self.event_handler)
         self.Middle_Frame = Bottom_Middle_Frame(self, self.event_handler)
-        # self.Center_Frame = Bottom_Center_Frame(self, self.event_handler)
         self.Right_Frame = Bottom_Right_Frame(self, self.event_handler)
 
         # Grid configuration
@@ -933,14 +933,14 @@ class Bottom_Frame(ctk.CTkFrame):
         self.columnconfigure(1, weight=1)  # Right column with x/3 of the space
         self.columnconfigure(2, weight=1)  # Right column with x/3 of the space
         self.columnconfigure(3, weight=1)  # Right column with x/3 of the space
-        # self.columnconfigure(4, weight=0)  # Right column with x/3 of the space
+        self.columnconfigure(4, weight=1)  # Right column with x/3 of the space
 
         # Place the frames using grid
         self.Left_Frame.grid(row=0, column=0, sticky='nsew')  # Left frame in column 0
-        self.Middle_Center_Frame.grid(row=0, column=1, sticky='nsew')  # Right frame in column 1
-        self.Middle_Frame.grid(row=0, column=2, sticky='nsew')  # Right frame in column 1
-        # self.Center_Frame.grid(row=0, column=3, sticky='nsew')  # Right frame in column 1
-        self.Right_Frame.grid(row=0, column=3, sticky='nsew')  # Right frame in column 1
+        self.Middle_Frame.grid(row=0, column=1, sticky='nsew')  # Right frame in column 1
+        self.Middle_Center_Frame.grid(row=0, column=2, sticky='nsew')  # Right frame in column 1
+        self.Center_Frame.grid(row=0, column=3, sticky='nsew')  # Right frame in column 1
+        self.Right_Frame.grid(row=0, column=4, sticky='nsew')  # Right frame in column 1
 
 
 class Bottom_Left_Frame(ctk.CTkFrame):
@@ -1339,18 +1339,84 @@ class Bottom_Center_Frame(ctk.CTkFrame):
         self.parent = parent
 
         # Configure the grid layout
-        self.grid_rowconfigure(0, weight=0)  # Row for the top label
-        self.grid_rowconfigure(1, weight=1)  # Row for the settings
-        self.grid_rowconfigure(2, weight=1)  # Row for the settings
-        self.grid_rowconfigure(3, weight=1)  # Row for the settings
+        self.grid_rowconfigure(0, weight=0)  # Settings label
+        self.grid_rowconfigure(1, weight=0)  # Wind Bias label
+        self.grid_rowconfigure(2, weight=0)  # Wind Bias inputs + button
+        self.grid_rowconfigure(3, weight=0)  # Edge Suppression label
+        self.grid_rowconfigure(4, weight=0)  # Edge Suppression inputs + button
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
         self.grid_columnconfigure(2, weight=1)
+        self.grid_columnconfigure(3, weight=1)  # for the buttons
 
+        # Wind bias defaults
+        self.default_scale_factor = "0.99"
+        self.default_margin_bias = "0.5"
+        self.default_theta_ratio = "0.7"
 
-        self.hp_bottom_cutoff_freq = 1144
-        self.ds_new_sr = 6288
+        # Edge suppression defaults
+        self.default_edge_width = "4"
+        self.default_suppression_factor = "0.5"
+        self.box_width = 20
 
+        self.detector_settings_frame()
+
+    def detector_settings_frame(self):
+        configuration = self.parent.parent.device_config
+
+        self.settings_label = ctk.CTkLabel(
+            self, text="Heatmap Filtering Settings", font=configuration.console_font_style
+        )
+        self.settings_label.grid(row=0, column=0, columnspan=4, sticky='nsew', padx=10, pady=10)
+
+        # Row 1: Labels for wind bias inputs + section label at end
+        self.scale_factor_label = ctk.CTkLabel(self, text="Scale Factor", font=configuration.console_font_style_small)
+        self.scale_factor_label.grid(row=1, column=0, padx=5, pady=2, sticky='ew')
+
+        self.margin_bias_label = ctk.CTkLabel(self, text="Margin Bias", font=configuration.console_font_style_small)
+        self.margin_bias_label.grid(row=1, column=1, padx=5, pady=2, sticky='ew')
+
+        self.theta_ratio_label = ctk.CTkLabel(self, text="Theta Ratio", font=configuration.console_font_style_small)
+        self.theta_ratio_label.grid(row=1, column=2, padx=5, pady=2, sticky='ew')
+
+        self.wind_bias_label = ctk.CTkLabel(self, text="Wind Bias Removal", font=configuration.console_font_style_small)
+        self.wind_bias_label.grid(row=1, column=3, padx=5, pady=2, sticky='ew')
+
+        self.scale_factor_entry = ctk.CTkEntry(self, width=self.box_width, font=configuration.button_font_style)
+        self.scale_factor_entry.insert(0, self.default_scale_factor)
+        self.scale_factor_entry.grid(row=2, column=0, padx=5, pady=5, sticky='ew')
+
+        self.margin_bias_entry = ctk.CTkEntry(self, width=self.box_width, font=configuration.button_font_style)
+        self.margin_bias_entry.insert(0, self.default_margin_bias)
+        self.margin_bias_entry.grid(row=2, column=1, padx=5, pady=5, sticky='ew')
+
+        self.theta_ratio_entry = ctk.CTkEntry(self, width=self.box_width, font=configuration.button_font_style)
+        self.theta_ratio_entry.insert(0, self.default_theta_ratio)
+        self.theta_ratio_entry.grid(row=2, column=2, padx=5, pady=5, sticky='ew')
+
+        self.set_bias_button = ctk.CTkButton(self, text="Set Bias", command=lambda: self.event_handler.handle_event(), font=configuration.button_font_style)
+        self.set_bias_button.grid(row=2, column=3, padx=5, pady=5, sticky='ew')
+
+        # Row 3: Labels for edge suppression inputs + section label at end
+        self.edge_width_label = ctk.CTkLabel(self, text="Edge Width", font=configuration.console_font_style_small)
+        self.edge_width_label.grid(row=3, column=1, padx=5, pady=2, sticky='ew')
+
+        self.suppression_factor_label = ctk.CTkLabel(self, text="Suppression Factor", font=configuration.console_font_style_small)
+        self.suppression_factor_label.grid(row=3, column=2, padx=5, pady=2, sticky='ew')
+
+        self.edge_suppression_label = ctk.CTkLabel(self, text="Edge Suppression", font=configuration.console_font_style_small)
+        self.edge_suppression_label.grid(row=3, column=3, padx=5, pady=2, sticky='ew')
+
+        self.edge_width_entry = ctk.CTkEntry(self, width=self.box_width, font=configuration.button_font_style)
+        self.edge_width_entry.insert(0, self.default_edge_width)
+        self.edge_width_entry.grid(row=4, column=1, padx=5, pady=5, sticky='ew')
+
+        self.suppression_factor_entry = ctk.CTkEntry(self, width=self.box_width, font=configuration.button_font_style)
+        self.suppression_factor_entry.insert(0, self.default_suppression_factor)
+        self.suppression_factor_entry.grid(row=4, column=2, padx=5, pady=5, sticky='ew')
+
+        self.set_edge_button = ctk.CTkButton(self, text="Set Edge", command=lambda: self.event_handler.handle_event(), font=configuration.button_font_style)
+        self.set_edge_button.grid(row=4, column=3, padx=5, pady=5, sticky='ew')
 
 
 class Bottom_Right_Frame(ctk.CTkFrame):
@@ -1370,10 +1436,14 @@ class Bottom_Right_Frame(ctk.CTkFrame):
 
         self.max_anomaly_value = 2500 # 1500 # 50
         self.anomaly_threshold_value = 2 # 3 # 8
+        self.box_width = 60
+
         self.pca_detector_settings_frame()
 
     def pca_detector_settings_frame(self):
         configuration = self.parent.parent.device_config
+
+
         # Number of Components Label
         self.pca_detector_settings_label = ctk.CTkLabel(self, text="PCA Detector Settings", font=configuration.console_font_style)
         self.pca_detector_settings_label.grid(row=0, column=0, columnspan=3, sticky='nsew', padx=10, pady=10)
@@ -1381,7 +1451,7 @@ class Bottom_Right_Frame(ctk.CTkFrame):
         self.num_components_label = ctk.CTkLabel(self, text="# Comps:", font=configuration.console_font_style)
         self.num_components_label.grid(row=1, column=0, sticky='e', padx=10, pady=5)
 
-        self.num_components_entry = ctk.CTkEntry(self, width=50, font=configuration.button_font_style)
+        self.num_components_entry = ctk.CTkEntry(self, width=self.box_width, font=configuration.button_font_style)
         self.num_components_entry.grid(row=1, column=1, sticky='w', padx=10, pady=5)
         self.num_components_entry.insert(0, "3")  # Default value
 
@@ -1392,7 +1462,7 @@ class Bottom_Right_Frame(ctk.CTkFrame):
         self.anomaly_threshold_value_label = ctk.CTkLabel(self, text="Anom Thres:", font=configuration.console_font_style)
         self.anomaly_threshold_value_label.grid(row=2, column=0, sticky='e', padx=10, pady=5)
 
-        self.anomaly_threshold_value_entry = ctk.CTkEntry(self, width=50, font=configuration.button_font_style)
+        self.anomaly_threshold_value_entry = ctk.CTkEntry(self, width=self.box_width, font=configuration.button_font_style)
         self.anomaly_threshold_value_entry.grid(row=2, column=1, sticky='w', padx=10, pady=5)
         self.anomaly_threshold_value_entry.insert(0, f'{self.anomaly_threshold_value}')  # Default value
 
@@ -1403,23 +1473,16 @@ class Bottom_Right_Frame(ctk.CTkFrame):
         self.max_anomaly_value_label = ctk.CTkLabel(self, text="Max Anom:", font=configuration.console_font_style)
         self.max_anomaly_value_label.grid(row=3, column=0, sticky='e', padx=10, pady=5)
 
-        self.max_anomaly_value_entry = ctk.CTkEntry(self, width=50, font=configuration.button_font_style)
+        self.max_anomaly_value_entry = ctk.CTkEntry(self, width=self.box_width, font=configuration.button_font_style)
         self.max_anomaly_value_entry.grid(row=3, column=1, sticky='w', padx=10, pady=5)
         self.max_anomaly_value_entry.insert(0, f'{self.max_anomaly_value}')  # Default value
 
         self.max_anomaly_value_set_button = ctk.CTkButton(self, text="Set", command=self.set_max_anomaly_value, font=configuration.button_font_style)
         self.max_anomaly_value_set_button.grid(row=3, column=2, sticky='w', padx=10, pady=5)
 
-        # Threshold Multiplier Label
-        self.threshold_multiplier_label = ctk.CTkLabel(self, text="N/A:", font=configuration.console_font_style)
-        self.threshold_multiplier_label.grid(row=4, column=0, sticky='e', padx=10, pady=5)
-
-        self.threshold_multiplier_entry = ctk.CTkEntry(self, width=50, font=configuration.button_font_style)
-        self.threshold_multiplier_entry.grid(row=4, column=1, sticky='w', padx=10, pady=5)
-        self.threshold_multiplier_entry.insert(0, "1.0")  # Default value
-
-        self.threshold_multiplier_set_button = ctk.CTkButton(self, text="Set", command=self.set_threshold_multiplier, font=configuration.button_font_style)
-        self.threshold_multiplier_set_button.grid(row=4, column=2, sticky='w', padx=10, pady=5)
+        self.normalization_checkbox = ctk.CTkCheckBox(self, text="Normalization", font=configuration.button_font_style)
+        self.normalization_checkbox.deselect()
+        self.normalization_checkbox.grid(row=5, column=0, columnspan=4, pady=10)
 
     def set_num_components(self):
         num_components = self.num_components_entry.get()
