@@ -8,6 +8,7 @@ from Application.engine.filters.processor import Processing
 from Application.engine.detectors.pca_calculator import PCA_Calculator
 from Application.engine.detectors.detector import Detector
 from Application.engine.detectors.heatmap import Heatmap
+from Application.engine.detectors.heatmap import generate_full_heatmap
 from Application.engine.calibration_parallel import Calibration_All
 
 from Application.controller.detector_log import Detector_Log
@@ -155,9 +156,9 @@ class Controller:
             time.sleep(0.5)
 
     def setup_project_directory(self):
-        if self.app_device == 'mac':
+        if self.app_device.device_type == 'mac':
             self.project_directory_base_path = '/Users/KevMcK/Dropbox/2 Work/1 Optics Lab/2 FOSSN/Data/Field_Tests'
-        elif self.app_device == 'pi':
+        elif self.app_device.device_type == 'pi':
             self.project_directory_base_path = '/home/pi/Field_Tests'
         else: self.project_directory_base_path = './Field_Tests'
 
@@ -558,7 +559,7 @@ class Controller:
                         d = os.path.join(dst, fname)
                         if not os.path.exists(d) or not filecmp.cmp(s, d, shallow=False):
                             shutil.copy2(s, d)
-                    print(f"Copied calibration folder '{folder_name}' into:\n    {dst}")
+                    # print(f"Copied calibration folder '{folder_name}' into:\n    {dst}")
 
                 except Exception as e:
                     # Fallback: look for a .wav and trigger PCA calibration
@@ -570,13 +571,33 @@ class Controller:
                             wav_file = fname
 
                     if wav_found:
-                        print("WAV file found, triggering PCA calibration.")
+                        # print("WAV file found, triggering PCA calibration.")
                         self.audio_loaded = True
                         filepath = os.path.join(src, wav_file)
                         self.audio_simulation(filepath)
                         self.gui.Top_Frame.Right_Frame.insert_text(f'Calibration Wav File Loaded: {Path(filepath).stem}.wav', 'green')
                         self.gui.Top_Frame.Right_Frame.insert_text(f'Triggering PCA Calibration', 'green')
                         self.handle_event(Event.PCA_CALIBRATION)
+
+                        baselines = {}
+                        for fname in os.listdir(src):
+                            if not fname.lower().endswith('.npy'):
+                                continue
+                            mix = fname.split('_')[0]
+                            param = fname.split('_')[-1].split('.')[0]
+                            baselines.setdefault(mix, {})[param] = np.load(os.path.join(src, fname))
+
+                        self.calibration_baselines_all = baselines
+                        self.calibration_baseline_loader()
+
+                        # Only copy contents after successful load
+                        os.makedirs(dst, exist_ok=True)
+                        for fname in os.listdir(src):
+                            s = os.path.join(src, fname)
+                            d = os.path.join(dst, fname)
+                            if not os.path.exists(d) or not filecmp.cmp(s, d, shallow=False):
+                                shutil.copy2(s, d)
+                                
                     else:
                         self.gui.Top_Frame.Right_Frame.insert_text(
                             f'Error loading calibration and no WAV file found: {e}', 'red'
@@ -625,14 +646,29 @@ class Controller:
                     self.heatmap_logger.save_heatmap_image(final_image, "final")
             self.stop_all_queues()
             self.gui.Middle_Frame.Center_Frame.stop_updates()
-            # self.remove_directory_if_empty()
-            self.setup_project_directory()
-            self.gui.Top_Frame.Center_Right_Frame.stop_recording()
 
+
+            self.gui.Top_Frame.Center_Right_Frame.stop_recording()
             if not self.realtime:
                 self.gui.Top_Frame.Right_Frame.insert_text(f'App is finished analyzing', 'green')
 
             if self.use_external_audio: self.external_player.stop()
+
+            # reset the heatmap
+            if self.heatmap is not None:
+                self.heatmap.anomaly_matrix = None
+
+            # generate a full length heatmap of test
+            generate_full_heatmap(
+                self.anom_filepath,
+                self.gui.Bottom_Frame.Middle_Center_Frame.visual_selector.get(),
+                self.gui.Bottom_Frame.Middle_Center_Frame.value_slider.get(),
+                int(self.gui.Bottom_Frame.Middle_Center_Frame.hp_max_options.get())
+            )
+
+            # self.remove_directory_if_empty()
+            self.setup_project_directory()
+
 
         elif event == Event.PCA_CALIBRATION:
             entry_val = self.gui.Top_Frame.Center_Frame.calibration_time_entry.get()
@@ -685,6 +721,8 @@ class Controller:
 
             if self.use_external_calibration:
                 self.audio_loaded = False
+
+            self.handle_event(Event.LOAD_CALIBRATION)
 
         elif event == Event.SET_TEMP:
             self.temperature = int(self.gui.Bottom_Frame.Left_Frame.temp_value)
