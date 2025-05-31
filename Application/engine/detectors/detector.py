@@ -102,7 +102,6 @@ class Detector:
 
             self.queue.put(anomalies_list)
 
-
     def remove_bias(self, anomalies):
         # print('removing bias like wind')
 
