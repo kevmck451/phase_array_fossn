@@ -775,13 +775,36 @@ class Main_Middle_Frame(ctk.CTkFrame):
         self.heatmap_canvas.grid(row=1, column=0, sticky='nsew', padx=0, pady=0)
         self.heatmap_canvas.master.grid_propagate(False)
 
+    # def classification(self, frame):
+    #     self.classifier_label = ctk.CTkLabel(frame, text="Sound Classifier", font=self.configuration.console_font_style)
+    #     self.classifier_label.grid(row=0, column=0, sticky='ew')
+    #
+    #     # Create a subframe to hold the icons
+    #     icon_frame = ctk.CTkFrame(frame, fg_color="transparent")
+    #     icon_frame.grid(row=1, column=0)
+    #
+    #     size = 40
+    #     horizontal_pad = self.configuration.classification_horizontal_pad
+    #
+    #     self.icons = {
+    #         'drone': ctk.CTkImage(Image.open(self.configuration.drone_icon), size=(size, size)),
+    #         'plane': ctk.CTkImage(Image.open(self.configuration.plane_icon), size=(size, size)),
+    #         'tank': ctk.CTkImage(Image.open(self.configuration.tank_icon), size=(size, size)),
+    #         'car': ctk.CTkImage(Image.open(self.configuration.car_icon), size=(size, size)),
+    #         'generator': ctk.CTkImage(Image.open(self.configuration.generator_icon), size=(size, size)),
+    #     }
+    #
+    #     for icon in self.icons.values():
+    #         label = ctk.CTkLabel(icon_frame, image=icon, text="")
+    #         label.pack(side="left", padx=horizontal_pad, pady=5)
+
     def classification(self, frame):
         self.classifier_label = ctk.CTkLabel(frame, text="Sound Classifier", font=self.configuration.console_font_style)
         self.classifier_label.grid(row=0, column=0, sticky='ew')
 
-        # Create a subframe to hold the icons
+        # Subframe for icons and associated widgets
         icon_frame = ctk.CTkFrame(frame, fg_color="transparent")
-        icon_frame.grid(row=1, column=0)
+        icon_frame.grid(row=1, column=0, pady=5)
 
         size = 40
         horizontal_pad = self.configuration.classification_horizontal_pad
@@ -790,13 +813,64 @@ class Main_Middle_Frame(ctk.CTkFrame):
             'drone': ctk.CTkImage(Image.open(self.configuration.drone_icon), size=(size, size)),
             'plane': ctk.CTkImage(Image.open(self.configuration.plane_icon), size=(size, size)),
             'tank': ctk.CTkImage(Image.open(self.configuration.tank_icon), size=(size, size)),
-            'generator': ctk.CTkImage(Image.open(self.configuration.generator_icon), size=(size, size)),
             'car': ctk.CTkImage(Image.open(self.configuration.car_icon), size=(size, size)),
+            'generator': ctk.CTkImage(Image.open(self.configuration.generator_icon), size=(size, size)),
         }
 
-        for icon in self.icons.values():
-            label = ctk.CTkLabel(icon_frame, image=icon, text="")
-            label.pack(side="left", padx=horizontal_pad, pady=5)
+        icon_labels = ["Multi-Rotor", "Fixed-Wing", "Tank", "Car", "Generator"]
+        self.percentage_boxes = {}
+
+        # Row 0: Icons
+        for i, (key, icon) in enumerate(self.icons.items()):
+            ctk.CTkLabel(icon_frame, image=icon, text="").grid(row=0, column=i, padx=horizontal_pad)
+
+        # New frame for labels + percentage boxes
+        info_frame = ctk.CTkFrame(icon_frame, fg_color="#1e1e1e", corner_radius=8)
+        info_frame.grid(row=1, column=0, columnspan=5, pady=(5, 0))
+
+        # Set fixed spacing like original
+        for i in range(5):
+            info_frame.grid_columnconfigure(i, weight=0)
+
+        for i, key in enumerate(self.icons.keys()):
+            ctk.CTkLabel(info_frame, text=icon_labels[i], font=self.configuration.console_font_style_small).grid(
+                row=0, column=i, pady=(4, 0), padx=horizontal_pad)
+
+            box = ctk.CTkLabel(info_frame, text="  0% ", width=size, height=size, corner_radius=6)
+            box.grid(row=1, column=i, pady=(2, 6), padx=horizontal_pad)
+            self.percentage_boxes[key] = box
+
+        # Aerial and Ground
+        frame.grid_columnconfigure(0, weight=1)  # Center content and stretch frame column
+
+        summary_frame = ctk.CTkFrame(frame, fg_color="#1e1e1e", corner_radius=8)
+        summary_frame.grid(row=2, column=0, pady=(15, 5), padx=0, sticky='ew')  # Stretch the frame across
+
+        summary_frame.grid_columnconfigure((0, 1, 2), weight=1)  # Center content inside
+
+        ground_label = ctk.CTkLabel(summary_frame, text="Aerial", font=self.configuration.console_font_style)
+        ground_label.grid(row=0, column=0, padx=(30, 10), pady=(5, 0))
+
+        divider_label = ctk.CTkLabel(summary_frame, text="|", font=self.configuration.console_font_style)
+        divider_label.grid(row=0, column=1, padx=10, pady=(5, 0))
+
+        aerial_label = ctk.CTkLabel(summary_frame, text="Ground", font=self.configuration.console_font_style)
+        aerial_label.grid(row=0, column=2, padx=(10, 30), pady=(5, 0))
+
+        self.summary_boxes = {}
+
+        ground_box = ctk.CTkLabel(summary_frame, text="  0% ", width=size, height=size, corner_radius=6)
+        ground_box.grid(row=1, column=0, pady=(2, 10))
+
+        aerial_box = ctk.CTkLabel(summary_frame, text="  0% ", width=size, height=size, corner_radius=6)
+        aerial_box.grid(row=1, column=2, pady=(2, 10))
+
+        self.summary_boxes['ground'] = ground_box
+        self.summary_boxes['aerial'] = aerial_box
+
+        # Placeholder canvas for time series
+        canvas = tk.Canvas(frame, width=520, height=520, bg="black")
+        canvas.grid(row=3, column=0, pady=10)
 
     def draw_bar_chart(self):
         font_size = 9

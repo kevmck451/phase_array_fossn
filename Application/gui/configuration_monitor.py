@@ -31,7 +31,7 @@ generator_icon = base_path('Application/docs/generator.png')
 plane_icon = base_path('Application/docs/plane.png')
 tank_icon = base_path('Application/docs/tank.png')
 
-detector_canvas_width = int(560*1.2)
+detector_canvas_width = int(560*1.17)
 detector_canvas_height = int(460*1.1)
 heatmap_canvas_width = int(800*1.2)
 heatmap_canvas_height = int(600*1.1)
