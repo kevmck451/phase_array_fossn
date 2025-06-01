@@ -133,3 +133,5 @@ beam_mix_4 = BeamMixConfig(
     num_mics=4,
     num_taps=number_of_taps
 )
+
+beam_mixes = [beam_mix_1, beam_mix_2, beam_mix_3, beam_mix_4]

@@ -17,10 +17,11 @@ from Application.controller.heatmap_log import Heatmap_Log
 from Application.controller.temp_log import Temp_Log
 from Application.controller.event_states import Event
 from Application.controller.event_states import State
+from Application.controller.settings_log import Settings_Log
 
 from Application.gui.human_op_mode import Human_Op_Mode_Window
 
-
+from dataclasses import asdict
 from datetime import datetime
 from threading import Thread
 from pathlib import Path
@@ -75,6 +76,7 @@ class Controller:
         self.detector_running = False
         self.calibration_baselines_all = None
 
+        self.use_anomaly_filter = True
         self.anomaly_filter = Anomaly_Filter()
         self.heatmap = Heatmap()
 
@@ -90,6 +92,7 @@ class Controller:
         self.data_logger = None
         self.heatmap_logger = None
         self.temp_logger = None
+        self.settings_logger = None
 
         self.queue_check_time = 0.01
 
@@ -104,6 +107,7 @@ class Controller:
         self.audio_filepath = None
         self.anom_filepath = None
         self.temp_filepath = None
+        self.settings_filepath = None
         self.setup_project_directory()
 
         self.server = None
@@ -202,6 +206,12 @@ class Controller:
             self.temp_filepath = filepath
             os.makedirs(filepath, exist_ok=True)
             self.temp_logger = Temp_Log(self.temp_filepath)
+        elif option == 'settings':
+            self.settings_filepath = f'{self.project_directory_path}/Settings_'
+            filepath = self.settings_filepath + current_time
+            self.settings_filepath = filepath
+            os.makedirs(filepath, exist_ok=True)
+            self.settings_logger = Settings_Log(self.settings_filepath)
 
 
     # ---------------------------------
@@ -391,7 +401,8 @@ class Controller:
                 current_anomaly_data = current_anomaly_data[int(self.detector.anomaly_threshold) - 1]
 
                 # filter anomalies
-                if bool(self.gui.Bottom_Frame.Center_Frame.filters_checkbox.get()):
+                self.use_anomaly_filter = bool(self.gui.Bottom_Frame.Center_Frame.filters_checkbox.get())
+                if self.use_anomaly_filter:
                     self.anomaly_filter.targeted = bool(self.gui.Bottom_Frame.Center_Frame.targeted_filters_checkbox.get())
                     current_anomaly_data = self.anomaly_filter.process(current_anomaly_data)
 
@@ -540,6 +551,58 @@ class Controller:
             'Baseline calibration loaded successfully', 'green'
         )
 
+    def log_all_settings(self):
+        print('logging all settings')
+        self.create_directory('settings')
+        self.settings_logger.use_external_calibration = self.use_external_calibration
+        self.settings_logger.temp_sensor = bool(self.temp_sensor)
+        self.settings_logger.mic_array = bool(self.mic_array)
+        self.settings_logger.audio_loaded = self.audio_loaded
+        self.settings_logger.array_type = self.array_config.title
+        self.settings_logger.sample_rate = self.array_config.sample_rate
+        self.settings_logger.beam_mixes = [asdict(mix) for mix in self.array_config.beam_mixes]
+        self.settings_logger.chunk_size_seconds = self.chunk_size_seconds
+
+        # Beamforming
+        self.settings_logger.thetas = self.thetas
+        self.settings_logger.phis = self.phis
+        self.settings_logger.beam_mix = self.beam_mix_selection
+
+        # Processor
+        self.settings_logger.processing_chain = self.processor.processing_chain
+        self.settings_logger.nr_std_threshold = self.processor.nr_std_threshold
+        self.settings_logger.bottom_cutoff_frequency = self.processor.bottom_cutoff_frequency
+        self.settings_logger.norm_percent = self.processor.norm_percent
+        self.settings_logger.new_sample_rate = self.processor.new_sample_rate
+
+        # PCA Calculator
+        self.settings_logger.nperseg = self.pca_calculator.nperseg
+        self.settings_logger.num_components = self.pca_calculator.num_components
+
+        # Detector
+        self.settings_logger.max_value = self.detector.max_value
+        self.settings_logger.anomaly_threshold = self.detector.anomaly_threshold
+        self.settings_logger.num_channels = self.detector.num_channels
+        self.settings_logger.num_pca_components = self.detector.num_pca_components
+        self.settings_logger.num_samples = self.detector.num_samples
+
+        # Anomaly Filter
+        self.settings_logger.anomaly_filter_on_off = self.use_anomaly_filter
+        self.settings_logger.bias_scale_factor = self.anomaly_filter.bias_scale_factor
+        self.settings_logger.bias_margin = self.anomaly_filter.bias_margin
+        self.settings_logger.bias_theta_ratio = self.anomaly_filter.bias_theta_ratio
+        self.settings_logger.edge_width = self.anomaly_filter.edge_width
+        self.settings_logger.suppression_factor = self.anomaly_filter.suppression_factor
+        self.settings_logger.targeted = self.anomaly_filter.targeted
+
+        # Heatmap
+        self.settings_logger.max_value_seen_global = self.heatmap.max_value_seen_global
+        self.settings_logger.smoothing_window = self.heatmap.smoothing_window
+        self.settings_logger.vert_max = self.gui.Bottom_Frame.Middle_Center_Frame.value_slider.get()
+        self.settings_logger.sensitivity_factor = self.gui.Bottom_Frame.Middle_Center_Frame.hp_max_options.get()
+
+        self.settings_logger.log_data()
+
     # ---------------------------------
     # EVENT HANDLER -------------------
     # ---------------------------------
@@ -679,6 +742,9 @@ class Controller:
                                     int(self.gui.Bottom_Frame.Middle_Center_Frame.hp_max_options.get()))
                 if final_image is not None:
                     self.heatmap_logger.save_heatmap_image(final_image, "final")
+
+                self.log_all_settings()
+
             self.stop_all_queues()
             self.gui.Middle_Frame.Center_Frame.stop_updates()
 
@@ -811,7 +877,6 @@ class Controller:
 
             else:
                 self.gui.Top_Frame.Right_Frame.insert_text(f'Cannot change in Real Time', 'red')
-
 
         elif event == Event.START_EXTERNAL_PLAY:
             self.use_external_audio = True

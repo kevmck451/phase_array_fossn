@@ -92,3 +92,5 @@ beam_mix_4 = BeamMixConfig(
     num_mics=48,
     num_taps = number_of_taps
 )
+
+beam_mixes = [beam_mix_1, beam_mix_2]

@@ -8,10 +8,8 @@ class Anomaly_Filter:
         self.bias_scale_factor = 0.99
         self.bias_margin = 0.5
         self.bias_theta_ratio = 0.7
-
         self.edge_width = 4
         self.suppression_factor = 0.5
-
         self.targeted = False
 
     def remove_bias(self, anomalies):
