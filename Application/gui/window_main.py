@@ -1262,7 +1262,7 @@ class Bottom_Middle_Center_Frame(ctk.CTkFrame):
 
         # Slider tick labels below
         self.slider_min_label = ctk.CTkLabel(self, text="Less Sensitive", font=configuration.console_font_style_small)
-        self.slider_mid_label = ctk.CTkLabel(self, text="|", font=configuration.console_font_style_small)
+        self.slider_mid_label = ctk.CTkLabel(self, text="           |", font=configuration.console_font_style_small)
         self.slider_max_label = ctk.CTkLabel(self, text="More Sensitive", font=configuration.console_font_style_small)
 
         self.slider_min_label.grid(row=3, column=0, sticky="w", padx=10)
@@ -1270,7 +1270,7 @@ class Bottom_Middle_Center_Frame(ctk.CTkFrame):
         self.slider_max_label.grid(row=3, column=2, sticky="e", padx=10)
 
         self.heatmap_anom_settings_label = ctk.CTkLabel(
-            self, text="Anomaly Max/Sensitivity Settings", font=configuration.button_font_style
+            self, text="Anomaly Max   |   Sensitivity   |   Smoothing Window", font=configuration.button_font_style
         )
         self.heatmap_anom_settings_label.grid(row=4, column=0, columnspan=3, sticky='nsew', padx=10, pady=(10, 5))
 
@@ -1279,20 +1279,30 @@ class Bottom_Middle_Center_Frame(ctk.CTkFrame):
             self,
             values=["global", "local"],
             # command=self.handle_visual_selection,
-            font=configuration.button_font_style,
+            font=configuration.console_font_style_small,
             height=28  # reduce the button height directly
         )
         self.hp_max_selector.set("global")
-        self.hp_max_selector.grid(row=5, column=0, pady=(0, 10), padx=40, sticky='ew')
+        self.hp_max_selector.grid(row=5, column=0, pady=(5, 10), padx=(5, 5), sticky='ew')
 
         self.hp_max_options = ctk.CTkSegmentedButton(
             self,
             values=["1", "2", "3", "4", "5"],
-            font=configuration.button_font_style,
+            font=configuration.console_font_style_small,
             height=28
         )
         self.hp_max_options.set("2")
-        self.hp_max_options.grid(row=5, column=2, pady=(0, 10), padx=(5, 40), sticky='ew')
+        self.hp_max_options.grid(row=5, column=1, pady=(5, 10), padx=(5, 5), sticky='ew')
+
+        self.smoothing_window_options = ctk.CTkSegmentedButton(
+            self,
+            values=["1", "2", "3", "4", "5"],
+            font=configuration.console_font_style_small,
+            height=28
+        )
+        self.smoothing_window_options.set("3")
+        self.smoothing_window_options.grid(row=5, column=2, pady=(5, 10), padx=(5, 5), sticky='ew')
+
 
     def handle_visual_selection(self, value):
         print(f"Selected: {value}")
@@ -1346,7 +1356,7 @@ class Bottom_Middle_Frame(ctk.CTkFrame):
 
         self.beam_mix_settings_label = ctk.CTkLabel(self,
                                                     text=f'Center: {self.center_freq}Hz   |   #Mics: {self.beam_mix_num_mics}   |   Sp: {self.beam_mix_spcaing}m',
-                                                    font=configuration.console_font_style)
+                                                    font=configuration.console_font_style_small)
         self.beam_mix_settings_label.grid(row=2, column=0, columnspan=3, sticky='nsew', padx=10, pady=10)
 
         # DS: New Sample Rate
@@ -1431,7 +1441,7 @@ class Bottom_Center_Frame(ctk.CTkFrame):
         # Edge suppression defaults
         self.default_edge_width = "4"
         self.default_suppression_factor = "0.5"
-        self.box_width = 20
+        self.box_width = 10
 
         self.detector_settings_frame()
 
@@ -1458,20 +1468,20 @@ class Bottom_Center_Frame(ctk.CTkFrame):
 
         self.scale_factor_entry = ctk.CTkEntry(self, width=self.box_width, font=configuration.button_font_style)
         self.scale_factor_entry.insert(0, self.default_scale_factor)
-        self.scale_factor_entry.grid(row=2, column=0, padx=5, pady=5, sticky='ew')
+        self.scale_factor_entry.grid(row=2, column=0, padx=5, pady=2, sticky='ew')
 
         self.margin_bias_entry = ctk.CTkEntry(self, width=self.box_width, font=configuration.button_font_style)
         self.margin_bias_entry.insert(0, self.default_margin_bias)
-        self.margin_bias_entry.grid(row=2, column=1, padx=5, pady=5, sticky='ew')
+        self.margin_bias_entry.grid(row=2, column=1, padx=5, pady=2, sticky='ew')
 
         self.theta_ratio_entry = ctk.CTkEntry(self, width=self.box_width, font=configuration.button_font_style)
         self.theta_ratio_entry.insert(0, self.default_theta_ratio)
-        self.theta_ratio_entry.grid(row=2, column=2, padx=5, pady=5, sticky='ew')
+        self.theta_ratio_entry.grid(row=2, column=2, padx=5, pady=2, sticky='ew')
 
         self.set_bias_button = ctk.CTkButton(self, text="Set Bias",
                                              command=lambda: self.event_handler(Event.UPDATE_ANOMALY_SETTINGS),
                                              font=configuration.button_font_style)
-        self.set_bias_button.grid(row=2, column=3, padx=5, pady=5, sticky='ew')
+        self.set_bias_button.grid(row=2, column=3, padx=5, pady=2, sticky='ew')
 
         self.targeted_filters_checkbox = ctk.CTkCheckBox(self, text="Target", font=configuration.console_font_style_small)
         self.targeted_filters_checkbox.deselect()
@@ -1493,16 +1503,16 @@ class Bottom_Center_Frame(ctk.CTkFrame):
 
         self.edge_width_entry = ctk.CTkEntry(self, width=self.box_width, font=configuration.button_font_style)
         self.edge_width_entry.insert(0, self.default_edge_width)
-        self.edge_width_entry.grid(row=4, column=1, padx=5, pady=5, sticky='ew')
+        self.edge_width_entry.grid(row=4, column=1, padx=5, pady=2, sticky='ew')
 
         self.suppression_factor_entry = ctk.CTkEntry(self, width=self.box_width, font=configuration.button_font_style)
         self.suppression_factor_entry.insert(0, self.default_suppression_factor)
-        self.suppression_factor_entry.grid(row=4, column=2, padx=5, pady=5, sticky='ew')
+        self.suppression_factor_entry.grid(row=4, column=2, padx=5, pady=2, sticky='ew')
 
         self.set_edge_button = ctk.CTkButton(self, text="Set Edge",
                                              command=lambda: self.event_handler(Event.UPDATE_ANOMALY_SETTINGS),
                                              font=configuration.button_font_style)
-        self.set_edge_button.grid(row=4, column=3, padx=5, pady=5, sticky='ew')
+        self.set_edge_button.grid(row=4, column=3, padx=5, pady=2, sticky='ew')
 
 
 class Bottom_Right_Frame(ctk.CTkFrame):

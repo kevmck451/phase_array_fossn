@@ -407,6 +407,7 @@ class Controller:
                     current_anomaly_data = self.anomaly_filter.process(current_anomaly_data)
 
                 # generate heatmap
+                self.heatmap.smoothing_window = int(self.gui.Bottom_Frame.Middle_Center_Frame.smoothing_window_options.get())
                 self.heatmap.update(self.thetas, current_anomaly_data,
                                     self.gui.Bottom_Frame.Middle_Center_Frame.hp_max_selector.get())
                 cmap = self.gui.Bottom_Frame.Middle_Center_Frame.visual_selector.get()
