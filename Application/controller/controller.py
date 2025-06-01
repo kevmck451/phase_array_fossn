@@ -768,6 +768,8 @@ class Controller:
                 self.detector.num_pca_components = self.pca_calculator.num_components
                 self.gui.Top_Frame.Right_Frame.insert_text(
                     f'Number of PCA Comps Set Successful: {self.gui.Bottom_Frame.Right_Frame.num_components_selector.get()}', 'green')
+            else:
+                self.gui.Top_Frame.Right_Frame.insert_text(f'Cannot change in Real Time', 'red')
 
         elif event == Event.SET_ANOMALY_THRESHOLD_VALUE:
             self.detector.anomaly_threshold = int(self.gui.Bottom_Frame.Right_Frame.anomaly_threshold_value)
@@ -804,6 +806,10 @@ class Controller:
                 self.gui.Middle_Frame.Center_Frame.directions = self.thetas
                 self.gui.Middle_Frame.Center_Frame.anomaly_data = [0] * len(self.thetas)
                 self.gui.Top_Frame.Right_Frame.insert_text(f'Theta: ({Ltheta}, {Rtheta}, {increment}) | Phi: {phi}', self.color_pink)
+
+            else:
+                self.gui.Top_Frame.Right_Frame.insert_text(f'Cannot change in Real Time', 'red')
+
 
         elif event == Event.START_EXTERNAL_PLAY:
             self.use_external_audio = True
