@@ -391,7 +391,9 @@ class Controller:
                 current_anomaly_data = current_anomaly_data[int(self.detector.anomaly_threshold) - 1]
 
                 # filter anomalies
-                current_anomaly_data = self.anomaly_filter.process(current_anomaly_data)
+                if bool(self.gui.Bottom_Frame.Center_Frame.filters_checkbox.get()):
+                    self.anomaly_filter.targeted = bool(self.gui.Bottom_Frame.Center_Frame.targeted_filters_checkbox.get())
+                    current_anomaly_data = self.anomaly_filter.process(current_anomaly_data)
 
                 # generate heatmap
                 self.heatmap.update(self.thetas, current_anomaly_data,

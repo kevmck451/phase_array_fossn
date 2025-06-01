@@ -1473,6 +1473,10 @@ class Bottom_Center_Frame(ctk.CTkFrame):
                                              font=configuration.button_font_style)
         self.set_bias_button.grid(row=2, column=3, padx=5, pady=5, sticky='ew')
 
+        self.targeted_filters_checkbox = ctk.CTkCheckBox(self, text="Target", font=configuration.console_font_style_small)
+        self.targeted_filters_checkbox.deselect()
+        self.targeted_filters_checkbox.grid(row=3, column=0, padx=5, pady=2, sticky='ew')
+
         # Row 3: Labels for edge suppression inputs + section label at end
         self.edge_width_label = ctk.CTkLabel(self, text="Edge Width", font=configuration.console_font_style_small)
         self.edge_width_label.grid(row=3, column=1, padx=5, pady=2, sticky='ew')
@@ -1482,6 +1486,10 @@ class Bottom_Center_Frame(ctk.CTkFrame):
 
         self.edge_suppression_label = ctk.CTkLabel(self, text="Edge Suppression", font=configuration.console_font_style_small)
         self.edge_suppression_label.grid(row=3, column=3, padx=5, pady=2, sticky='ew')
+
+        self.filters_checkbox = ctk.CTkCheckBox(self, text="On/Off", font=configuration.console_font_style_small)
+        self.filters_checkbox.select()
+        self.filters_checkbox.grid(row=4, column=0, padx=5, pady=2, sticky='ew')
 
         self.edge_width_entry = ctk.CTkEntry(self, width=self.box_width, font=configuration.button_font_style)
         self.edge_width_entry.insert(0, self.default_edge_width)

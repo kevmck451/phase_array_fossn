@@ -12,6 +12,8 @@ class Anomaly_Filter:
         self.edge_width = 4
         self.suppression_factor = 0.5
 
+        self.targeted = False
+
     def remove_bias(self, anomalies):
         mean_val = sum(anomalies) / len(anomalies)
         if mean_val == 0:
@@ -26,12 +28,13 @@ class Anomaly_Filter:
             bias = mean_val * self.bias_scale_factor
 
             # subtract only values in the margin
-            # anomalies = [
-            #     max(0, int(round(a - bias))) if abs(a - mean_val) <= threshold else a
-            #     for a in anomalies]
+            if self.targeted:
+                anomalies = [
+                    max(0, int(round(a - bias))) if abs(a - mean_val) <= threshold else a
+                    for a in anomalies]
 
             # subtract the mean from everything
-            anomalies = [max(0, int(round(a - bias))) for a in anomalies]
+            else: anomalies = [max(0, int(round(a - bias))) for a in anomalies]
 
         return anomalies
 

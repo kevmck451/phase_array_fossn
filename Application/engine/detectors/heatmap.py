@@ -80,7 +80,7 @@ class Heatmap:
         else:
             self.should_log = False
 
-        self.max_value_seen_global = max(self.max_value_seen, np.max(new_row))
+        self.max_value_seen_global = max(self.max_value_seen, np.max(smoothed_row))
         if max_value_seen_setting == 'global':
             self.max_value_seen = self.max_value_seen_global
         elif max_value_seen_setting == 'local':
