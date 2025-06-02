@@ -1613,7 +1613,7 @@ class Bottom_Right_Frame(ctk.CTkFrame):
     def set_num_components(self, value):
         num_components = self.num_components_selector.get()
         if num_components:
-            print(f"Number of components set to: {num_components}")
+            # print(f"Number of components set to: {num_components}")
             self.event_handler(Event.SET_NUM_COMPS)
 
     def set_anomaly_threshold_value(self, value):

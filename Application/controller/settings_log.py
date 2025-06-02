@@ -35,6 +35,7 @@ class Settings_Log:
         # PCA Calculator
         self.nperseg = None
         self.num_components = None
+        self.stft_shape = None
 
         # Detector
         self.max_value = None
@@ -67,17 +68,9 @@ class Settings_Log:
             "temp_sensor": self.temp_sensor,
             "mic_array": self.mic_array,
             "audio_loaded": self.audio_loaded,
-            "beam_mixes": self.beam_mixes,
             "array_type": self.array_type,
             "sample_rate": self.sample_rate,
             "chunk_size_seconds": self.chunk_size_seconds,
-
-            "beamforming": {
-                "thetas": self.thetas,
-                "phis": self.phis,
-                "beam_mix": asdict(self.beam_mix) if self.beam_mix else None,
-                "beam_mixes": self.beam_mixes,
-            },
 
             "processor": {
                 "processing_chain": self.processing_chain,
@@ -90,6 +83,7 @@ class Settings_Log:
             "pca_calculator": {
                 "nperseg": self.nperseg,
                 "num_components": self.num_components,
+                "stft shape": self.stft_shape,
             },
 
             "detector": {
@@ -115,7 +109,14 @@ class Settings_Log:
                 "smoothing_window": self.smoothing_window,
                 "vert_max": self.vert_max,
                 "sensitivity_factor": self.sensitivity_factor,
-            }
+            },
+
+            "beamforming": {
+                "thetas": self.thetas,
+                "phis": self.phis,
+                "beam_mix": asdict(self.beam_mix) if self.beam_mix else None,
+                "beam_mixes": self.beam_mixes,
+            },
         }
 
         with open(filename, "w") as f:

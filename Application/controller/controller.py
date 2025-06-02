@@ -284,7 +284,7 @@ class Controller:
                 # print('BEAMFORMING------------------')
 
                 if self.gui.Top_Frame.Center_Frame.audio_save_checkbox_variable.get():
-                    if not self.audio_loaded:
+                    if not self.audio_loaded and self.app_state != State.CALIBRATING:
                         self.temp_logger.log_data(self.temp_sensor.current_temp)
 
                 current_audio_data = self.audio_streamer.queue.get()
@@ -579,6 +579,7 @@ class Controller:
         # PCA Calculator
         self.settings_logger.nperseg = self.pca_calculator.nperseg
         self.settings_logger.num_components = self.pca_calculator.num_components
+        self.settings_logger.stft_shape = self.pca_calculator.stft_shape
 
         # Detector
         self.settings_logger.max_value = self.detector.max_value
@@ -838,6 +839,7 @@ class Controller:
                 self.gui.Top_Frame.Right_Frame.insert_text(
                     f'Number of PCA Comps Set Successful: {self.gui.Bottom_Frame.Right_Frame.num_components_selector.get()}', 'green')
             else:
+                self.gui.Bottom_Frame.Right_Frame.num_components_selector.set(str(self.pca_calculator.num_components))
                 self.gui.Top_Frame.Right_Frame.insert_text(f'Cannot change in Real Time', 'red')
 
         elif event == Event.SET_ANOMALY_THRESHOLD_VALUE:
